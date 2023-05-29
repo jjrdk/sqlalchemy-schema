@@ -1,5 +1,7 @@
-# -*- coding:utf-8 -*-
 import pytest
+import sqlalchemy as sa
+import sqlalchemy.orm as orm
+from sqlalchemy.ext.declarative import declarative_base
 
 
 def _getTarget():
@@ -9,16 +11,10 @@ def _getTarget():
 
 
 def _makeOne(*args, **kwargs):
-    from sqlalchemy_to_json_schema import ForeignKeyWalker, DefaultClassfier
+    from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker
 
     return _getTarget()(ForeignKeyWalker, DefaultClassfier)
 
-
-# definition
-from collections import OrderedDict
-import sqlalchemy as sa
-import sqlalchemy.orm as orm
-from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
@@ -106,6 +102,7 @@ def test__filtering_by__excludes():
 
 def test__filtering_by__excludes_and_includes__conflict():
     import pytest
+
     from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 
     target = _makeOne()
@@ -138,6 +135,7 @@ def test__overrides__pop():
 
 def test__overrides__wrong_column():
     import pytest
+
     from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 
     target = _makeOne()

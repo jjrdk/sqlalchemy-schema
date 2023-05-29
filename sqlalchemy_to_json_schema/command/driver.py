@@ -1,8 +1,15 @@
 import magicalimport
 from dictknife import loading
-from sqlalchemy_to_json_schema import SchemaFactory
-from sqlalchemy_to_json_schema import StructuralWalker, NoForeignKeyWalker, ForeignKeyWalker
-from sqlalchemy_to_json_schema import RelationDecision, UseForeignKeyIfPossibleDecision
+
+from sqlalchemy_to_json_schema import (
+    ForeignKeyWalker,
+    NoForeignKeyWalker,
+    RelationDecision,
+    SchemaFactory,
+    StructuralWalker,
+    UseForeignKeyIfPossibleDecision,
+)
+
 from ._transformer import (
     JSONSchemaTransformer,
     OpenAPI2Transformer,
@@ -48,9 +55,7 @@ class Driver:
     def build_transformer(self, walker, decision, layout):
         walker_factory = detect_walker_factory(walker)
         relation_decision = detect_decision(decision)
-        schema_factory = SchemaFactory(
-            walker_factory, relation_decision=relation_decision
-        )
+        schema_factory = SchemaFactory(walker_factory, relation_decision=relation_decision)
         transformer_factory = detect_transformer(layout)
         return transformer_factory(schema_factory).transform
 

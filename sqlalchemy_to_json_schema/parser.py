@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 """
 x -> dict
 """
@@ -51,7 +50,7 @@ def from_multidict(multidict):
     return r
 
 
-class DjangoMultiDictWrapper(object):
+class DjangoMultiDictWrapper:
     """almost for testing"""
 
     def __init__(self, mdict):

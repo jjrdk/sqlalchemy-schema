@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 def _callFUT(*args, **kwargs):
     from sqlalchemy_to_json_schema.dictify import dictify
 
@@ -25,9 +24,10 @@ def _callFUT4(*args, **kwargs):
 
 
 def test_it__dictify():
+    from datetime import datetime
+
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from tests.fixtures.models import Group, User
-    from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
     group_schema = factory(Group)
@@ -53,9 +53,10 @@ def test_it__dictify():
 
 
 def test_it__dictify2():
+    from datetime import datetime
+
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from tests.fixtures.models import Group, User
-    from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
     user_schema = factory(User)
@@ -79,10 +80,12 @@ def test_it__dictify2():
 
 
 def test_it__normalize():
+    from datetime import datetime
+
+    import pytz
+
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from tests.fixtures.models import Group
-    from datetime import datetime
-    import pytz
 
     created_at = datetime(2000, 1, 1, 0, 0, 0, 0, pytz.utc)
 
@@ -201,9 +204,10 @@ def test_it__prepare_partial():
 
 
 def test_it__jsonify():
+    from datetime import datetime
+
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from tests.fixtures.models import Group, User
-    from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
     group_schema = factory(Group)

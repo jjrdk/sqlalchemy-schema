@@ -1,4 +1,9 @@
-# -*- coding:utf-8 -*-
+# definition
+import sqlalchemy as sa
+import sqlalchemy.orm as orm
+from sqlalchemy.ext.declarative import declarative_base
+
+
 def _getTarget():
     from sqlalchemy_to_json_schema import SchemaFactory
 
@@ -6,15 +11,10 @@ def _getTarget():
 
 
 def _makeOne(*args, **kwargs):
-    from sqlalchemy_to_json_schema import ForeignKeyWalker, DefaultClassfier
+    from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker
 
     return _getTarget()(ForeignKeyWalker, DefaultClassfier)
 
-
-# definition
-import sqlalchemy as sa
-import sqlalchemy.orm as orm
-from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
@@ -83,8 +83,9 @@ def test_it2_create_schema__and__valid_params__success():
 
 
 def test_it_jsonify_data__that_is_valid_params():
-    from sqlalchemy_to_json_schema.dictify import jsonify
     from jsonschema import validate
+
+    from sqlalchemy_to_json_schema.dictify import jsonify
 
     target = _makeOne()
     schema = target(User, excludes=["pk", "group_id"])

@@ -73,9 +73,7 @@ class MyModelWithRelationship(Base):
         self._other_model_id = other_model_id
 
 
-@pytest.mark.parametrize(
-    "walker", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker]
-)
+@pytest.mark.parametrize("walker", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker])
 @pytest.mark.parametrize(
     "model, expected_title",
     [
@@ -83,9 +81,7 @@ class MyModelWithRelationship(Base):
         pytest.param(MyModelWithMixin, "MyModelWithMixin"),
     ],
 )
-def test_hybrid_property(
-    walker: BaseModelWalker, model: Type[Base], expected_title: str
-) -> None:
+def test_hybrid_property(walker: BaseModelWalker, model: Type[Base], expected_title: str) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 
     actual = schema_factory(model)

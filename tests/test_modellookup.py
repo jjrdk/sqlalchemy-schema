@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 def _getTarget():
     from sqlalchemy_to_json_schema.dictify import ModelLookup
 

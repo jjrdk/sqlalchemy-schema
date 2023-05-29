@@ -1,4 +1,9 @@
-# -*- coding:utf-8 -*-
+# definition
+import sqlalchemy as sa
+import sqlalchemy.orm as orm
+from sqlalchemy.ext.declarative import declarative_base
+
+
 def _getTarget():
     from sqlalchemy_to_json_schema import SchemaFactory
 
@@ -10,11 +15,6 @@ def _makeOne(walker, *args, **kwargs):
 
     return _getTarget()(walker, DefaultClassfier, *args, **kwargs)
 
-
-# definition
-import sqlalchemy as sa
-import sqlalchemy.orm as orm
-from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
@@ -48,7 +48,7 @@ def test_properties__default__includes__foreign_keys():
 
 
 def test_properties__include_OnetoMany_relation():
-    from sqlalchemy_to_json_schema import StructuralWalker, RelationDecision
+    from sqlalchemy_to_json_schema import RelationDecision, StructuralWalker
 
     target = _makeOne(StructuralWalker, relation_decision=RelationDecision())
     result = target(User)
@@ -59,11 +59,12 @@ def test_properties__include_OnetoMany_relation():
 
 
 def test_properties__include_OnetoMany_relation2():
-    from sqlalchemy_to_json_schema import StructuralWalker, UseForeignKeyIfPossibleDecision
-
-    target = _makeOne(
-        StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision()
+    from sqlalchemy_to_json_schema import (
+        StructuralWalker,
+        UseForeignKeyIfPossibleDecision,
     )
+
+    target = _makeOne(StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision())
     result = target(User)
 
     assert "required" in result
@@ -94,11 +95,9 @@ def test_properties__include_ManytoOne_backref():
 
 
 def test_properties__include_ManytoOne_backref__bidirectional_is_true():
-    from sqlalchemy_to_json_schema import StructuralWalker, ChildFactory
+    from sqlalchemy_to_json_schema import ChildFactory, StructuralWalker
 
-    target = _makeOne(
-        StructuralWalker, child_factory=ChildFactory(".", bidirectional=True)
-    )
+    target = _makeOne(StructuralWalker, child_factory=ChildFactory(".", bidirectional=True))
     result = target(Group)
 
     assert "required" in result
@@ -235,7 +234,7 @@ class Z(Base):
 
 
 def test_properties__infinite_loop():
-    from sqlalchemy_to_json_schema import StructuralWalker, RelationDecision
+    from sqlalchemy_to_json_schema import RelationDecision, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import get_reference
 
     target = _makeOne(StructuralWalker, relation_decision=RelationDecision())
@@ -249,11 +248,12 @@ def test_properties__infinite_loop():
 
 
 def test_properties__infinite_loop2():
-    from sqlalchemy_to_json_schema import StructuralWalker, UseForeignKeyIfPossibleDecision
-
-    target = _makeOne(
-        StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision()
+    from sqlalchemy_to_json_schema import (
+        StructuralWalker,
+        UseForeignKeyIfPossibleDecision,
     )
+
+    target = _makeOne(StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision())
     result = target(X)
     assert "required" in result
     assert list(sorted(result["properties"])) == ["id", "y_id"]

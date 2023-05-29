@@ -1,6 +1,6 @@
-# -*- coding:utf-8 -*-
-import pytest
 from collections import OrderedDict
+
+import pytest
 
 # using sqlalchemy's automap
 
@@ -8,11 +8,12 @@ from collections import OrderedDict
 @pytest.fixture(scope="module")
 def db():
     import os.path
-    from sqlalchemy.ext.automap import automap_base
+
     from sqlalchemy import create_engine
+    from sqlalchemy.ext.automap import automap_base
 
     dbname = os.path.join(os.path.abspath(os.path.dirname(__file__)), "reflection.db")
-    engine = create_engine("sqlite:///{}".format(dbname))
+    engine = create_engine(f"sqlite:///{dbname}")
     Base = automap_base()
     Base.prepare(engine, reflect=True)
     return Base

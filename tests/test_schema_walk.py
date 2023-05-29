@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 def _callFUT(*args, **kwargs):
     from sqlalchemy_to_json_schema.dictify import dictify
 
@@ -6,8 +5,9 @@ def _callFUT(*args, **kwargs):
 
 
 def test_it():
-    from tests.fixtures.models import Group, User
     from datetime import datetime
+
+    from tests.fixtures.models import Group, User
 
     created_at = datetime(2000, 1, 1)
     group = Group(name="ravenclaw", color="blue", created_at=created_at)
@@ -49,8 +49,9 @@ def test_it():
 
 
 def test_it2():
-    from tests.fixtures.models import Group, User
     from datetime import datetime
+
+    from tests.fixtures.models import Group, User
 
     created_at = datetime(2000, 1, 1)
     group = Group(name="ravenclaw", color="blue", created_at=created_at)
@@ -95,8 +96,9 @@ def test_it2():
 
 
 def test_it3():
-    from tests.fixtures.models import Group, User
     from datetime import datetime
+
+    from tests.fixtures.models import Group, User
 
     created_at = datetime(2000, 1, 1)
     group = Group(name="ravenclaw", color="blue", created_at=created_at)

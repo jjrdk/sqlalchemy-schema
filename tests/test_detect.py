@@ -1,6 +1,5 @@
-# -*- coding:utf-8 -*-
-from sqlalchemy.ext.declarative import declarative_base
 import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
@@ -44,8 +43,9 @@ def test_detect__nullable_is_False__required():
 
 
 def test_detect__nullable_is_False__but_default_is_exists__not_required():
-    from sqlalchemy_to_json_schema import ForeignKeyWalker
     from datetime import datetime
+
+    from sqlalchemy_to_json_schema import ForeignKeyWalker
 
     class Model2(Base):
         __tablename__ = "Model2"

@@ -1,22 +1,23 @@
-# -*- coding:utf-8 -*-
 from functools import partial
+
+from jsonschema import FormatChecker
+from jsonschema.validators import Draft3Validator, Draft4Validator
+
+from . import default_column_to_schema, default_restriction_dict
 from .dictify import (
-    objectify,
-    jsonify,
-    dictify,
-    normalize,
-    prepare,
-    apply_changes,
-    validate_all,
     ModelLookup,
+    apply_changes,
+    dictify,
+    jsonify,
     jsonify_dict,
+    normalize,
     normalize_dict,
+    objectify,
+    prepare,
     prepare_dict,
     raise_error,
+    validate_all,
 )
-from jsonschema import validate, FormatChecker
-from jsonschema.validators import Draft3Validator, Draft4Validator
-from . import default_restriction_dict, default_column_to_schema
 
 
 class DefaultRegistry:
@@ -27,7 +28,7 @@ class DefaultRegistry:
     column_to_schema = default_column_to_schema
 
 
-class Mapping(object):
+class Mapping:
     def __init__(
         self,
         validator,
@@ -69,7 +70,7 @@ class Mapping(object):
         return apply_changes(ob, params, self.schema, self.modellookup)
 
 
-class MappingFactory(object):
+class MappingFactory:
     _Mapping = Mapping
     _ModelLookup = ModelLookup
 
@@ -88,9 +89,7 @@ class MappingFactory(object):
         self.module = module
 
     def __call__(self, model, includes=None, excludes=None, depth=None):
-        schema = self.schema_factory(
-            model, includes=includes, excludes=excludes, depth=depth
-        )
+        schema = self.schema_factory(model, includes=includes, excludes=excludes, depth=depth)
         validator = self.validator_class(
             schema, resolver=self.resolver, format_checker=self.format_checker
         )

@@ -23,9 +23,7 @@ class MyModel(Base):
     id = Column("id", UUID, primary_key=True)
 
 
-@pytest.mark.parametrize(
-    "walker", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker]
-)
+@pytest.mark.parametrize("walker", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker])
 def test_hybrid_property(walker: BaseModelWalker) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 

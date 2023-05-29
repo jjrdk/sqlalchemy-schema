@@ -1,13 +1,12 @@
-# -*- coding:utf-8 -*-
-import re
-from jsonschema._format import _checks_drafts, FormatChecker, _draft_checkers
-import calendar
-from datetime import date, time
-
-
 """
 this is custom format
 """
+import calendar
+import re
+from datetime import date, time
+
+from jsonschema._format import _checks_drafts
+
 time_rx = re.compile(r"(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|([+\-])(\d{2}):(\d{2}))?")
 date_rx = re.compile(r"(\d{4})\-(\d{2})\-(\d{2})")
 
@@ -19,7 +18,7 @@ def parse_date(date_string):
 
     groups = m.groups()
 
-    year, month, day = [int(x) for x in groups[:3]]
+    year, month, day = (int(x) for x in groups[:3])
     return date(year, month, day)
 
 
@@ -30,7 +29,7 @@ def validate_date(date_string):
 
     groups = m.groups()
 
-    year, month, day = [int(x) for x in groups[:3]]
+    year, month, day = (int(x) for x in groups[:3])
 
     if not 1 <= year <= 9999:
         # Have to reject this, unfortunately (despite it being OK by rfc3339):
@@ -55,7 +54,7 @@ def parse_time(time_string):
 
     groups = m.groups()
 
-    hour, minute, second = [int(x) for x in groups[:3]]
+    hour, minute, second = (int(x) for x in groups[:3])
     if groups[4] is not None and groups[4] != "Z":
         return time(hour, minute, second, int(groups(3)))
     return time(hour, minute, second)
@@ -68,7 +67,7 @@ def validate_time(time_string):
 
     groups = m.groups()
 
-    hour, minute, second = [int(x) for x in groups[:3]]
+    hour, minute, second = (int(x) for x in groups[:3])
     if not (0 <= hour <= 23 and 0 <= minute <= 59 and 0 <= second <= 59):
         # forbid leap seconds :-(. See README
         return False

@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.ext.declarative import declarative_base

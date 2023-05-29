@@ -1,6 +1,3 @@
-# -*- coding:utf-8 -*-
-
-
 def _callFUT(*args, **kwargs):
     from sqlalchemy_to_json_schema.parser import from_multidict
 
@@ -25,6 +22,7 @@ def test_single_mdict__return_dict():
 
 def test_django_like_mdict__return_dict():
     from webob.multidict import MultiDict
+
     from sqlalchemy_to_json_schema.parser import DjangoMultiDictWrapper
 
     mdict = DjangoMultiDictWrapper(MultiDict({"name": "foo", "country": "jp"}))

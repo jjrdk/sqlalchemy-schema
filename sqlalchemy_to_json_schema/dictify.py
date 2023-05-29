@@ -1,5 +1,10 @@
-# -*- coding:utf-8 -*-
 import logging
+from collections import OrderedDict
+
+import isodate
+import pytz
+from sqlalchemy.inspection import inspect
+from sqlalchemy.orm.relationships import RelationshipProperty
 
 from sqlalchemy_to_json_schema.exceptions import (
     ConversionError,
@@ -7,18 +12,10 @@ from sqlalchemy_to_json_schema.exceptions import (
     InvalidStatus,
 )
 
+from .custom.format import parse_date  # more strict
+from .custom.format import parse_time  # more strict than isodate
+
 logger = logging.getLogger(__name__)
-from sqlalchemy.inspection import inspect
-from sqlalchemy.orm.relationships import RelationshipProperty
-from functools import partial
-import isodate
-from .custom.format import (
-    parse_time,  # more strict than isodate
-    parse_date,  # more strict
-)
-from collections import OrderedDict
-from jsonschema import validate
-import pytz
 
 
 def datetime_rfc3339(ob):
@@ -36,7 +33,7 @@ def isoformat0(ob):
 
 
 def raise_error(ob):
-    raise Exception("convert failure. unknown format xxx of {}".format(ob))
+    raise Exception(f"convert failure. unknown format xxx of {ob}")
 
 
 def maybe_wrap(fn, default=None):
@@ -123,7 +120,7 @@ def attribute_of(ob, name, type_, registry=None):
     return getattr(ob, name)
 
 
-class DictWalker(object):
+class DictWalker:
     def __init__(self, schema, convert, getter, registry=prepare_dict, marker=marker):
         self.schema = schema
         self.convert = convert
@@ -148,17 +145,11 @@ class DictWalker(object):
         type_ = schema.get("type")
         if type_ == "array":
             properties = self.get_properties(schema)
-            return [
-                self.fold_properties(e, properties) for e in self.getter(ob, name, [])
-            ]
+            return [self.fold_properties(e, properties) for e in self.getter(ob, name, [])]
         elif type_ is None:
-            return self.fold_properties(
-                self.getter(ob, name), self.get_properties(schema)
-            )
+            return self.fold_properties(self.getter(ob, name), self.get_properties(schema))
         elif type_ == "object":
-            return self.fold_properties(
-                self.getter(ob, name), self.get_properties(schema)
-            )
+            return self.fold_properties(self.getter(ob, name), self.get_properties(schema))
         else:
             return self.convert(ob, name, (type_, schema.get("format")), self.registry)
 
@@ -205,7 +196,7 @@ def prepare(ob, schema, convert=prepare_of, registry=prepare_dict):
     return DictWalker(schema, convert, dict.get, registry=registry)(ob)
 
 
-class ModelLookup(object):
+class ModelLookup:
     def __init__(self, module):
         self.module = module
         self.name_stack = []
@@ -234,7 +225,7 @@ class ModelLookup(object):
         return name, self.inspect_stack.pop()
 
 
-class ComposedModule(object):
+class ComposedModule:
     def __init__(self, *modules):
         self.modules = set(modules)
 
@@ -245,7 +236,7 @@ class ComposedModule(object):
 
 
 # objectify
-class CreateObjectWalker(object):
+class CreateObjectWalker:
     def __init__(self, schema, modellookup, strict=True):
         self.schema = schema
         self.modellookup = modellookup
@@ -273,10 +264,7 @@ class CreateObjectWalker(object):
 
         if type_ == "array":
             sub_schema = self.get_properties(schema)
-            return [
-                self._create_subobject(e, name, sub_schema)
-                for e in params.get(name, [])
-            ]
+            return [self._create_subobject(e, name, sub_schema) for e in params.get(name, [])]
         elif name not in params:
             return None
         elif type_ == "object":
@@ -298,9 +286,7 @@ class CreateObjectWalker(object):
         if self.strict:
             for k in schema.get("required", []):
                 if getattr(sub, k) is None:
-                    raise InvalidStatus(
-                        "{}.{} is None. this is required.".format(sub_model, k)
-                    )
+                    raise InvalidStatus(f"{sub_model}.{k} is None. this is required.")
         return sub
 
     def get_properties(self, schema):
@@ -316,7 +302,7 @@ def apply_changes(ob, params, schema, modellookup):
     return UpdateObjectWalker(schema, modellookup)(ob, params)
 
 
-class UpdateObjectWalker(object):
+class UpdateObjectWalker:
     def __init__(self, schema, modellookup, strict=True):
         self.schema = schema
         self.modellookup = modellookup
@@ -357,9 +343,7 @@ class UpdateObjectWalker(object):
             for ac, sub, sub_params in list(subobject_iterate(ob, params, name)):
                 if ac == "create":
                     access.append(
-                        self.create_walker._create_subobject(
-                            sub_params, name, sub_schema
-                        )
+                        self.create_walker._create_subobject(sub_params, name, sub_schema)
                     )
                 elif ac == "update":
                     for k, v in sub_params.items():  # xxx:
@@ -428,7 +412,6 @@ def _get_primary_keys_from_object(ob):
 
 def _get_primary_keys_from_params(sub_params, primary_keys):
     return tuple(sorted(sub_params.get(k) for k in primary_keys))
-
 
 
 def raise_error(data, e):

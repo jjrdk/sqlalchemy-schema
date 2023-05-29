@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 def _callFUT(*args, **kwargs):
     from sqlalchemy_to_json_schema.dictify import objectify
 
@@ -6,7 +5,7 @@ def _callFUT(*args, **kwargs):
 
 
 def test_no_required():
-    from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
+    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
     from tests.fixtures import models
 

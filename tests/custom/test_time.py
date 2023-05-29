@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 def _callFUT(*args, **kwargs):
     from sqlalchemy_to_json_schema.custom.format import validate_time
 

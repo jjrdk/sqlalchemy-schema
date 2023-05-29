@@ -1,13 +1,13 @@
-# -*- coding:utf-8 -*-
-"""
+r"""
 jsondict <-> dict <-> model object
    \______________________/
 """
 
 
 def _datetime(*args):
-    import pytz
     from datetime import datetime
+
+    import pytz
 
     args = list(args)
     args.append(pytz.utc)
@@ -29,15 +29,14 @@ def _makeOne(schema_factory, model, *args, **kwargs):
 
 
 def test_it__dict_from_model_object():
-    from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
+    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+
     from .fixtures.models import Group, User
 
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
 
-    group = Group(
-        name="ravenclaw", color="blue", created_at=_datetime(2000, 1, 1, 10, 0, 0, 0)
-    )
+    group = Group(name="ravenclaw", color="blue", created_at=_datetime(2000, 1, 1, 10, 0, 0, 0))
     group.users = [User(name="foo", created_at=_datetime(2000, 1, 1, 10, 0, 0, 0))]
 
     group_dict = target.dict_from_object(group)
@@ -57,15 +56,14 @@ def test_it__dict_from_model_object():
 
 
 def test_it__jsondict_from_model():
-    from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
+    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+
     from .fixtures.models import Group, User
 
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
 
-    group = Group(
-        name="ravenclaw", color="blue", created_at=_datetime(2000, 1, 1, 10, 0, 0, 0)
-    )
+    group = Group(name="ravenclaw", color="blue", created_at=_datetime(2000, 1, 1, 10, 0, 0, 0))
     group.users = [User(name="foo", created_at=_datetime(2000, 1, 1, 10, 0, 0, 0))]
 
     jsondict = target.jsondict_from_object(group, verbose=True)
@@ -77,16 +75,15 @@ def test_it__jsondict_from_model():
     assert jsondict == {
         "color": "blue",
         "name": "ravenclaw",
-        "users": [
-            {"name": "foo", "pk": None, "created_at": "2000-01-01T10:00:00+00:00"}
-        ],
+        "users": [{"name": "foo", "pk": None, "created_at": "2000-01-01T10:00:00+00:00"}],
         "pk": None,
         "created_at": "2000-01-01T10:00:00+00:00",
     }
 
 
 def test_it__validate__jsondict():
-    from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
+    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+
     from .fixtures.models import Group
 
     schema_factory = SchemaFactory(StructuralWalker)
@@ -104,7 +101,8 @@ def test_it__validate__jsondict():
 
 
 def test_it__dict_from_jsondict():
-    from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
+    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+
     from .fixtures.models import Group
 
     schema_factory = SchemaFactory(StructuralWalker)
@@ -122,9 +120,7 @@ def test_it__dict_from_jsondict():
 
     assert group_dict == {
         "color": "blue",
-        "users": [
-            {"created_at": _datetime(2000, 1, 1, 10, 0, 0, 0), "pk": 10, "name": "foo"}
-        ],
+        "users": [{"created_at": _datetime(2000, 1, 1, 10, 0, 0, 0), "pk": 10, "name": "foo"}],
         "created_at": _datetime(2000, 1, 1, 10, 0, 0, 0),
         "pk": None,
         "name": "ravenclaw",
@@ -132,7 +128,8 @@ def test_it__dict_from_jsondict():
 
 
 def test_it__object_from_dict():
-    from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
+    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+
     from .fixtures.models import Group, User
 
     schema_factory = SchemaFactory(StructuralWalker)

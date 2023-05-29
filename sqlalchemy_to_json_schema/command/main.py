@@ -1,4 +1,5 @@
 import argparse
+
 from magicalimport import import_symbol
 
 
@@ -11,9 +12,7 @@ def main():
         choices=["noforeignkey", "foreignkey", "structural"],
         default="structural",
     )
-    parser.add_argument(
-        "--decision", choices=["default", "useforeignkey"], default="default"
-    )
+    parser.add_argument("--decision", choices=["default", "useforeignkey"], default="default")
     parser.add_argument("--depth", default=None, type=int)
     parser.add_argument("--out", default=None, help="output to file")
     parser.add_argument(

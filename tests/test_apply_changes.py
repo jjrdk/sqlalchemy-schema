@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*-
 def _callFUT(*args, **kwargs):
     from sqlalchemy_to_json_schema.dictify import apply_changes
 
@@ -6,17 +5,15 @@ def _callFUT(*args, **kwargs):
 
 
 def test_it_update_parent__onlyone():
-    from tests.fixtures import models as m
-    from sqlalchemy_to_json_schema import SchemaFactory, NoForeignKeyWalker
+    from sqlalchemy_to_json_schema import NoForeignKeyWalker, SchemaFactory
     from sqlalchemy_to_json_schema.dictify import ModelLookup
+    from tests.fixtures import models as m
 
     factory = SchemaFactory(NoForeignKeyWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
 
-    a0 = m.A0(
-        pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))]
-    )
+    a0 = m.A0(pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))])
 
     assert a0.name == "a0"
     params = {"pk": 1, "name": "updated"}
@@ -26,17 +23,15 @@ def test_it_update_parent__onlyone():
 
 
 def test_it_update_parent__full():
-    from tests.fixtures import models as m
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
+    from tests.fixtures import models as m
 
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
 
-    a0 = m.A0(
-        pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))]
-    )
+    a0 = m.A0(pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))])
 
     assert a0.name == "a0"
     params = {
@@ -49,17 +44,15 @@ def test_it_update_parent__full():
 
 
 def test_it_create_child():
-    from tests.fixtures import models as m
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
+    from tests.fixtures import models as m
 
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
 
-    a0 = m.A0(
-        pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))]
-    )
+    a0 = m.A0(pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))])
 
     assert len(a0.children) == 2
     params = {
@@ -76,17 +69,15 @@ def test_it_create_child():
 
 
 def test_it_update_child():
-    from tests.fixtures import models as m
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
+    from tests.fixtures import models as m
 
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
 
-    a0 = m.A0(
-        pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))]
-    )
+    a0 = m.A0(pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))])
 
     assert len(a0.children) == 2
     params = {
@@ -100,17 +91,15 @@ def test_it_update_child():
 
 
 def test_it_delete_child():
-    from tests.fixtures import models as m
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
+    from tests.fixtures import models as m
 
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
 
-    a0 = m.A0(
-        pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))]
-    )
+    a0 = m.A0(pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))])
 
     assert len(a0.children) == 2
     params = {"pk": 1, "name": "a0", "children": [{"name": "a00", "pk": 1}]}
@@ -119,17 +108,15 @@ def test_it_delete_child():
 
 
 def test_it_reverse_update():
-    from tests.fixtures import models as m
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
+    from tests.fixtures import models as m
 
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A1)
     modellookup = ModelLookup(m)
 
-    a0 = m.A0(
-        pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))]
-    )
+    a0 = m.A0(pk=1, name="a0", children=[m.A1(pk=1, name="a00"), m.A1(pk=2, name=("a01"))])
 
     assert a0.name == "a0"
     params = {"pk": 1, "name": "a00", "parent": {"name": "updated", "pk": 1}}

@@ -1,6 +1,3 @@
-# -*- coding:utf-8 -*-
-
-
 def _callFUT(*args, **kwargs):
     # see: https://github.com/expobrain/sqlalchemy_to_json_schema/issues/6
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
@@ -17,7 +14,7 @@ def _makeType(impl_):
 
         def __init__(self, choices, **kw):
             self.choices = dict(choices)
-            super(Choice, self).__init__(**kw)
+            super().__init__(**kw)
 
         def process_bind_param(self, value, dialect):
             return [k for k, v in self.choices.iteritems() if v == value][0]

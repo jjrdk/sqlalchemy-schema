@@ -1,4 +1,10 @@
-# -*- coding:utf-8 -*-
+import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+
+# definition
+from sqlalchemy.types import BigInteger, Integer
+
+
 def _getTarget():
     from sqlalchemy_to_json_schema import SchemaFactory
 
@@ -6,15 +12,10 @@ def _getTarget():
 
 
 def _makeOne(*args, **kwargs):
-    from sqlalchemy_to_json_schema import ForeignKeyWalker, DefaultClassfier
+    from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker
 
     return _getTarget()(ForeignKeyWalker, DefaultClassfier)
 
-
-# definition
-from sqlalchemy.types import Integer, BigInteger
-import sqlalchemy as sa
-from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
