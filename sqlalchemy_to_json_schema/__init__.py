@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import logging
 from collections import OrderedDict
-from typing import Iterator
+from typing import Iterator, Optional
 
 import sqlalchemy.types as t
 from sqlalchemy.dialects import postgresql as postgresql_types
@@ -363,15 +363,17 @@ class SchemaFactory(object):
         classifier=DefaultClassfier,
         restriction_dict=default_restriction_dict,
         container_factory=OrderedDict,
-        child_factory=ChildFactory("."),
-        relation_decision=RelationDecision(),
+        child_factory: Optional[ChildFactory] = None,
+        relation_decision: Optional[RelationDecision] = None,
     ):
         self.container_factory = container_factory
         self.classifier = classifier
         self.walker = walker  # class
         self.restriction_set = [{k: v} for k, v in restriction_dict.items()]
-        self.child_factory = child_factory
-        self.relation_decision = relation_decision
+        self.child_factory = ChildFactory(".") if child_factory is None else child_factory
+        self.relation_decision = (
+            RelationDecision() if relation_decision is None else relation_decision
+        )
 
     def __call__(
         self,
