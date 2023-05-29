@@ -6,7 +6,7 @@ def _callFUT(*args, **kwargs):
 
 
 def test_it():
-    from tests.models import Group, User
+    from tests.fixtures.models import Group, User
     from datetime import datetime
 
     created_at = datetime(2000, 1, 1)
@@ -49,7 +49,7 @@ def test_it():
 
 
 def test_it2():
-    from tests.models import Group, User
+    from tests.fixtures.models import Group, User
     from datetime import datetime
 
     created_at = datetime(2000, 1, 1)
@@ -95,7 +95,7 @@ def test_it2():
 
 
 def test_it3():
-    from tests.models import Group, User
+    from tests.fixtures.models import Group, User
     from datetime import datetime
 
     created_at = datetime(2000, 1, 1)

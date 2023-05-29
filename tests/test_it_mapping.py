@@ -21,7 +21,7 @@ def _getTarget():
 
 
 def _makeOne(schema_factory, model, *args, **kwargs):
-    import tests.models as models
+    import tests.fixtures.models as models
 
     module = models
     mapping_factory = _getTarget()(schema_factory, module, *args, **kwargs)
@@ -30,7 +30,7 @@ def _makeOne(schema_factory, model, *args, **kwargs):
 
 def test_it__dict_from_model_object():
     from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
-    from .models import Group, User
+    from .fixtures.models import Group, User
 
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
@@ -58,7 +58,7 @@ def test_it__dict_from_model_object():
 
 def test_it__jsondict_from_model():
     from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
-    from .models import Group, User
+    from .fixtures.models import Group, User
 
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
@@ -87,7 +87,7 @@ def test_it__jsondict_from_model():
 
 def test_it__validate__jsondict():
     from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
-    from .models import Group
+    from .fixtures.models import Group
 
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
@@ -105,7 +105,7 @@ def test_it__validate__jsondict():
 
 def test_it__dict_from_jsondict():
     from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
-    from .models import Group
+    from .fixtures.models import Group
 
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
@@ -133,7 +133,7 @@ def test_it__dict_from_jsondict():
 
 def test_it__object_from_dict():
     from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
-    from .models import Group, User
+    from .fixtures.models import Group, User
 
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
