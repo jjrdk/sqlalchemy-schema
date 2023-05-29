@@ -25,10 +25,10 @@ packages = [{ include = "sqlalchemy_to_json_schema" }]
 [tool.poetry.dependencies]
 python = "^3.8,<3.12"
 sqlalchemy = "<2"
-jsonschema = "^4.17.3"
-isodate = "^0.6.1"
-pytz = "^2023.3"
-magicalimport = "^0.9.1"
+jsonschema = ">=4.17.3"
+isodate = ">=0.6.1"
+pytz = ">=2023.3"
+magicalimport = ">=0.9.1"
 dictknife = ">=0.7.2"
 
 [tool.poetry.group.dev.dependencies]
