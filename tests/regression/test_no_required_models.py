@@ -1,14 +1,13 @@
-def _callFUT(*args, **kwargs):
-    from sqlalchemy_to_json_schema.dictify import objectify
+from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+from sqlalchemy_to_json_schema.dictify import ModelLookup, objectify
+from tests.fixtures import models
 
+
+def _callFUT(*args, **kwargs):
     return objectify(*args, **kwargs)
 
 
 def test_no_required():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from tests.fixtures import models
-
     schema_factory = SchemaFactory(StructuralWalker)
     schema = schema_factory(models.MyModel, excludes=["id"])
     modellookup = ModelLookup(models)

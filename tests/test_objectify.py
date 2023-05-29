@@ -1,19 +1,24 @@
+from datetime import datetime
+
+import pytest
+
+from sqlalchemy_to_json_schema import (
+    ForeignKeyWalker,
+    RelationDecision,
+    SchemaFactory,
+    StructuralWalker,
+    UseForeignKeyIfPossibleDecision,
+)
+from sqlalchemy_to_json_schema.dictify import ModelLookup, objectify
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
+from tests.fixtures import models
 
 
 def _callFUT(*args, **kwargs):
-    from sqlalchemy_to_json_schema.dictify import objectify
-
     return objectify(*args, **kwargs)
 
 
 def test_it__simple():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import ForeignKeyWalker, SchemaFactory
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(ForeignKeyWalker)
     user_schema = factory(models.User)
 
@@ -31,14 +36,6 @@ def test_it__simple():
 
 
 def test_it__strict_true__then__required_are_notfound__error_raised():
-    from datetime import datetime
-
-    import pytest
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import ForeignKeyWalker, SchemaFactory
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(ForeignKeyWalker)
     user_schema = factory(models.User)
 
@@ -51,12 +48,6 @@ def test_it__strict_true__then__required_are_notfound__error_raised():
 
 
 def test_it__strict_false__then__required_are_notfound__ok():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import ForeignKeyWalker, SchemaFactory
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(ForeignKeyWalker)
     user_schema = factory(models.User)
 
@@ -74,16 +65,6 @@ def test_it__strict_false__then__required_are_notfound__ok():
 
 
 def test_it_complex__relation_decision():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import (
-        RelationDecision,
-        SchemaFactory,
-        StructuralWalker,
-    )
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(StructuralWalker, relation_decision=RelationDecision())
     user_schema = factory(models.User)
 
@@ -110,16 +91,6 @@ def test_it_complex__relation_decision():
 
 
 def test_it_complex__fullset_decision():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import (
-        SchemaFactory,
-        StructuralWalker,
-        UseForeignKeyIfPossibleDecision,
-    )
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision())
     user_schema = factory(models.User)
 
@@ -138,12 +109,6 @@ def test_it_complex__fullset_decision():
 
 
 def test_it_complex2():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(StructuralWalker)
     group_schema = factory(models.Group)
 
@@ -169,12 +134,6 @@ def test_it_complex2():
 
 
 def test_it_complex__partial():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(StructuralWalker)
     user_schema = factory(models.User)
 
@@ -194,12 +153,6 @@ def test_it_complex__partial():
 
 
 def test_it_complex__partial2():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(StructuralWalker)
     group_schema = factory(models.Group)
 
@@ -219,12 +172,6 @@ def test_it_complex__partial2():
 
 
 def test_it_complex__partia3():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(StructuralWalker)
     user_schema = factory(models.User)
 
@@ -244,12 +191,6 @@ def test_it_complex__partia3():
 
 
 def test_it_complex__partial4():
-    from datetime import datetime
-
-    import tests.fixtures.models as models
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-
     factory = SchemaFactory(StructuralWalker)
     group_schema = factory(models.Group)
 
@@ -269,10 +210,6 @@ def test_it_complex__partial4():
 
 
 def test_it_nested():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from tests.fixtures import models
-
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(models.A0)
     modellookup = ModelLookup(models)

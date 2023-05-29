@@ -1,14 +1,18 @@
+import sqlalchemy as sa
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.types import String, TypeDecorator
+
+from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+
+
 def _callFUT(*args, **kwargs):
     # see: https://github.com/expobrain/sqlalchemy_to_json_schema/issues/6
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
 
     factory = SchemaFactory(StructuralWalker)
     return factory(*args, **kwargs)
 
 
 def _makeType(impl_):
-    from sqlalchemy.types import TypeDecorator
-
     class Choice(TypeDecorator):
         impl = impl_
 
@@ -26,10 +30,6 @@ def _makeType(impl_):
 
 
 def test_it():
-    import sqlalchemy as sa
-    from sqlalchemy.ext.declarative import declarative_base
-    from sqlalchemy.types import String
-
     Base = declarative_base()
     Choice = _makeType(impl_=String)
 
@@ -44,10 +44,6 @@ def test_it():
 
 
 def test_it__impl_is_not_callable():
-    import sqlalchemy as sa
-    from sqlalchemy.ext.declarative import declarative_base
-    from sqlalchemy.types import String
-
     Base = declarative_base()
     Choice = _makeType(impl_=String(length=1))
 

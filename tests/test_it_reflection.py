@@ -1,17 +1,17 @@
+import os.path
 from collections import OrderedDict
 
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.ext.automap import automap_base
+
+from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
 
 # using sqlalchemy's automap
 
 
 @pytest.fixture(scope="module")
 def db():
-    import os.path
-
-    from sqlalchemy import create_engine
-    from sqlalchemy.ext.automap import automap_base
-
     dbname = os.path.join(os.path.abspath(os.path.dirname(__file__)), "reflection.db")
     engine = create_engine(f"sqlite:///{dbname}")
     Base = automap_base()
@@ -20,14 +20,10 @@ def db():
 
 
 def _getTarget():
-    from sqlalchemy_to_json_schema import SchemaFactory
-
     return SchemaFactory
 
 
 def _makeOne(*args, **kwargs):
-    from sqlalchemy_to_json_schema import StructuralWalker
-
     return _getTarget()(StructuralWalker)
 
 

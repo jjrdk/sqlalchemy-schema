@@ -3,16 +3,20 @@ import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.ext.declarative import declarative_base
 
+from sqlalchemy_to_json_schema import (
+    DefaultClassfier,
+    ForeignKeyWalker,
+    SchemaFactory,
+    pop_marker,
+)
+from sqlalchemy_to_json_schema.exceptions import InvalidStatus
+
 
 def _getTarget():
-    from sqlalchemy_to_json_schema import SchemaFactory
-
     return SchemaFactory
 
 
 def _makeOne(*args, **kwargs):
-    from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker
-
     return _getTarget()(ForeignKeyWalker, DefaultClassfier)
 
 
@@ -101,10 +105,6 @@ def test__filtering_by__excludes():
 
 
 def test__filtering_by__excludes_and_includes__conflict():
-    import pytest
-
-    from sqlalchemy_to_json_schema.exceptions import InvalidStatus
-
     target = _makeOne()
     with pytest.raises(InvalidStatus):
         target(Group, excludes=["pk"], includes=["pk"])
@@ -124,8 +124,6 @@ def test__overrides__add():
 
 @pytest.mark.skip("to be fixed")
 def test__overrides__pop():
-    from sqlalchemy_to_json_schema import pop_marker
-
     target = _makeOne()
     overrides = {"name": {"maxLength": pop_marker}}
     result = target(Group, includes=["name"], overrides=overrides)
@@ -134,10 +132,6 @@ def test__overrides__pop():
 
 
 def test__overrides__wrong_column():
-    import pytest
-
-    from sqlalchemy_to_json_schema.exceptions import InvalidStatus
-
     target = _makeOne()
     overrides = {"*missing-field*": {"maxLength": 100}}
     with pytest.raises(InvalidStatus):

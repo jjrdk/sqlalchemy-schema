@@ -1,12 +1,14 @@
+from datetime import datetime
+
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
+
+from sqlalchemy_to_json_schema import ForeignKeyWalker, SchemaFactory
 
 Base = declarative_base()
 
 
 def _getTarget():
-    from sqlalchemy_to_json_schema import SchemaFactory
-
     return SchemaFactory
 
 
@@ -15,8 +17,6 @@ def _makeOne(*args, **kwargs):
 
 
 def test_detect__nullable_is_True__not_required():
-    from sqlalchemy_to_json_schema import ForeignKeyWalker
-
     class Model0(Base):
         __tablename__ = "Model0"
         pk = sa.Column(sa.Integer, primary_key=True, doc="primary key")
@@ -29,8 +29,6 @@ def test_detect__nullable_is_True__not_required():
 
 
 def test_detect__nullable_is_False__required():
-    from sqlalchemy_to_json_schema import ForeignKeyWalker
-
     class Model1(Base):
         __tablename__ = "Model1"
         pk = sa.Column(sa.Integer, primary_key=True, doc="primary key")
@@ -43,10 +41,6 @@ def test_detect__nullable_is_False__required():
 
 
 def test_detect__nullable_is_False__but_default_is_exists__not_required():
-    from datetime import datetime
-
-    from sqlalchemy_to_json_schema import ForeignKeyWalker
-
     class Model2(Base):
         __tablename__ = "Model2"
         pk = sa.Column(sa.Integer, primary_key=True, doc="primary key")
@@ -59,8 +53,6 @@ def test_detect__nullable_is_False__but_default_is_exists__not_required():
 
 
 def test_detect__nullable_is_False__but_server_default_is_exists__not_required():
-    from sqlalchemy_to_json_schema import ForeignKeyWalker
-
     class Model3(Base):
         __tablename__ = "Model3"
         pk = sa.Column(sa.Integer, primary_key=True, doc="primary key")
@@ -73,8 +65,6 @@ def test_detect__nullable_is_False__but_server_default_is_exists__not_required()
 
 
 def test_detect__adjust_required():
-    from sqlalchemy_to_json_schema import ForeignKeyWalker
-
     class Model4(Base):
         __tablename__ = "Model4"
         pk = sa.Column(sa.Integer, primary_key=True, doc="primary key")

@@ -1,14 +1,17 @@
-def _callFUT(*args, **kwargs):
-    from sqlalchemy_to_json_schema.dictify import apply_changes
+from sqlalchemy_to_json_schema import (
+    NoForeignKeyWalker,
+    SchemaFactory,
+    StructuralWalker,
+)
+from sqlalchemy_to_json_schema.dictify import ModelLookup, apply_changes
+from tests.fixtures import models as m
 
+
+def _callFUT(*args, **kwargs):
     return apply_changes(*args, **kwargs)
 
 
 def test_it_update_parent__onlyone():
-    from sqlalchemy_to_json_schema import NoForeignKeyWalker, SchemaFactory
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from tests.fixtures import models as m
-
     factory = SchemaFactory(NoForeignKeyWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
@@ -23,10 +26,6 @@ def test_it_update_parent__onlyone():
 
 
 def test_it_update_parent__full():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from tests.fixtures import models as m
-
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
@@ -44,10 +43,6 @@ def test_it_update_parent__full():
 
 
 def test_it_create_child():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from tests.fixtures import models as m
-
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
@@ -69,10 +64,6 @@ def test_it_create_child():
 
 
 def test_it_update_child():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from tests.fixtures import models as m
-
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
@@ -91,10 +82,6 @@ def test_it_update_child():
 
 
 def test_it_delete_child():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from tests.fixtures import models as m
-
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A0)
     modellookup = ModelLookup(m)
@@ -108,10 +95,6 @@ def test_it_delete_child():
 
 
 def test_it_reverse_update():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from tests.fixtures import models as m
-
     factory = SchemaFactory(StructuralWalker)
     a_schema = factory(m.A1)
     modellookup = ModelLookup(m)

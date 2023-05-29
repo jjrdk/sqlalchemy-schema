@@ -1,18 +1,24 @@
-# definition
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.ext.declarative import declarative_base
 
+from sqlalchemy_to_json_schema import (
+    ChildFactory,
+    DefaultClassfier,
+    ForeignKeyWalker,
+    RelationDecision,
+    SchemaFactory,
+    StructuralWalker,
+    UseForeignKeyIfPossibleDecision,
+)
+from sqlalchemy_to_json_schema.dictify import get_reference
+
 
 def _getTarget():
-    from sqlalchemy_to_json_schema import SchemaFactory
-
     return SchemaFactory
 
 
 def _makeOne(walker, *args, **kwargs):
-    from sqlalchemy_to_json_schema import DefaultClassfier
-
     return _getTarget()(walker, DefaultClassfier, *args, **kwargs)
 
 
@@ -38,8 +44,6 @@ class User(Base):
 
 
 def test_properties__default__includes__foreign_keys():
-    from sqlalchemy_to_json_schema import ForeignKeyWalker
-
     target = _makeOne(ForeignKeyWalker)
     result = target(User)
 
@@ -48,8 +52,6 @@ def test_properties__default__includes__foreign_keys():
 
 
 def test_properties__include_OnetoMany_relation():
-    from sqlalchemy_to_json_schema import RelationDecision, StructuralWalker
-
     target = _makeOne(StructuralWalker, relation_decision=RelationDecision())
     result = target(User)
 
@@ -59,11 +61,6 @@ def test_properties__include_OnetoMany_relation():
 
 
 def test_properties__include_OnetoMany_relation2():
-    from sqlalchemy_to_json_schema import (
-        StructuralWalker,
-        UseForeignKeyIfPossibleDecision,
-    )
-
     target = _makeOne(StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision())
     result = target(User)
 
@@ -73,8 +70,6 @@ def test_properties__include_OnetoMany_relation2():
 
 
 def test_properties__include_ManytoOne_backref():
-    from sqlalchemy_to_json_schema import StructuralWalker
-
     target = _makeOne(StructuralWalker)
     result = target(Group)
 
@@ -95,8 +90,6 @@ def test_properties__include_ManytoOne_backref():
 
 
 def test_properties__include_ManytoOne_backref__bidirectional_is_true():
-    from sqlalchemy_to_json_schema import ChildFactory, StructuralWalker
-
     target = _makeOne(StructuralWalker, child_factory=ChildFactory(".", bidirectional=True))
     result = target(Group)
 
@@ -165,9 +158,6 @@ class A5(Base):
 
 
 def test_properties__default_depth_is__traverse_all_chlidren():
-    from sqlalchemy_to_json_schema import StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import get_reference
-
     target = _makeOne(StructuralWalker)
     result = target(A0)
 
@@ -182,9 +172,6 @@ def test_properties__default_depth_is__traverse_all_chlidren():
 
 
 def test_properties__default_depth_is__2__traverse_depth2():
-    from sqlalchemy_to_json_schema import StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import get_reference
-
     target = _makeOne(StructuralWalker)
     result = target(A0, depth=2)
 
@@ -195,9 +182,6 @@ def test_properties__default_depth_is__2__traverse_depth2():
 
 
 def test_properties__default_depth_is__3__traverse_depth3():
-    from sqlalchemy_to_json_schema import StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import get_reference
-
     target = _makeOne(StructuralWalker)
     result = target(A0, depth=3)
 
@@ -234,9 +218,6 @@ class Z(Base):
 
 
 def test_properties__infinite_loop():
-    from sqlalchemy_to_json_schema import RelationDecision, StructuralWalker
-    from sqlalchemy_to_json_schema.dictify import get_reference
-
     target = _makeOne(StructuralWalker, relation_decision=RelationDecision())
     result = target(X)
     ys = result["properties"]["ys"]
@@ -248,11 +229,6 @@ def test_properties__infinite_loop():
 
 
 def test_properties__infinite_loop2():
-    from sqlalchemy_to_json_schema import (
-        StructuralWalker,
-        UseForeignKeyIfPossibleDecision,
-    )
-
     target = _makeOne(StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision())
     result = target(X)
     assert "required" in result

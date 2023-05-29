@@ -1,6 +1,9 @@
-def _callFUT(*args, **kwargs):
-    from sqlalchemy_to_json_schema.parser import from_multidict
+from webob.multidict import MultiDict
 
+from sqlalchemy_to_json_schema.parser import DjangoMultiDictWrapper, from_multidict
+
+
+def _callFUT(*args, **kwargs):
     return from_multidict(*args, **kwargs)
 
 
@@ -12,8 +15,6 @@ def test_dict__return_onesself():
 
 
 def test_single_mdict__return_dict():
-    from webob.multidict import MultiDict
-
     mdict = MultiDict({"name": "foo", "country": "jp"})
     result = _callFUT(mdict)
 
@@ -21,10 +22,6 @@ def test_single_mdict__return_dict():
 
 
 def test_django_like_mdict__return_dict():
-    from webob.multidict import MultiDict
-
-    from sqlalchemy_to_json_schema.parser import DjangoMultiDictWrapper
-
     mdict = DjangoMultiDictWrapper(MultiDict({"name": "foo", "country": "jp"}))
     result = _callFUT(mdict)
 
@@ -32,8 +29,6 @@ def test_django_like_mdict__return_dict():
 
 
 def test_multiple__convert_to_dict_list__order_also_same():
-    from webob.multidict import MultiDict
-
     mdict = MultiDict(
         [
             ("name", "foo"),
@@ -53,8 +48,6 @@ def test_multiple__convert_to_dict_list__order_also_same():
 
 
 def test_multiple2__convert_to_dict_list__order_also_same():
-    from webob.multidict import MultiDict
-
     mdict = MultiDict(
         [
             ("name", "foo"),
@@ -74,8 +67,6 @@ def test_multiple2__convert_to_dict_list__order_also_same():
 
 
 def test_php_compatible_mdict_return_list():
-    from webob.multidict import MultiDict
-
     mdict = MultiDict([("name", "foo"), ("g_id[]", "1"), ("g_id[]", "2")])
     result = _callFUT(mdict)
     assert result == {"name": "foo", "g_id": ["1", "2"]}

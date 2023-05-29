@@ -4,16 +4,14 @@ from sqlalchemy.ext.declarative import declarative_base
 # definition
 from sqlalchemy.types import BigInteger, Integer
 
+from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker, SchemaFactory
+
 
 def _getTarget():
-    from sqlalchemy_to_json_schema import SchemaFactory
-
     return SchemaFactory
 
 
 def _makeOne(*args, **kwargs):
-    from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker
-
     return _getTarget()(ForeignKeyWalker, DefaultClassfier)
 
 

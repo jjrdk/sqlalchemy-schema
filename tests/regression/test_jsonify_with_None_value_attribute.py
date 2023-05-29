@@ -1,24 +1,25 @@
+import jsonschema
 import pytest
+import sqlalchemy as sa
+from jsonschema.exceptions import ValidationError
+from sqlalchemy.ext.declarative import declarative_base
+
+from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+from sqlalchemy_to_json_schema.dictify import jsonify
 
 
 def _callFUT(*args, **kwargs):
     # see: https://github.com/expobrain/sqlalchemy_to_json_schema/pull/3
-    from sqlalchemy_to_json_schema.dictify import jsonify
 
     return jsonify(*args, **kwargs)
 
 
 def _makeSchema(model):
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-
     factory = SchemaFactory(StructuralWalker)
     return factory(model)
 
 
 def _makeModel():
-    import sqlalchemy as sa
-    from sqlalchemy.ext.declarative import declarative_base
-
     Base = declarative_base()
 
     class UserKey(Base):
@@ -41,8 +42,6 @@ def test_it():
 
     assert "deactivated_at" not in d
 
-    import jsonschema
-
     jsonschema.validate(d, schema)
 
 
@@ -54,9 +53,6 @@ def test_it__validation_failure__when_verbose_is_True():
     d = _callFUT(uk, schema, verbose=True)
 
     assert d["deactivated_at"] is None
-
-    import jsonschema
-    from jsonschema.exceptions import ValidationError
 
     with pytest.raises(ValidationError):
         jsonschema.validate(d, schema)

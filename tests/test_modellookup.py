@@ -1,6 +1,9 @@
-def _getTarget():
-    from sqlalchemy_to_json_schema.dictify import ModelLookup
+import tests.fixtures.models as models
+from sqlalchemy_to_json_schema.dictify import ModelLookup
+from tests.fixtures.models import Group, User
 
+
+def _getTarget():
     return ModelLookup
 
 
@@ -9,18 +12,12 @@ def _makeOne(*args, **kwargs):
 
 
 def test_root_model():
-    import tests.fixtures.models as models
-    from tests.fixtures.models import Group
-
     target = _makeOne(models)
     result = target("Group")
     assert result == Group
 
 
 def test_child__of__root_model():
-    import tests.fixtures.models as models
-    from tests.fixtures.models import User
-
     """
     Group.users -> [User]
     """
@@ -31,9 +28,6 @@ def test_child__of__root_model():
 
 
 def test_child__of__child__of__root_model():
-    import tests.fixtures.models as models
-    from tests.fixtures.models import Group
-
     """
     Group.users -> [User]
     User.group -> Group

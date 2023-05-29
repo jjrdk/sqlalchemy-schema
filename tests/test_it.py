@@ -1,18 +1,20 @@
 # definition
+import pytest
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 from sqlalchemy.ext.declarative import declarative_base
+
+from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker, SchemaFactory
+from sqlalchemy_to_json_schema.dictify import jsonify
 
 
 def _getTarget():
-    from sqlalchemy_to_json_schema import SchemaFactory
-
     return SchemaFactory
 
 
 def _makeOne(*args, **kwargs):
-    from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker
-
     return _getTarget()(ForeignKeyWalker, DefaultClassfier)
 
 
@@ -43,8 +45,6 @@ class AnotherUser(Base):
 
 
 def test_it_create_schema__and__valid_params__sucess():
-    from jsonschema import validate
-
     target = _makeOne()
     schema = target(Group, excludes=["pk", "users.pk"])
     data = {
@@ -57,10 +57,6 @@ def test_it_create_schema__and__valid_params__sucess():
 
 
 def test_it_create_schema__and__invalid_params__failure():
-    import pytest
-    from jsonschema import validate
-    from jsonschema.exceptions import ValidationError
-
     target = _makeOne()
     schema = target(Group, excludes=["pk", "uesrs.pk"])
     data = {
@@ -74,8 +70,6 @@ def test_it_create_schema__and__invalid_params__failure():
 
 
 def test_it2_create_schema__and__valid_params__success():
-    from jsonschema import validate
-
     target = _makeOne()
     schema = target(User, excludes=["pk", "group_id"])
     data = {"name": "foo", "group": {"name": "ravenclaw", "color": "blue", "pk": 1}}
@@ -83,10 +77,6 @@ def test_it2_create_schema__and__valid_params__success():
 
 
 def test_it_jsonify_data__that_is_valid_params():
-    from jsonschema import validate
-
-    from sqlalchemy_to_json_schema.dictify import jsonify
-
     target = _makeOne()
     schema = target(User, excludes=["pk", "group_id"])
 

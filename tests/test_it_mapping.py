@@ -2,37 +2,35 @@ r"""
 jsondict <-> dict <-> model object
    \______________________/
 """
+import json
+from datetime import datetime
+
+import pytz
+
+import tests.fixtures.models as models
+from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+from sqlalchemy_to_json_schema.mapping import Draft4MappingFactory
+
+from .fixtures.models import Group, User
 
 
 def _datetime(*args):
-    from datetime import datetime
-
-    import pytz
-
     args = list(args)
     args.append(pytz.utc)
     return datetime(*args)
 
 
 def _getTarget():
-    from sqlalchemy_to_json_schema.mapping import Draft4MappingFactory
-
     return Draft4MappingFactory
 
 
 def _makeOne(schema_factory, model, *args, **kwargs):
-    import tests.fixtures.models as models
-
     module = models
     mapping_factory = _getTarget()(schema_factory, module, *args, **kwargs)
     return mapping_factory(model)
 
 
 def test_it__dict_from_model_object():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-
-    from .fixtures.models import Group, User
-
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
 
@@ -56,10 +54,6 @@ def test_it__dict_from_model_object():
 
 
 def test_it__jsondict_from_model():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-
-    from .fixtures.models import Group, User
-
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
 
@@ -67,8 +61,6 @@ def test_it__jsondict_from_model():
     group.users = [User(name="foo", created_at=_datetime(2000, 1, 1, 10, 0, 0, 0))]
 
     jsondict = target.jsondict_from_object(group, verbose=True)
-
-    import json
 
     assert json.dumps(jsondict)
 
@@ -82,10 +74,6 @@ def test_it__jsondict_from_model():
 
 
 def test_it__validate__jsondict():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-
-    from .fixtures.models import Group
-
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
 
@@ -101,10 +89,6 @@ def test_it__validate__jsondict():
 
 
 def test_it__dict_from_jsondict():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-
-    from .fixtures.models import Group
-
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
 
@@ -128,10 +112,6 @@ def test_it__dict_from_jsondict():
 
 
 def test_it__object_from_dict():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-
-    from .fixtures.models import Group, User
-
     schema_factory = SchemaFactory(StructuralWalker)
     target = _makeOne(schema_factory, Group)
 
