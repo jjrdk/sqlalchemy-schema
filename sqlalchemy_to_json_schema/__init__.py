@@ -40,11 +40,6 @@ logger = logging.getLogger(__name__)
 EMPTY_DICT = {}
 
 
-logger = logging.getLogger(__name__)
-
-EMPTY_DICT = {}
-
-
 #  tentative
 default_column_to_schema = {
     t.String: "string",
