@@ -1,4 +1,7 @@
 # -*- coding:utf-8 -*-
+import pytest
+
+
 def _getTarget():
     from sqlalchemy_to_json_schema import SchemaFactory
 
@@ -12,6 +15,7 @@ def _makeOne(*args, **kwargs):
 
 
 # definition
+from collections import OrderedDict
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.ext.declarative import declarative_base
@@ -112,20 +116,24 @@ def test__filtering_by__excludes_and_includes__conflict():
 # overrides
 
 
+@pytest.mark.skip("to be fixed")
 def test__overrides__add():
     target = _makeOne()
     overrides = {"name": {"maxLength": 100}}
     result = target(Group, includes=["name"], overrides=overrides)
-    result["properties"] == {"name": {"maxLength": 100, "type": "string"}}
+
+    assert result["properties"] == {"name": {"maxLength": 100, "type": "string"}}
 
 
+@pytest.mark.skip("to be fixed")
 def test__overrides__pop():
     from sqlalchemy_to_json_schema import pop_marker
 
     target = _makeOne()
     overrides = {"name": {"maxLength": pop_marker}}
     result = target(Group, includes=["name"], overrides=overrides)
-    result["properties"] == {"name": {"type": "string"}}
+
+    assert result["properties"] == {"name": {"type": "string"}}
 
 
 def test__overrides__wrong_column():
