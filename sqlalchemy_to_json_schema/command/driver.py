@@ -2,7 +2,7 @@ import magicalimport
 from dictknife import loading
 from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema import StructuralWalker, NoForeignKeyWalker, ForeignKeyWalker
-from sqlalchemy_to_json_schema import RelationDesicion, UseForeignKeyIfPossibleDecision
+from sqlalchemy_to_json_schema import RelationDecision, UseForeignKeyIfPossibleDecision
 from ._transformer import (
     JSONSchemaTransformer,
     OpenAPI2Transformer,
@@ -23,7 +23,7 @@ def detect_walker_factory(x):
 
 def detect_decision(x):
     if x == "default":
-        return RelationDesicion()
+        return RelationDecision()
     elif x == "useforeignkey":
         return UseForeignKeyIfPossibleDecision()
     else:

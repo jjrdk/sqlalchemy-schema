@@ -48,9 +48,9 @@ def test_properties__default__includes__foreign_keys():
 
 
 def test_properties__include_OnetoMany_relation():
-    from sqlalchemy_to_json_schema import StructuralWalker, RelationDesicion
+    from sqlalchemy_to_json_schema import StructuralWalker, RelationDecision
 
-    target = _makeOne(StructuralWalker, relation_decision=RelationDesicion())
+    target = _makeOne(StructuralWalker, relation_decision=RelationDecision())
     result = target(User)
 
     assert "required" in result
@@ -235,10 +235,10 @@ class Z(Base):
 
 
 def test_properties__infinite_loop():
-    from sqlalchemy_to_json_schema import StructuralWalker, RelationDesicion
+    from sqlalchemy_to_json_schema import StructuralWalker, RelationDecision
     from sqlalchemy_to_json_schema.dictify import get_reference
 
-    target = _makeOne(StructuralWalker, relation_decision=RelationDesicion())
+    target = _makeOne(StructuralWalker, relation_decision=RelationDecision())
     result = target(X)
     ys = result["properties"]["ys"]
     zs = get_reference(ys, result)["properties"]["zs"]

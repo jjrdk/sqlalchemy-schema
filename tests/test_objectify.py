@@ -68,12 +68,12 @@ def test_it__strict_false__then__required_are_notfound__ok():
 
 
 def test_it_complex__relation_decision():
-    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker, RelationDesicion
+    from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker, RelationDecision
     from sqlalchemy_to_json_schema.dictify import ModelLookup
     import tests.models as models
     from datetime import datetime
 
-    factory = SchemaFactory(StructuralWalker, relation_decision=RelationDesicion())
+    factory = SchemaFactory(StructuralWalker, relation_decision=RelationDecision())
     user_schema = factory(models.User)
 
     created_at = datetime(2000, 1, 1)

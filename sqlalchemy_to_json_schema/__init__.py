@@ -321,8 +321,8 @@ FOREIGNKEY = "foreignkey"
 IMMEDIATE = "immediate"
 
 
-class RelationDesicion(object):
-    def desicion(self, walker, prop, toplevel):
+class RelationDecision(object):
+    def decision(self, walker, prop, toplevel):
         if hasattr(prop, "mapper"):
             yield RELATIONSHIP, prop, EMPTY_DICT
         elif hasattr(prop, "columns"):
@@ -332,7 +332,7 @@ class RelationDesicion(object):
 
 
 class UseForeignKeyIfPossibleDecision(object):
-    def desicion(self, walker, prop, toplevel):
+    def decision(self, walker, prop, toplevel):
         if hasattr(prop, "mapper"):
             if prop.direction == MANYTOONE:
                 if toplevel:
@@ -366,7 +366,7 @@ class SchemaFactory(object):
         restriction_dict=default_restriction_dict,
         container_factory=OrderedDict,
         child_factory=ChildFactory("."),
-        relation_decision=RelationDesicion(),
+        relation_decision=RelationDecision(),
     ):
         self.container_factory = container_factory
         self.classifier = classifier
@@ -452,7 +452,7 @@ class SchemaFactory(object):
             history = []
 
         for prop in walker.walk():
-            for action, prop, opts in self.relation_decision.desicion(
+            for action, prop, opts in self.relation_decision.decision(
                 walker, prop, toplevel
             ):
                 if action == RELATIONSHIP:  # RelationshipProperty
