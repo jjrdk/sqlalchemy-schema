@@ -220,7 +220,10 @@ class ModelLookup(object):
         else:
             self.name_stack.append(name)
             prop = self.inspect_stack[-1].get_property(name)
-            assert isinstance(prop, RelationshipProperty)
+
+            if not isinstance(prop, RelationshipProperty):
+                raise ValueError(f"{prop} is not relationship")
+
             mapper = prop.mapper
             model = mapper.class_
             self.inspect_stack.append(mapper)
@@ -251,7 +254,10 @@ class CreateObjectWalker(object):
     def __call__(self, params):
         schema = self.schema
         result = self._create_subobject(params, schema["title"], schema)
-        assert self.modellookup.name_stack == []
+
+        if self.modellookup.name_stack != []:
+            raise RuntimeError("stack is not empty")
+
         return result
 
     def fold_properties(self, params, properties):
@@ -321,9 +327,15 @@ class UpdateObjectWalker(object):
         schema = self.schema
         model_class = self.modellookup(schema["title"])
         params = self.fold_properties(ob, params, self.get_properties(schema))
-        assert model_class == ob.__class__
+
+        if model_class != ob.__class__:
+            raise RuntimeError(f"model class {model_class} is not match {ob.__class__}")
+
         self.modellookup.pop()
-        assert self.modellookup.name_stack == []
+
+        if self.modellookup.name_stack != []:
+            raise RuntimeError("stack is not empty")
+
         return ob
 
     def get_properties(self, schema):
@@ -376,7 +388,10 @@ class UpdateObjectWalker(object):
             return self.create_walker._create_subobject(params, name, schema)
         else:
             sub_model = self.modellookup(name)
-            assert sub.__class__ == sub_model
+
+            if sub.__class__ != sub_model:
+                raise RuntimeError(f"model class {sub_model} is not match {sub.__class__}")
+
             sub = self.fold_properties(sub, params, self.get_properties(schema))
             self.modellookup.pop()
             return sub
