@@ -6,7 +6,7 @@ def _callFUT(*args, **kwargs):
 
 
 def test_it():
-    from sqlalchemy_to_json_schema.tests.models import Group, User
+    from tests.models import Group, User
     from datetime import datetime
 
     created_at = datetime(2000, 1, 1)
@@ -49,7 +49,7 @@ def test_it():
 
 
 def test_it2():
-    from sqlalchemy_to_json_schema.tests.models import Group, User
+    from tests.models import Group, User
     from datetime import datetime
 
     created_at = datetime(2000, 1, 1)
@@ -95,7 +95,7 @@ def test_it2():
 
 
 def test_it3():
-    from sqlalchemy_to_json_schema.tests.models import Group, User
+    from tests.models import Group, User
     from datetime import datetime
 
     created_at = datetime(2000, 1, 1)

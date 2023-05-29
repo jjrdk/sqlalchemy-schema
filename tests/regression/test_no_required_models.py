@@ -8,7 +8,7 @@ def _callFUT(*args, **kwargs):
 def test_no_required():
     from sqlalchemy_to_json_schema import StructuralWalker, SchemaFactory
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    from sqlalchemy_to_json_schema.tests import models
+    from tests import models
 
     schema_factory = SchemaFactory(StructuralWalker)
     schema = schema_factory(models.MyModel, excludes=["id"])

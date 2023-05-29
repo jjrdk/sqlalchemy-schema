@@ -26,7 +26,7 @@ def _callFUT4(*args, **kwargs):
 
 def test_it__dictify():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import Group, User
+    from tests.models import Group, User
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
@@ -54,7 +54,7 @@ def test_it__dictify():
 
 def test_it__dictify2():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import Group, User
+    from tests.models import Group, User
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
@@ -80,7 +80,7 @@ def test_it__dictify2():
 
 def test_it__normalize():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import Group
+    from tests.models import Group
     from datetime import datetime
     import pytz
 
@@ -114,7 +114,7 @@ def test_it__normalize():
 
 def test_it_normalize2():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import User
+    from tests.models import User
 
     factory = SchemaFactory(StructuralWalker)
     user_schema = factory(User)
@@ -136,7 +136,7 @@ def test_it_normalize2():
 
 def test_it_normalize__partial():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import Group
+    from tests.models import Group
 
     factory = SchemaFactory(StructuralWalker)
     group_schema = factory(Group)
@@ -148,7 +148,7 @@ def test_it_normalize__partial():
 
 def test_it_normalize__partial2():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import User
+    from tests.models import User
 
     factory = SchemaFactory(StructuralWalker)
     user_schema = factory(User)
@@ -160,7 +160,7 @@ def test_it_normalize__partial2():
 
 def test_it__prepare():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import Group
+    from tests.models import Group
 
     factory = SchemaFactory(StructuralWalker)
     group_schema = factory(Group)
@@ -190,7 +190,7 @@ def test_it__prepare():
 
 def test_it__prepare_partial():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import Group
+    from tests.models import Group
 
     factory = SchemaFactory(StructuralWalker)
     group_schema = factory(Group)
@@ -202,7 +202,7 @@ def test_it__prepare_partial():
 
 def test_it__jsonify():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-    from sqlalchemy_to_json_schema.tests.models import Group, User
+    from tests.models import Group, User
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)

@@ -156,12 +156,12 @@ optional arguments:
   --out OUT             output to file
 ```
 
-If above two model definitions (User,Group) are existed in `sqlalchemy_to_json_schema.tests.models`.
+If above two model definitions (User,Group) are existed in `tests.models`.
 
 Target is the class position or module position. for example,
 
-- class position -- `sqlalchemy_to_json_schema.tests.models:User`
-- module position -- `sqlalchemy_to_json_schema.tests.models`
+- class position -- `tests.models:User`
+- module position -- `tests.models`
 
 #### example
 
@@ -169,7 +169,7 @@ Using StructuralWalker via command line (`--walker structural`).
 Of course, NoForeignKeyWalker is noforeignkey, and ForeignKeyWalker is foreignkey.
 
 ```bash
-$ sqlalchemy_to_json_schema --walker structural sqlalchemy_to_json_schema.tests.models:Group
+$ sqlalchemy_to_json_schema --walker structural tests.models:Group
 
 {
   "definitions": {
@@ -241,8 +241,8 @@ Output is not same when using Walker-class, directly. This is handy output for s
 what is `--decision`? (TODO: gentle description)
 
 ```bash
-$ sqlalchemy_to_json_schema --walker structural sqlalchemy_to_json_schema.tests.models:User | jq . -S > /tmp/default.json
-$ sqlalchemy_to_json_schema --decision useforeignkey --walker structural sqlalchemy_to_json_schema.tests.models:User | jq . -S > /tmp/useforeignkey.json
+$ sqlalchemy_to_json_schema --walker structural tests.models:User | jq . -S > /tmp/default.json
+$ sqlalchemy_to_json_schema --decision useforeignkey --walker structural tests.models:User | jq . -S > /tmp/useforeignkey.json
 
 
 $ diff -u /tmp/default.json /tmp/useforeignkey.json

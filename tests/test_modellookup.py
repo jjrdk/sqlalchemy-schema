@@ -10,8 +10,8 @@ def _makeOne(*args, **kwargs):
 
 
 def test_root_model():
-    import sqlalchemy_to_json_schema.tests.models as models
-    from sqlalchemy_to_json_schema.tests.models import Group
+    import tests.models as models
+    from tests.models import Group
 
     target = _makeOne(models)
     result = target("Group")
@@ -19,8 +19,8 @@ def test_root_model():
 
 
 def test_child__of__root_model():
-    import sqlalchemy_to_json_schema.tests.models as models
-    from sqlalchemy_to_json_schema.tests.models import User
+    import tests.models as models
+    from tests.models import User
 
     """
     Group.users -> [User]
@@ -32,8 +32,8 @@ def test_child__of__root_model():
 
 
 def test_child__of__child__of__root_model():
-    import sqlalchemy_to_json_schema.tests.models as models
-    from sqlalchemy_to_json_schema.tests.models import Group
+    import tests.models as models
+    from tests.models import Group
 
     """
     Group.users -> [User]

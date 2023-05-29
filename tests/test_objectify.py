@@ -8,7 +8,7 @@ def _callFUT(*args, **kwargs):
 def test_it__simple():
     from sqlalchemy_to_json_schema import SchemaFactory, ForeignKeyWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(ForeignKeyWalker)
@@ -30,7 +30,7 @@ def test_it__simple():
 def test_it__strict_true__then__required_are_notfound__error_raised():
     from sqlalchemy_to_json_schema import SchemaFactory, ForeignKeyWalker, InvalidStatus
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
     import pytest
 
@@ -48,7 +48,7 @@ def test_it__strict_true__then__required_are_notfound__error_raised():
 def test_it__strict_false__then__required_are_notfound__ok():
     from sqlalchemy_to_json_schema import SchemaFactory, ForeignKeyWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(ForeignKeyWalker)
@@ -70,7 +70,7 @@ def test_it__strict_false__then__required_are_notfound__ok():
 def test_it_complex__relation_decision():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker, RelationDesicion
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker, relation_decision=RelationDesicion())
@@ -107,7 +107,7 @@ def test_it_complex__fullset_decision():
         UseForeignKeyIfPossibleDecision,
     )
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(
@@ -132,7 +132,7 @@ def test_it_complex__fullset_decision():
 def test_it_complex2():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
@@ -164,7 +164,7 @@ def test_it_complex2():
 def test_it_complex__partial():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
@@ -188,7 +188,7 @@ def test_it_complex__partial():
 def test_it_complex__partial2():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
@@ -212,7 +212,7 @@ def test_it_complex__partial2():
 def test_it_complex__partia3():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
@@ -236,7 +236,7 @@ def test_it_complex__partia3():
 def test_it_complex__partial4():
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
     from datetime import datetime
 
     factory = SchemaFactory(StructuralWalker)
@@ -258,7 +258,7 @@ def test_it_complex__partial4():
 
 
 def test_it_nested():
-    from sqlalchemy_to_json_schema.tests import models
+    from tests import models
     from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
 

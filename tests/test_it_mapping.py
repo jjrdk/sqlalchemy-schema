@@ -21,7 +21,7 @@ def _getTarget():
 
 
 def _makeOne(schema_factory, model, *args, **kwargs):
-    import sqlalchemy_to_json_schema.tests.models as models
+    import tests.models as models
 
     module = models
     mapping_factory = _getTarget()(schema_factory, module, *args, **kwargs)
