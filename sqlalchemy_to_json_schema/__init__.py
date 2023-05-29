@@ -451,9 +451,9 @@ class SchemaFactory(object):
         if history is None:
             history = []
 
-        for prop in walker.walk():
+        for walked_prop in walker.walk():
             for action, prop, opts in self.relation_decision.decision(
-                walker, prop, toplevel
+                walker, walked_prop, toplevel
             ):
                 if action == RELATIONSHIP:  # RelationshipProperty
                     history.append(prop)

@@ -26,7 +26,7 @@ def from_multidict(multidict):
         if k.endswith("[]"):  # php compatible
             store_k = k[:-2]
             use_php_compatible_flow = True
-            for i, v in enumerate(getter(k)):
+            for _, v in enumerate(getter(k)):
                 try:
                     r[0][store_k].append(v)
                 except IndexError:
