@@ -2,7 +2,7 @@ import json
 from functools import partial
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Any, Callable, Dict, Optional, Sequence
+from typing import Any, Callable, Dict, Iterator, Optional, Sequence
 from unittest.mock import ANY
 
 import pytest
@@ -25,7 +25,7 @@ from sqlalchemy_to_json_schema.types import (
 
 
 @pytest.fixture
-def temp_filename() -> Path:
+def temp_filename() -> Iterator[Path]:
     with NamedTemporaryFile() as f:
         yield Path(f.name)
 
@@ -52,7 +52,7 @@ def temp_filename() -> Path:
 def test_run(
     temp_filename: Path,
     walker: WalkerChoice,
-    decision: str,
+    decision: DecisionChoice,
     layout: LayoutChoice,
     targets: Sequence[str],
     format: Optional[FormatChoice],

@@ -10,12 +10,8 @@ from sqlalchemy_to_json_schema import DefaultClassfier, SchemaFactory
 from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker
 
 
-def _getTarget():
-    return SchemaFactory
-
-
-def _makeOne(*args, **kwargs):
-    return _getTarget()(ForeignKeyWalker, DefaultClassfier)
+def _makeOne() -> SchemaFactory:
+    return SchemaFactory(ForeignKeyWalker, DefaultClassfier)
 
 
 Base = declarative_base()
@@ -44,7 +40,7 @@ class AnotherUser(Base):
     __table__ = User.__table__
 
 
-def test_it_create_schema__and__valid_params__sucess():
+def test_it_create_schema__and__valid_params__sucess() -> None:
     target = _makeOne()
     schema = target(Group, excludes=["pk", "users.pk"])
     data = {
@@ -56,7 +52,7 @@ def test_it_create_schema__and__valid_params__sucess():
     validate(data, schema)
 
 
-def test_it_create_schema__and__invalid_params__failure():
+def test_it_create_schema__and__invalid_params__failure() -> None:
     target = _makeOne()
     schema = target(Group, excludes=["pk", "uesrs.pk"])
     data = {
@@ -69,14 +65,14 @@ def test_it_create_schema__and__invalid_params__failure():
         validate(data, schema)
 
 
-def test_it2_create_schema__and__valid_params__success():
+def test_it2_create_schema__and__valid_params__success() -> None:
     target = _makeOne()
     schema = target(User, excludes=["pk", "group_id"])
     data = {"name": "foo", "group": {"name": "ravenclaw", "color": "blue", "pk": 1}}
     validate(data, schema)
 
 
-def test_create_schema__without_tablename():
+def test_create_schema__without_tablename() -> None:
     """can generate schema with model(without __tablename__)"""
     target = _makeOne()
     schema = target(AnotherUser)

@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.ext.automap import AutomapBase, automap_base
 
 from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.walkers import StructuralWalker
@@ -12,23 +12,19 @@ from sqlalchemy_to_json_schema.walkers import StructuralWalker
 
 
 @pytest.fixture(scope="module")
-def db():
+def db() -> AutomapBase:
     dbname = os.path.join(os.path.abspath(os.path.dirname(__file__)), "reflection.db")
     engine = create_engine(f"sqlite:///{dbname}")
     Base = automap_base()
     Base.prepare(engine, reflect=True)
-    return Base
+    return Base  # type: ignore[no-any-return]
 
 
-def _getTarget():
-    return SchemaFactory
+def _makeOne() -> SchemaFactory:
+    return SchemaFactory(StructuralWalker)
 
 
-def _makeOne(*args, **kwargs):
-    return _getTarget()(StructuralWalker)
-
-
-def test_it(db):
+def test_it(db: AutomapBase) -> None:
     target = _makeOne()
     schema = target(db.classes.artist)
     expected = {
@@ -61,7 +57,7 @@ def test_it(db):
     assert schema == expected
 
 
-def test_it2(db):
+def test_it2(db: AutomapBase) -> None:
     target = _makeOne()
     schema = target(db.classes.track)
     expected = {

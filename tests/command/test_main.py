@@ -87,7 +87,7 @@ def test_main(
     # ARRANGE
     runner = CliRunner()
 
-    cli_args = targets + [
+    cli_args = [
         "--walker",
         walker.value,
         "--decision",
@@ -99,6 +99,7 @@ def test_main(
         "--out",
         out.as_posix(),
     ]
+    cli_args.extend(targets)
 
     # ACT
     actual = runner.invoke(main, cli_args)

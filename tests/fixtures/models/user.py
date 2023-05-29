@@ -1,7 +1,12 @@
+from typing import TYPE_CHECKING
+
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 
 from tests.fixtures.models.base import Base
+
+if TYPE_CHECKING:
+    from tests.fixtures.models.address import Address
 
 
 class Group(Base):
@@ -21,5 +26,5 @@ class User(Base):
     group_id = sa.Column(sa.Integer, sa.ForeignKey(Group.pk), nullable=False)
     address_id = sa.Column(sa.Integer, sa.ForeignKey("Address.pk"), nullable=False)
     group = orm.relationship(Group, uselist=False, backref="users")
-    address = orm.relationship("Address", uselist=False, backref="users")
+    address: orm.Mapped["Address"] = orm.relationship("Address", uselist=False, backref="users")
     created_at = sa.Column(sa.DateTime, nullable=True)

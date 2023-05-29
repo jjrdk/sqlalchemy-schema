@@ -1,42 +1,46 @@
 import inspect
 from abc import ABC, abstractmethod
 from types import ModuleType
-from typing import Optional, Sequence, Type, Union
+from typing import Iterable, List, Optional, Type, Union
+
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from sqlalchemy_to_json_schema import Schema, SchemaFactory
 
 
 class Transformer(ABC):
-    def __init__(self, schema_factory: SchemaFactory):
+    def __init__(self, schema_factory: SchemaFactory, /):
         self.schema_factory = schema_factory
 
     @abstractmethod
     def transform(
-        self, rawtargets: Sequence[Union[ModuleType, Type]], depth: Optional[int], /
+        self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
     ) -> Schema:
         ...
 
 
 class JSONSchemaTransformer(Transformer):
     def transform(
-        self, rawtargets: Sequence[Union[ModuleType, Type]], depth: Optional[int], /
+        self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
     ) -> Schema:
         definitions = {}
 
         for item in rawtargets:
-            if inspect.isclass(item):
+            if inspect.isclass(item) and isinstance(item, DeclarativeMeta):
                 partial_definitions = self.transform_by_model(item, depth)
-            else:
+            elif inspect.ismodule(item):
                 partial_definitions = self.transform_by_module(item, depth)
+            else:
+                TypeError(f"Expected a class or module, got {item}")
 
             definitions.update(partial_definitions)
 
         return definitions
 
-    def transform_by_model(self, model: Type, depth: int) -> Schema:
+    def transform_by_model(self, model: DeclarativeMeta, depth: Optional[int], /) -> Schema:
         return self.schema_factory(model, depth=depth)
 
-    def transform_by_module(self, module: ModuleType, depth: int) -> Schema:
+    def transform_by_module(self, module: ModuleType, depth: Optional[int], /) -> Schema:
         subdefinitions = {}
         definitions = {}
         for basemodel in collect_models(module):
@@ -52,21 +56,23 @@ class JSONSchemaTransformer(Transformer):
 
 class OpenAPI2Transformer(Transformer):
     def transform(
-        self, rawtargets: Sequence[Union[ModuleType, Type]], depth: Optional[int], /
+        self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
     ) -> Schema:
         definitions = {}
 
         for target in rawtargets:
-            if inspect.isclass(target):
+            if inspect.isclass(target) and isinstance(target, DeclarativeMeta):
                 partial_definitions = self.transform_by_model(target, depth)
-            else:
+            elif inspect.ismodule(target):
                 partial_definitions = self.transform_by_module(target, depth)
+            else:
+                raise TypeError(f"Expected a class or module, got {target}")
 
             definitions.update(partial_definitions)
 
         return {"definitions": definitions}
 
-    def transform_by_model(self, model: Type, depth: int) -> Schema:
+    def transform_by_model(self, model: DeclarativeMeta, depth: Optional[int], /) -> Schema:
         definitions = {}
         schema = self.schema_factory(model, depth=depth)
 
@@ -77,7 +83,7 @@ class OpenAPI2Transformer(Transformer):
 
         return definitions
 
-    def transform_by_module(self, module: ModuleType, depth: int) -> Schema:
+    def transform_by_module(self, module: ModuleType, depth: Optional[int], /) -> Schema:
         subdefinitions = {}
         definitions = {}
 
@@ -97,12 +103,12 @@ class OpenAPI2Transformer(Transformer):
 
 
 class OpenAPI3Transformer(Transformer):
-    def __init__(self, schema_factory):
+    def __init__(self, schema_factory: SchemaFactory, /):
         super().__init__(schema_factory)
 
         self.oas2transformer = OpenAPI2Transformer(schema_factory)
 
-    def replace_ref(self, d, old_prefix, new_prefix):
+    def replace_ref(self, d: Union[dict, list], old_prefix: str, new_prefix: str, /) -> None:
         if isinstance(d, dict):
             for k, v in d.items():
                 if k == "$ref":
@@ -114,7 +120,7 @@ class OpenAPI3Transformer(Transformer):
                 self.replace_ref(item, old_prefix, new_prefix)
 
     def transform(
-        self, rawtargets: Sequence[Union[ModuleType, Type]], depth: Optional[int], /
+        self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
     ) -> Schema:
         d = self.oas2transformer.transform(rawtargets, depth)
 
@@ -128,8 +134,8 @@ class OpenAPI3Transformer(Transformer):
         return d
 
 
-def collect_models(module):
-    def is_alchemy_model(maybe_model):
+def collect_models(module: ModuleType) -> List[DeclarativeMeta]:
+    def is_alchemy_model(maybe_model: Type, /) -> bool:
         return hasattr(maybe_model, "__table__") or hasattr(maybe_model, "__tablename__")
 
     if hasattr(module, "__all__"):

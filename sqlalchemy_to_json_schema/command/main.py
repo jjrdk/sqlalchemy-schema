@@ -52,10 +52,10 @@ def main(
     out: Optional[Path] = None,
     format: Optional[str] = None,
     depth: Optional[int] = None,
-):
+) -> None:
     driver_cls = load_module_or_symbol(driver)
-    driver = driver_cls(WalkerChoice(walker), DecisionChoice(decision), LayoutChoice(layout))
-    driver.run(targets, filename=out, format=None if format is None else FormatChoice(format))
+    driver = driver_cls(WalkerChoice(walker), DecisionChoice(decision), LayoutChoice(layout))  # type: ignore[operator] # noqa: E501
+    driver.run(targets, filename=out, format=None if format is None else FormatChoice(format))  # type: ignore[attr-defined] # noqa: E501
 
 
 if __name__ == "__main__":

@@ -1,36 +1,42 @@
-import sqlalchemy as sa
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.types import String, TypeDecorator
+from typing import Any, Iterable, Tuple, Type, Union
 
-from sqlalchemy_to_json_schema import SchemaFactory
+import sqlalchemy as sa
+from sqlalchemy import TypeDecorator
+from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
+from sqlalchemy.sql.type_api import TypeEngine
+from sqlalchemy.types import String
+
+from sqlalchemy_to_json_schema import Schema, SchemaFactory
 from sqlalchemy_to_json_schema.walkers import StructuralWalker
 
 
-def _callFUT(*args, **kwargs):
+def _callFUT(model: DeclarativeMeta, /) -> Schema:
     # see: https://github.com/expobrain/sqlalchemy_to_json_schema/issues/6
 
     factory = SchemaFactory(StructuralWalker)
-    return factory(*args, **kwargs)
+    schema = factory(model)
+
+    return schema
 
 
-def _makeType(impl_):
+def _makeType(impl_: Union[Type[TypeEngine], TypeEngine]) -> Type[TypeDecorator]:
     class Choice(TypeDecorator):
         impl = impl_
 
-        def __init__(self, choices, **kw):
+        def __init__(self, choices: Iterable[Tuple[str, Any]], **kw: Any) -> None:
             self.choices = dict(choices)
             super().__init__(**kw)
 
-        def process_bind_param(self, value, dialect):
-            return [k for k, v in self.choices.iteritems() if v == value][0]
+        def process_bind_param(self, value: Any, dialect: Any) -> Any:
+            return [k for k, v in self.choices.items() if v == value][0]
 
-        def process_result_value(self, value, dialect):
+        def process_result_value(self, value: Any, dialect: Any) -> Any:
             return self.choices[value]
 
     return Choice
 
 
-def test_it():
+def test_it() -> None:
     Base = declarative_base()
     Choice = _makeType(impl_=String)
 
@@ -44,7 +50,7 @@ def test_it():
     assert result["properties"]["color"] == {"type": "string", "maxLength": 1}
 
 
-def test_it__impl_is_not_callable():
+def test_it__impl_is_not_callable() -> None:
     Base = declarative_base()
     Choice = _makeType(impl_=String(length=1))
 

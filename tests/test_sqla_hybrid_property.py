@@ -24,7 +24,7 @@ class IdMixin:
     def id(self) -> int:
         return self._id
 
-    @id.setter
+    @id.setter  # type: ignore[no-redef]
     def id(self, id_: int) -> None:
         self._id = id_
 
@@ -42,7 +42,7 @@ class MyModel(Base):
     def id(self) -> int:
         return self._id
 
-    @id.setter
+    @id.setter  # type: ignore[no-redef]
     def id(self, id_: int) -> None:
         self._id = id_
 
@@ -67,7 +67,7 @@ class MyModelWithRelationship(Base):
     def other_model_id(self) -> int:
         return self._other_model_id
 
-    @other_model_id.setter
+    @other_model_id.setter  # type: ignore[no-redef]
     def other_model_id(self, other_model_id: int) -> None:
         self._other_model_id = other_model_id
 
@@ -80,7 +80,9 @@ class MyModelWithRelationship(Base):
         pytest.param(MyModelWithMixin, "MyModelWithMixin"),
     ],
 )
-def test_hybrid_property(walker: ModelWalker, model: Type[Base], expected_title: str) -> None:
+def test_hybrid_property(
+    walker: Type[ModelWalker], model: Type[Base], expected_title: str
+) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 
     actual = schema_factory(model)
@@ -147,7 +149,7 @@ def test_hybrid_property(walker: ModelWalker, model: Type[Base], expected_title:
 )
 @pytest.mark.parametrize("model", [MyModelWithRelationship])
 def test_hybrid_property_with_relationship(
-    walker: ModelWalker, model: Type[Base], expected: Dict[str, Any]
+    walker: Type[ModelWalker], model: Type[Base], expected: Dict[str, Any]
 ) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 

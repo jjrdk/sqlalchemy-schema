@@ -1,25 +1,39 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Iterator, Tuple
+from typing import Any, Dict, Iterator, Tuple, Union
 
 from sqlalchemy.orm.base import MANYTOMANY, MANYTOONE
 from sqlalchemy.orm.properties import ColumnProperty
+from sqlalchemy.orm.relationships import RelationshipProperty
 
 from sqlalchemy_to_json_schema.types import ColumnPropertyType
+from sqlalchemy_to_json_schema.walkers import ModelWalker
 
-DecisionResult = Tuple[ColumnPropertyType, ColumnProperty, Dict[str, Any]]
+DecisionResult = Tuple[
+    ColumnPropertyType, Union[ColumnProperty, RelationshipProperty], Dict[str, Any]
+]
 
 
 class Decision(ABC):
     @abstractmethod
     def decision(
-        self, walker, prop: ColumnProperty, toplevel: bool = False
+        self,
+        walker: ModelWalker,
+        prop: Union[ColumnProperty, RelationshipProperty],
+        /,
+        *,
+        toplevel: bool = False,
     ) -> Iterator[DecisionResult]:
         pass
 
 
 class RelationDecision(Decision):
     def decision(
-        self, walker, prop: ColumnProperty, toplevel: bool = False
+        self,
+        walker: ModelWalker,
+        prop: Union[ColumnProperty, RelationshipProperty],
+        /,
+        *,
+        toplevel: bool = False,
     ) -> Iterator[DecisionResult]:
         if hasattr(prop, "mapper"):
             yield ColumnPropertyType.RELATIONSHIP, prop, {}
@@ -31,7 +45,12 @@ class RelationDecision(Decision):
 
 class UseForeignKeyIfPossibleDecision(Decision):
     def decision(
-        self, walker, prop: ColumnProperty, toplevel: bool = False
+        self,
+        walker: ModelWalker,
+        prop: Union[ColumnProperty, RelationshipProperty],
+        /,
+        *,
+        toplevel: bool = False,
     ) -> Iterator[DecisionResult]:
         if hasattr(prop, "mapper"):
             if prop.direction == MANYTOONE:

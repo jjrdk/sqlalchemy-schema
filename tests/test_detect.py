@@ -1,10 +1,12 @@
 from datetime import datetime
-from typing import Callable, Optional, Type
+from typing import Any, Callable, Optional, Type, Union
 
 import pytest
 import sqlalchemy as sa
-from sqlalchemy import func
+from sqlalchemy import FetchedValue, func
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql.elements import TextClause
+from sqlalchemy.sql.expression import ColumnElement
 
 from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.walkers import (
@@ -17,7 +19,7 @@ from sqlalchemy_to_json_schema.walkers import (
 Base = declarative_base()
 
 
-def _makeOne(walker: ModelWalker, /):
+def _makeOne(walker: Type[ModelWalker], /) -> SchemaFactory:
     return SchemaFactory(walker)
 
 
@@ -27,7 +29,7 @@ def _makeOne(walker: ModelWalker, /):
 def test_detect__nullable_is_True__not_required(
     walker_cls: Type[ModelWalker],
     default: Optional[Callable[..., datetime]],
-    server_default: Optional[Callable[..., datetime]],
+    server_default: Optional[Union[FetchedValue, str, TextClause, ColumnElement[Any], None]],
 ) -> None:
     class Model(Base):
         __tablename__ = f"model_nullable_true_{walker_cls}_{default}_{server_default}"

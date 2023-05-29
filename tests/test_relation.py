@@ -1,19 +1,27 @@
+from __future__ import annotations
+
+from typing import Any, Mapping, Type
+
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Mapped
 
 from sqlalchemy_to_json_schema import (
     ChildFactory,
     DefaultClassfier,
     RelationDecision,
-    Schema,
     SchemaFactory,
 )
 from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
-from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker, StructuralWalker
+from sqlalchemy_to_json_schema.walkers import (
+    ForeignKeyWalker,
+    ModelWalker,
+    StructuralWalker,
+)
 
 
-def get_reference(schema: Schema, root_schema: Schema) -> str:
+def get_reference(schema: Mapping[str, Any], root_schema: Mapping[str, Any]) -> Mapping[str, Any]:
     ref = schema["$ref"]
     if not ref.startswith("#/"):
         raise NotImplementedError(ref)
@@ -23,12 +31,8 @@ def get_reference(schema: Schema, root_schema: Schema) -> str:
     return target
 
 
-def _getTarget():
-    return SchemaFactory
-
-
-def _makeOne(walker, *args, **kwargs):
-    return _getTarget()(walker, DefaultClassfier, *args, **kwargs)
+def _makeOne(walker: Type[ModelWalker], *args: Any, **kwargs: Any) -> SchemaFactory:
+    return SchemaFactory(walker, DefaultClassfier, *args, **kwargs)
 
 
 Base = declarative_base()
@@ -52,7 +56,7 @@ class User(Base):
     group = orm.relationship(Group, uselist=False, backref="users")
 
 
-def test_properties__default__includes__foreign_keys():
+def test_properties__default__includes__foreign_keys() -> None:
     target = _makeOne(ForeignKeyWalker)
     result = target(User)
 
@@ -60,7 +64,7 @@ def test_properties__default__includes__foreign_keys():
     assert list(sorted(result["properties"].keys())) == ["group_id", "name", "pk"]
 
 
-def test_properties__include_OnetoMany_relation():
+def test_properties__include_OnetoMany_relation() -> None:
     target = _makeOne(StructuralWalker, relation_decision=RelationDecision())
     result = target(User)
 
@@ -69,7 +73,7 @@ def test_properties__include_OnetoMany_relation():
     assert result["properties"]["group"] == {"$ref": "#/definitions/Group"}
 
 
-def test_properties__include_OnetoMany_relation2():
+def test_properties__include_OnetoMany_relation2() -> None:
     target = _makeOne(StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision())
     result = target(User)
 
@@ -78,7 +82,7 @@ def test_properties__include_OnetoMany_relation2():
     assert result["properties"]["group_id"] == {"type": "integer", "relation": "group"}
 
 
-def test_properties__include_ManytoOne_backref():
+def test_properties__include_ManytoOne_backref() -> None:
     target = _makeOne(StructuralWalker)
     result = target(Group)
 
@@ -98,8 +102,8 @@ def test_properties__include_ManytoOne_backref():
     }
 
 
-def test_properties__include_ManytoOne_backref__bidirectional_is_true():
-    target = _makeOne(StructuralWalker, child_factory=ChildFactory(".", bidirectional=True))
+def test_properties__include_ManytoOne_backref__bidirectional_is_true() -> None:
+    target = _makeOne(StructuralWalker, child_factory=ChildFactory(bidirectional=True))
     result = target(Group)
 
     assert "required" in result
@@ -166,7 +170,7 @@ class A5(Base):
     parent = orm.relationship(A4, uselist=False, backref="children")
 
 
-def test_properties__default_depth_is__traverse_all_chlidren():
+def test_properties__default_depth_is__traverse_all_chlidren() -> None:
     target = _makeOne(StructuralWalker)
     result = target(A0)
 
@@ -180,7 +184,7 @@ def test_properties__default_depth_is__traverse_all_chlidren():
     assert children4["properties"]["pk"]["description"] == "primary key5"
 
 
-def test_properties__default_depth_is__2__traverse_depth2():
+def test_properties__default_depth_is__2__traverse_depth2() -> None:
     target = _makeOne(StructuralWalker)
     result = target(A0, depth=2)
 
@@ -190,7 +194,7 @@ def test_properties__default_depth_is__2__traverse_depth2():
     assert children0["properties"]["pk"]["description"] == "primary key1"
 
 
-def test_properties__default_depth_is__3__traverse_depth3():
+def test_properties__default_depth_is__3__traverse_depth3() -> None:
     target = _makeOne(StructuralWalker)
     result = target(A0, depth=3)
 
@@ -209,24 +213,24 @@ class Y(Base):
     __tablename__ = "y"
     id = sa.Column(sa.Integer, primary_key=True, doc="primary key")
     z_id = sa.Column(sa.Integer, sa.ForeignKey("z.id"))
-    zs = orm.relationship("Z", foreign_keys=[z_id])
+    zs: Mapped[X] = orm.relationship("Z", foreign_keys=[z_id])
 
 
 class X(Base):
     __tablename__ = "x"
     id = sa.Column(sa.Integer, primary_key=True, doc="primary key")
     y_id = sa.Column(sa.Integer, sa.ForeignKey("y.id"))
-    ys = orm.relationship(Y, foreign_keys=[y_id])
+    ys: Mapped[Y] = orm.relationship(Y, foreign_keys=[y_id])
 
 
 class Z(Base):
     __tablename__ = "z"
     id = sa.Column(sa.Integer, primary_key=True, doc="primary key")
     y_id = sa.Column(sa.Integer, sa.ForeignKey("y.id"))
-    ys = orm.relationship(Y, foreign_keys=[y_id])
+    ys: Mapped[Y] = orm.relationship(Y, foreign_keys=[y_id])
 
 
-def test_properties__infinite_loop():
+def test_properties__infinite_loop() -> None:
     target = _makeOne(StructuralWalker, relation_decision=RelationDecision())
     result = target(X)
     ys = result["properties"]["ys"]
@@ -237,7 +241,7 @@ def test_properties__infinite_loop():
     assert xs["id"]["description"] == "primary key"
 
 
-def test_properties__infinite_loop2():
+def test_properties__infinite_loop2() -> None:
     target = _makeOne(StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision())
     result = target(X)
     assert "required" in result

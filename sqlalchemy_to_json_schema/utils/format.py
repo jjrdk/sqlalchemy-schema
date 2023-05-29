@@ -5,7 +5,7 @@ from dateutil import parser
 from dateutil.parser import ParserError
 
 
-def parse_date(date_string: str) -> Optional[date]:
+def parse_date(date_string: str, /) -> Optional[date]:
     try:
         timestamp = parser.isoparse(date_string)
     except ValueError:
@@ -14,11 +14,11 @@ def parse_date(date_string: str) -> Optional[date]:
     return timestamp.date()
 
 
-def validate_date(date_string: str) -> bool:
+def validate_date(date_string: str, /) -> bool:
     return parse_date(date_string) is not None
 
 
-def parse_time(time_string: str) -> Optional[time]:
+def parse_time(time_string: str, /) -> Optional[time]:
     try:
         timestamp = parser.parse(time_string)
     except ParserError:
@@ -30,5 +30,5 @@ def parse_time(time_string: str) -> Optional[time]:
     return time_value
 
 
-def validate_time(time_string: str) -> bool:
+def validate_time(time_string: str, /) -> bool:
     return parse_time(time_string) is not None

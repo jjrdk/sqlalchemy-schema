@@ -1,7 +1,10 @@
+import inspect
 from importlib import import_module
+from types import ModuleType
+from typing import Type, Union
 
 
-def load_module_or_symbol(module_path: str) -> object:
+def load_module_or_symbol(module_path: str, /) -> Union[ModuleType, Type]:
     module_path_split = module_path.split(":", maxsplit=1)
 
     if len(module_path_split) == 1:
@@ -14,5 +17,8 @@ def load_module_or_symbol(module_path: str) -> object:
 
         module = import_module(module_name)
         symbol = getattr(module, symbol_name)
+
+        if not inspect.isclass(symbol):
+            raise TypeError(f"{symbol} is not a class")
 
         return symbol

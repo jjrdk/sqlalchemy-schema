@@ -1,15 +1,30 @@
+import inspect
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, NoReturn, Optional, Sequence
+from types import ModuleType
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    Optional,
+    Sequence,
+    Type,
+    Union,
+    cast,
+)
 
 import yaml
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
-from sqlalchemy_to_json_schema import SchemaFactory
+from sqlalchemy_to_json_schema import Schema, SchemaFactory
 from sqlalchemy_to_json_schema.command.transformer import (
     JSONSchemaTransformer,
     OpenAPI2Transformer,
     OpenAPI3Transformer,
+    Transformer,
 )
 from sqlalchemy_to_json_schema.decisions import (
     Decision,
@@ -31,7 +46,7 @@ from sqlalchemy_to_json_schema.walkers import (
 )
 
 
-def detect_walker_factory(walker: WalkerChoice) -> ModelWalker:
+def detect_walker_factory(walker: WalkerChoice, /) -> Type[ModelWalker]:
     if walker == WalkerChoice.STRUCTURAL:
         return StructuralWalker
     elif walker == WalkerChoice.NOFOREIGNKEY:
@@ -42,7 +57,7 @@ def detect_walker_factory(walker: WalkerChoice) -> ModelWalker:
     raise ValueError(walker)
 
 
-def detect_decision(decision: DecisionChoice) -> Decision:
+def detect_decision(decision: DecisionChoice, /) -> Decision:
     if decision == DecisionChoice.DEFAULT:
         return RelationDecision()
     elif decision == DecisionChoice.USE_FOREIGN_KEY:
@@ -51,7 +66,7 @@ def detect_decision(decision: DecisionChoice) -> Decision:
     raise ValueError(decision)
 
 
-def detect_transformer(layout: LayoutChoice):
+def detect_transformer(layout: LayoutChoice, /) -> Type[Transformer]:
     if layout in [LayoutChoice.SWAGGER_2, LayoutChoice.OPENAPI_2]:
         return OpenAPI2Transformer
     elif layout == LayoutChoice.OPENAPI_3:
@@ -63,12 +78,12 @@ def detect_transformer(layout: LayoutChoice):
 
 
 class Driver:
-    def __init__(self, walker: ModelWalker, decision: DecisionChoice, layout: LayoutChoice):
+    def __init__(self, walker: WalkerChoice, decision: DecisionChoice, layout: LayoutChoice, /):
         self.transformer = self.build_transformer(walker, decision, layout)
 
     def build_transformer(
-        self, walker: ModelWalker, decision: DecisionChoice, layout: LayoutChoice
-    ) -> NoReturn:
+        self, walker: WalkerChoice, decision: DecisionChoice, layout: LayoutChoice, /
+    ) -> Callable[[Iterable[Union[ModuleType, DeclarativeMeta]], Optional[int]], Schema]:
         walker_factory = detect_walker_factory(walker)
         relation_decision = detect_decision(decision)
         schema_factory = SchemaFactory(walker_factory, relation_decision=relation_decision)
@@ -82,15 +97,26 @@ class Driver:
         *,
         filename: Optional[Path] = None,
         format: Optional[FormatChoice] = None,
-        depth: int = None,
+        depth: Optional[int] = None,
     ) -> None:
-        modules_or_models = [load_module_or_symbol(target) for target in targets]
-        result = self.transformer(modules_or_models, depth=depth)
-        self.dump(result, filename, format=format)
+        modules_and_types = (load_module_or_symbol(target) for target in targets)
+        modules_and_models = cast(
+            Iterator[Union[ModuleType, DeclarativeMeta]],
+            (
+                item
+                for item in modules_and_types
+                if inspect.ismodule(item) or isinstance(item, DeclarativeMeta)
+            ),
+        )
+
+        result = self.transformer(modules_and_models, depth)
+        self.dump(result, filename=filename, format=format)
 
     def dump(
         self,
         data: Dict[str, Any],
+        /,
+        *,
         filename: Optional[Path] = None,
         format: Optional[FormatChoice] = None,
     ) -> None:
@@ -101,4 +127,4 @@ class Driver:
         else:
             output_stream = filename.open("w")
 
-        dump_function(data, output_stream)
+        dump_function(data, output_stream)  # type: ignore[operator]

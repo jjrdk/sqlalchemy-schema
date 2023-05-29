@@ -8,12 +8,8 @@ from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker
 
 
-def _getTarget():
-    return SchemaFactory
-
-
-def _makeOne(*args, **kwargs):
-    return _getTarget()(ForeignKeyWalker, DefaultClassfier)
+def _makeOne() -> SchemaFactory:
+    return SchemaFactory(ForeignKeyWalker, DefaultClassfier)
 
 
 Base = declarative_base()
@@ -38,7 +34,7 @@ class User(Base):
     group = orm.relationship(Group, uselist=False, backref="users")
 
 
-def test_type__is_object():
+def test_type__is_object() -> None:
     target = _makeOne()
     result = target(Group)
 
@@ -46,7 +42,7 @@ def test_type__is_object():
     assert result["type"] == "object"
 
 
-def test_properties__are__all_of_columns():
+def test_properties__are__all_of_columns() -> None:
     target = _makeOne()
     result = target(Group)
 
@@ -54,7 +50,7 @@ def test_properties__are__all_of_columns():
     assert list(sorted(result["properties"].keys())) == ["color", "name", "pk"]
 
 
-def test_title__id__model_class_name():
+def test_title__id__model_class_name() -> None:
     target = _makeOne()
     result = target(Group)
 
@@ -62,7 +58,7 @@ def test_title__id__model_class_name():
     assert result["title"] == Group.__name__
 
 
-def test_description__is__docstring_of_model():
+def test_description__is__docstring_of_model() -> None:
     target = _makeOne()
     result = target(Group)
 
@@ -70,7 +66,7 @@ def test_description__is__docstring_of_model():
     assert result["description"] == Group.__doc__
 
 
-def test_properties__all__this_is_slackoff_little_bit__all_is_all():  # hmm.
+def test_properties__all__this_is_slackoff_little_bit__all_is_all() -> None:  # hmm.
     target = _makeOne()
     result = target(Group)
 
@@ -88,19 +84,19 @@ def test_properties__all__this_is_slackoff_little_bit__all_is_all():  # hmm.
 # adaptive
 
 
-def test__filtering_by__includes():
+def test__filtering_by__includes() -> None:
     target = _makeOne()
     result = target(Group, includes=["pk"])
     assert list(sorted(result["properties"].keys())) == ["pk"]
 
 
-def test__filtering_by__excludes():
+def test__filtering_by__excludes() -> None:
     target = _makeOne()
     result = target(Group, excludes=["pk"])
     assert list(sorted(result["properties"].keys())) == ["color", "name"]
 
 
-def test__filtering_by__excludes_and_includes__conflict():
+def test__filtering_by__excludes_and_includes__conflict() -> None:
     target = _makeOne()
     with pytest.raises(InvalidStatus):
         target(Group, excludes=["pk"], includes=["pk"])
@@ -110,7 +106,7 @@ def test__filtering_by__excludes_and_includes__conflict():
 
 
 @pytest.mark.skip("to be fixed")
-def test__overrides__add():
+def test__overrides__add() -> None:
     target = _makeOne()
     overrides = {"name": {"maxLength": 100}}
     result = target(Group, includes=["name"], overrides=overrides)
@@ -119,7 +115,7 @@ def test__overrides__add():
 
 
 @pytest.mark.skip("to be fixed")
-def test__overrides__pop():
+def test__overrides__pop() -> None:
     target = _makeOne()
     overrides = {"name": {"maxLength": pop_marker}}
     result = target(Group, includes=["name"], overrides=overrides)
@@ -127,7 +123,7 @@ def test__overrides__pop():
     assert result["properties"] == {"name": {"type": "string"}}
 
 
-def test__overrides__wrong_column():
+def test__overrides__wrong_column() -> None:
     target = _makeOne()
     overrides = {"*missing-field*": {"maxLength": 100}}
     with pytest.raises(InvalidStatus):

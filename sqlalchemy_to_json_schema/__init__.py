@@ -21,16 +21,30 @@ JSON Schema defines seven primitive types for JSON values:
 """
 
 import logging
-from typing import Any, Callable, Dict, List, Optional
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    Union,
+)
 
 import sqlalchemy.types as t
+from sqlalchemy import Column
 from sqlalchemy.dialects import postgresql as postgresql_types
+from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.orm.base import ONETOMANY
+from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.sql.visitors import VisitableType
 
-from sqlalchemy_to_json_schema.decisions import RelationDecision
+from sqlalchemy_to_json_schema.decisions import Decision, RelationDecision
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 from sqlalchemy_to_json_schema.types import ColumnPropertyType
 from sqlalchemy_to_json_schema.walkers import ModelWalker
@@ -40,6 +54,8 @@ logger = logging.getLogger(__name__)
 Schema = Dict[str, Any]
 
 #  tentative
+DefaultColumnToSchemaDict = Mapping[Type[TypeEngine], str]
+
 default_column_to_schema = {
     t.String: "string",
     t.Text: "string",
@@ -64,32 +80,35 @@ default_column_to_schema = {
 
 
 # restriction
-def string_max_length(column, sub):
+def string_max_length(column: Column, sub: Dict[str, int], /) -> None:
     if column.type.length is not None:
         sub["maxLength"] = column.type.length
 
 
-def enum_one_of(column, sub):
+def enum_one_of(column: Column, sub: Dict[str, list], /) -> None:
     sub["enum"] = list(column.type.enums)
 
 
-def datetime_format(column, sub):
+def datetime_format(column: Column, sub: Dict[str, str], /) -> None:
     sub["format"] = "date-time"
 
 
-def date_format(column, sub):
+def date_format(column: Column, sub: Dict[str, str], /) -> None:
     sub["format"] = "date"
 
 
-def time_format(column, sub):
+def time_format(column: Column, sub: Dict[str, str], /) -> None:
     sub["format"] = "time"
 
 
-def uuid_format(column, sub):
+def uuid_format(column: Column, sub: Dict[str, str], /) -> None:
     sub["format"] = "uuid"
 
 
-default_restriction_dict = {
+TypeFormatFn = Callable[[Column, Dict[str, Any]], None]
+RestrictionDict = Mapping[Type[TypeEngine], TypeFormatFn]
+
+default_restriction_dict: RestrictionDict = {
     t.String: string_max_length,
     t.Enum: enum_one_of,
     t.DateTime: datetime_format,
@@ -100,33 +119,53 @@ default_restriction_dict = {
 
 
 class Classifier:
-    def __init__(self, mapping=default_column_to_schema, see_mro=True, see_impl=True):
+    def __init__(
+        self,
+        mapping: DefaultColumnToSchemaDict = default_column_to_schema,
+        /,
+        *,
+        see_mro: bool = True,
+        see_impl: bool = True,
+    ) -> None:
         self.mapping = mapping
         self.see_mro = see_mro
         self.see_impl = see_impl
 
-    def __getitem__(self, k):
+    def __getitem__(self, k: Type[Column], /) -> Tuple[Type[TypeEngine], str]:
         cls = k.__class__
         _, mapped = get_class_mapping(
-            self.mapping, cls, see_mro=self.see_mro, see_impl=self.see_impl
+            self.mapping,  # type: ignore[arg-type]
+            cls,  # type: ignore[arg-type]
+            see_mro=self.see_mro,
+            see_impl=self.see_impl,
         )
         if mapped is None:
             raise InvalidStatus(f"notfound: {k}. (cls={cls})")
-        return cls, mapped
+        return cls, mapped  # type: ignore[return-value]
 
 
-def get_class_mapping(mapping, cls, see_mro=True, see_impl=True):
+def get_class_mapping(
+    mapping: RestrictionDict,
+    cls: Type[TypeEngine],
+    /,
+    *,
+    see_mro: bool = True,
+    see_impl: bool = True,
+) -> Tuple[Optional[DeclarativeMeta], Optional[TypeFormatFn]]:
     v = mapping.get(cls)
     if v is not None:
-        return cls, v
+        return cls, v  # type: ignore[return-value]
 
     # inheritance
     if see_mro:
         for type_ in cls.mro()[1:]:
-            if type_ is TypeEngine:
+            if issubclass(TypeEngine, type_):
                 break
             if type_ in mapping:
-                return type_, mapping[type_]
+                return [
+                    type_,  # type: ignore[return-value]
+                    mapping[type_],
+                ]
 
     # decorator's type
     if see_impl and hasattr(cls, "impl"):
@@ -141,9 +180,18 @@ def get_class_mapping(mapping, cls, see_mro=True, see_impl=True):
 DefaultClassfier = Classifier(default_column_to_schema)
 
 
-def get_children(name, params, splitter=".", default=None):  # todo: rename
+def get_children(
+    name: str,
+    params: Optional[Union[Sequence[str], Mapping[str, Any]]],
+    /,
+    *,
+    splitter: str = ".",
+    default: Optional[Union[List[str], Dict[str, Any]]] = None,
+) -> Union[List[str], Dict[str, Any], None]:
     prefix = name + splitter
     if hasattr(params, "items"):
+        if params is None:
+            raise RuntimeError("params is None")
         return {k.split(splitter, 1)[1]: v for k, v in params.items() if k.startswith(prefix)}
     elif isinstance(params, (list, tuple)):
         return [e.split(splitter, 1)[1] for e in params if e.startswith(prefix)]
@@ -155,52 +203,86 @@ pop_marker = object()
 
 
 class CollectionForOverrides:
-    def __init__(self, params, pop_marker=pop_marker):
+    def __init__(self, params: Dict[str, Any], /, *, pop_marker: object = pop_marker) -> None:
         self.params = params or {}
         self.not_used_keys = set(params.keys())
         self.pop_marker = pop_marker
 
-    def __contains__(self, k):
+    def __contains__(self, k: str, /) -> bool:
         return k in self.params
 
-    def overrides(self, basedict):
+    def overrides(self, basedict: Dict[str, Any], /) -> None:
         for k, v in self.params.items():
             if v == self.pop_marker:
-                basedict.pop(k)  # xxx: KeyError?
+                basedict.pop(k, None)
             else:
                 basedict[k] = v
-            self.not_used_keys.remove(k)  # xxx: KeyError?
+            self.not_used_keys.remove(k)
 
 
 class ChildFactory:
-    def __init__(self, splitter=".", bidirectional=False):
+    def __init__(self, *, splitter: str = ".", bidirectional: bool = False) -> None:
         self.splitter = splitter
         self.bidirectional = bidirectional
 
-    def default_excludes(self, prop):
-        return [prop.back_populates, None if prop.backref is None else prop.backref[0]]
+    def default_excludes(self, prop: Union[ColumnProperty, RelationshipProperty], /) -> List[str]:
+        nullable_excludes = [
+            prop.back_populates,
+            None if prop.backref is None else prop.backref[0],
+        ]
+        excludes = [
+            nullable_exclude
+            for nullable_exclude in nullable_excludes
+            if nullable_exclude is not None
+        ]
 
-    def child_overrides(self, prop, overrides):
+        return excludes
+
+    def child_overrides(
+        self, prop: Union[ColumnProperty, RelationshipProperty], overrides: Any
+    ) -> Any:
         name = prop.key
         children = get_children(name, overrides.params, splitter=self.splitter)
         return overrides.__class__(children, pop_marker=overrides.pop_marker)
 
-    def child_walker(self, prop, walker, history=None):
+    def child_walker(
+        self,
+        prop: Union[ColumnProperty, RelationshipProperty],
+        walker: ModelWalker,
+        history: Optional[Any] = None,
+    ) -> ModelWalker:
         name = prop.key
         excludes = get_children(name, walker.includes, splitter=self.splitter, default=[])
         if not self.bidirectional:
+            if isinstance(excludes, dict):
+                raise RuntimeError(f"excludes is dict: {excludes}")
+            if excludes is None:
+                raise RuntimeError("excludes is None")
             excludes.extend(self.default_excludes(prop))
         includes = get_children(name, walker.includes, splitter=self.splitter)
 
         return walker.clone(
-            name, prop.mapper, includes=includes, excludes=excludes, history=history
+            name,
+            prop.mapper,
+            includes=includes,  # type: ignore[arg-type]
+            excludes=excludes,  # type: ignore[arg-type]
+            history=history,
         )
 
-    def child_schema(self, prop, schema_factory, root_schema, walker, overrides, depth, history):
+    def child_schema(
+        self,
+        prop: Union[ColumnProperty, RelationshipProperty],
+        schema_factory: Any,
+        root_schema: Mapping[str, Any],
+        walker: ModelWalker,
+        overrides: Any,
+        depth: Optional[int],
+        history: Optional[Any],
+    ) -> Dict[str, Any]:
         subschema = schema_factory._build_properties(
             walker,
             root_schema,
-            overrides,
+            overrides=overrides,
             depth=(depth and depth - 1),
             history=history,
             toplevel=False,
@@ -214,40 +296,42 @@ class ChildFactory:
 class SchemaFactory:
     def __init__(
         self,
-        walker,
-        classifier=DefaultClassfier,
-        restriction_dict=default_restriction_dict,
+        walker: Type[ModelWalker],
+        classifier: Classifier = DefaultClassfier,
+        restriction_dict: RestrictionDict = default_restriction_dict,
         child_factory: Optional[ChildFactory] = None,
-        relation_decision: Optional[RelationDecision] = None,
-    ):
+        relation_decision: Optional[Decision] = None,
+    ) -> None:
         self.classifier = classifier
         self.walker = walker  # class
         self.restriction_set = [{k: v} for k, v in restriction_dict.items()]
-        self.child_factory = ChildFactory(".") if child_factory is None else child_factory
+        self.child_factory = ChildFactory() if child_factory is None else child_factory
         self.relation_decision = (
             RelationDecision() if relation_decision is None else relation_decision
         )
 
     def __call__(
         self,
-        model,
+        model: DeclarativeMeta,
         *,
-        includes=None,
-        excludes=None,
-        overrides=None,
-        depth=None,
-        adjust_required=None,
+        includes: Optional[Sequence[str]] = None,
+        excludes: Optional[Sequence[str]] = None,
+        overrides: Optional[dict] = None,
+        depth: Optional[int] = None,
+        adjust_required: Optional[
+            Callable[[Union[ColumnProperty, RelationshipProperty], bool], bool]
+        ] = None,
     ) -> Schema:
         walker = self.walker(model, includes=includes, excludes=excludes)
-        overrides = CollectionForOverrides(overrides or {})
+        overrides_manager = CollectionForOverrides(overrides or {})
 
-        schema = {"title": model.__name__, "type": "object"}
+        schema: Dict[str, Any] = {"title": model.__name__, "type": "object"}
         schema["properties"] = self._build_properties(
-            walker, schema, overrides=overrides, depth=depth
+            walker, schema, overrides=overrides_manager, depth=depth
         )
 
-        if overrides.not_used_keys:
-            raise InvalidStatus(f"invalid overrides: {overrides.not_used_keys}")
+        if overrides_manager is not None and overrides_manager.not_used_keys:
+            raise InvalidStatus(f"invalid overrides: {overrides_manager.not_used_keys}")
 
         if model.__doc__:
             schema["description"] = model.__doc__
@@ -258,7 +342,9 @@ class SchemaFactory:
             schema["required"] = required
         return schema
 
-    def _add_restriction_if_found(self, D, column, itype):
+    def _add_restriction_if_found(
+        self, data: Dict[str, Any], column: Column, itype: Type[TypeEngine]
+    ) -> None:
         for restriction_dict in self.restriction_set:
             _, fn = get_class_mapping(
                 restriction_dict,
@@ -269,11 +355,18 @@ class SchemaFactory:
             if fn is not None:
                 if isinstance(fn, (list, tuple)):
                     for f in fn:
-                        f(column, D)
+                        f(column, data)
                 else:
-                    fn(column, D)
+                    fn(column, data)
 
-    def _add_property_with_reference(self, walker, root_schema, current_schema, prop, val):
+    def _add_property_with_reference(
+        self,
+        walker: ModelWalker,
+        root_schema: Schema,
+        current_schema: Dict[str, Any],
+        prop: Union[ColumnProperty, RelationshipProperty],
+        val: Dict[str, Any],
+    ) -> None:
         clsname = prop.mapper.class_.__name__
         if "definitions" not in root_schema:
             root_schema["definitions"] = {}
@@ -293,9 +386,17 @@ class SchemaFactory:
             root_schema["definitions"][clsname] = val
 
     def _build_properties(
-        self, walker, root_schema, overrides, depth=None, history=None, toplevel=True
-    ):
-        definitions = {}
+        self,
+        walker: ModelWalker,
+        root_schema: Schema,
+        /,
+        *,
+        overrides: Optional[CollectionForOverrides] = None,
+        depth: Optional[int] = None,
+        history: Optional[List[Union[ColumnProperty, RelationshipProperty]]] = None,
+        toplevel: bool = True,
+    ) -> Dict[str, Any]:
+        definitions: Dict[str, Any] = {}
 
         if depth is not None and depth <= 0:
             return definitions
@@ -305,7 +406,7 @@ class SchemaFactory:
 
         for walked_prop in walker.walk():
             for action, prop, opts in self.relation_decision.decision(
-                walker, walked_prop, toplevel
+                walker, walked_prop, toplevel=toplevel
             ):
                 if action == ColumnPropertyType.RELATIONSHIP:  # RelationshipProperty
                     history.append(prop)
@@ -335,6 +436,9 @@ class SchemaFactory:
                             if c.doc:
                                 sub["description"] = c.doc
 
+                            if overrides is None:
+                                raise RuntimeError("overrides is None")
+
                             if c.name in overrides:
                                 overrides.overrides(sub)
                             if opts:
@@ -351,7 +455,9 @@ class SchemaFactory:
         walker: ModelWalker,
         /,
         *,
-        adjust_required: Optional[Callable[[ColumnProperty, bool], List[str]]] = None,
+        adjust_required: Optional[
+            Callable[[Union[ColumnProperty, RelationshipProperty], bool], bool]
+        ] = None,
     ) -> List[str]:
         required_properties = set()
 

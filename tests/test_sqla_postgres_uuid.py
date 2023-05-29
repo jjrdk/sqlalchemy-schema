@@ -1,4 +1,4 @@
-from typing import OrderedDict
+from typing import OrderedDict, Type
 
 import pytest
 from sqlalchemy import Column
@@ -23,7 +23,7 @@ class MyModel(Base):
 
 
 @pytest.mark.parametrize("walker", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker])
-def test_hybrid_property(walker: ModelWalker) -> None:
+def test_hybrid_property(walker: Type[ModelWalker]) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 
     actual = schema_factory(MyModel)
