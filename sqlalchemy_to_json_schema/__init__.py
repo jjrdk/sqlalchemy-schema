@@ -37,8 +37,6 @@ from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 
 logger = logging.getLogger(__name__)
 
-EMPTY_DICT = {}
-
 
 #  tentative
 default_column_to_schema = {
@@ -310,9 +308,9 @@ IMMEDIATE = "immediate"
 class RelationDecision:
     def decision(self, walker, prop, toplevel):
         if hasattr(prop, "mapper"):
-            yield RELATIONSHIP, prop, EMPTY_DICT
+            yield RELATIONSHIP, prop, {}
         elif hasattr(prop, "columns"):
-            yield FOREIGNKEY, prop, EMPTY_DICT
+            yield FOREIGNKEY, prop, {}
         else:
             raise NotImplementedError(prop)
 
@@ -331,11 +329,11 @@ class UseForeignKeyIfPossibleDecision:
                             yield FOREIGNKEY, walker.mapper._props[c.name], {"relation": prop.key}
             elif prop.direction == MANYTOMANY:
                 # logger.warning("skip mapper=%s, prop=%s is many to many.", walker.mapper, prop)
-                yield {"type": "array", "items": {"type": "string"}}, prop, EMPTY_DICT
+                yield {"type": "array", "items": {"type": "string"}}, prop, {}
             else:
-                yield RELATIONSHIP, prop, EMPTY_DICT
+                yield RELATIONSHIP, prop, {}
         elif hasattr(prop, "columns"):
-            yield FOREIGNKEY, prop, EMPTY_DICT
+            yield FOREIGNKEY, prop, {}
         else:
             raise NotImplementedError(prop)
 
