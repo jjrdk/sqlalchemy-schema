@@ -1,4 +1,7 @@
 # -*- coding:utf-8 -*-
+from sqlalchemy_to_json_schema.exceptions import InvalidStatus
+
+
 def _callFUT(*args, **kwargs):
     from sqlalchemy_to_json_schema.dictify import objectify
 
@@ -28,7 +31,7 @@ def test_it__simple():
 
 
 def test_it__strict_true__then__required_are_notfound__error_raised():
-    from sqlalchemy_to_json_schema import SchemaFactory, ForeignKeyWalker, InvalidStatus
+    from sqlalchemy_to_json_schema import SchemaFactory, ForeignKeyWalker
     from sqlalchemy_to_json_schema.dictify import ModelLookup
     import tests.models as models
     from datetime import datetime

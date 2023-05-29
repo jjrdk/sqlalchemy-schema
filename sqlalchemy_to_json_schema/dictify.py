@@ -1,6 +1,12 @@
 # -*- coding:utf-8 -*-
 import logging
 
+from sqlalchemy_to_json_schema.exceptions import (
+    ConversionError,
+    ErrorFound,
+    InvalidStatus,
+)
+
 logger = logging.getLogger(__name__)
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.relationships import RelationshipProperty
@@ -12,14 +18,7 @@ from .custom.format import (
 )
 from collections import OrderedDict
 from jsonschema import validate
-from . import InvalidStatus
 import pytz
-
-
-class ConvertionError(Exception):
-    def __init__(self, name, message):
-        self.name = name
-        self.message = message
 
 
 def datetime_rfc3339(ob):
@@ -86,9 +85,7 @@ def jsonify_of(ob, name, type_, registry=jsonify_dict):
     try:
         convert_fn = registry[type_]
     except KeyError:
-        raise ConvertionError(
-            name, "convert {} failure. unknown format {} of {}".format(name, type_, ob)
-        )
+        raise ConversionError(name, f"convert {name} failure. unknown format {type_} of {ob}")
     return convert_fn(getattr(ob, name, None))
 
 
@@ -99,16 +96,14 @@ def normalize_of(ob, name, type_, registry=normalize_dict):
     try:
         convert_fn = registry[type_]
     except KeyError:
-        raise ConvertionError(
-            name, "convert {} failure. unknown format {} of {}".format(name, type_, ob)
-        )
+        raise ConversionError(name, f"convert {name} failure. unknown format {type_} of {ob}")
     try:
         val = ob.get(name, marker)
         if val is marker:
             return val
         return convert_fn(val)
     except ValueError as e:
-        raise ConvertionError(name, e.args[0])
+        raise ConversionError(name, e.args[0])
 
 
 def prepare_of(ob, name, type_, registry=prepare_dict):
@@ -121,7 +116,7 @@ def prepare_of(ob, name, type_, registry=prepare_dict):
     except KeyError:
         return val
     except ValueError as e:
-        raise ConvertionError(name, e.args[0])
+        raise ConversionError(name, e.args[0])
 
 
 def attribute_of(ob, name, type_, registry=None):
@@ -419,10 +414,6 @@ def _get_primary_keys_from_object(ob):
 def _get_primary_keys_from_params(sub_params, primary_keys):
     return tuple(sorted(sub_params.get(k) for k in primary_keys))
 
-
-class ErrorFound(Exception):  # xxx:
-    def __init__(self, errors):
-        self.errors = errors
 
 
 def raise_error(data, e):

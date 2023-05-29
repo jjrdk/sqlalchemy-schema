@@ -102,7 +102,7 @@ def test__filtering_by__excludes():
 
 def test__filtering_by__excludes_and_includes__conflict():
     import pytest
-    from sqlalchemy_to_json_schema import InvalidStatus
+    from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 
     target = _makeOne()
     with pytest.raises(InvalidStatus):
@@ -130,7 +130,7 @@ def test__overrides__pop():
 
 def test__overrides__wrong_column():
     import pytest
-    from sqlalchemy_to_json_schema import InvalidStatus
+    from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 
     target = _makeOne()
     overrides = {"*missing-field*": {"maxLength": 100}}

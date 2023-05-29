@@ -12,13 +12,11 @@ from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.sql.visitors import VisitableType
 
+from sqlalchemy_to_json_schema.exceptions import InvalidStatus
+
 logger = logging.getLogger(__name__)
 
 EMPTY_DICT = {}
-
-
-class InvalidStatus(Exception):
-    pass
 
 
 """
