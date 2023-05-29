@@ -326,7 +326,7 @@ class RelationDecision(object):
         elif hasattr(prop, "columns"):
             yield FOREIGNKEY, prop, EMPTY_DICT
         else:
-            raise NotImplemented(prop)
+            raise NotImplementedError(prop)
 
 
 class UseForeignKeyIfPossibleDecision(object):
@@ -353,7 +353,7 @@ class UseForeignKeyIfPossibleDecision(object):
         elif hasattr(prop, "columns"):
             yield FOREIGNKEY, prop, EMPTY_DICT
         else:
-            raise NotImplemented(prop)
+            raise NotImplementedError(prop)
 
 
 class SchemaFactory(object):
@@ -489,7 +489,7 @@ class SchemaFactory(object):
                                 sub.update(opts)
                             D[c.name] = sub
                         else:
-                            raise NotImplemented
+                            raise NotImplementedError
                     # fixme: remove me???
                     # D[prop.key] = sub
                 else:  # immediate
