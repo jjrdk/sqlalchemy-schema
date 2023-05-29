@@ -12,7 +12,7 @@ def from_json(jsonstring):
 def from_multidict(multidict):
     r = [{}]
     try:
-        getter = getattr(multidict, "getall", None) or getattr(multidict, "getlist")
+        getter = getattr(multidict, "getall", None) or multidict.getlist
     except AttributeError:
         return multidict  # maybe dict
 
