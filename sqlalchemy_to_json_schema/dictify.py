@@ -1,5 +1,6 @@
 import logging
 from collections import OrderedDict
+from typing import Any, Callable, NoReturn
 
 import isodate
 import pytz
@@ -16,6 +17,7 @@ from .custom.format import parse_date  # more strict
 from .custom.format import parse_time  # more strict than isodate
 
 logger = logging.getLogger(__name__)
+RaiseValidateErrorFn = Callable[[Any, Exception], NoReturn]
 
 
 def datetime_rfc3339(ob):
@@ -414,11 +416,11 @@ def _get_primary_keys_from_params(sub_params, primary_keys):
     return tuple(sorted(sub_params.get(k) for k in primary_keys))
 
 
-def raise_error(data, e):
-    raise e
+def raise_validate_error(data: Any, exception: Exception) -> NoReturn:
+    raise exception
 
 
-def validate_all(data, validator, treat_error=raise_error):
+def validate_all(data, validator, treat_error: RaiseValidateErrorFn = raise_validate_error):
     errors = []
     for e in validator.iter_errors(data):
         errors.append(e)
