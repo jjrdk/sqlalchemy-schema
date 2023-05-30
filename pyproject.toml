@@ -30,6 +30,7 @@ isodate = ">=0.6.1"
 pytz = ">=2023.3"
 magicalimport = ">=0.9.1"
 dictknife = ">=0.7.2"
+python-dateutil = ">=2.8"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.2"

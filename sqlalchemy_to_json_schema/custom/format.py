@@ -1,84 +1,38 @@
-"""
-this is custom format
-"""
-import calendar
-import re
 from datetime import date, time
+from typing import Optional
 
+from dateutil import parser
+from dateutil.parser import ParserError
 from jsonschema._format import _checks_drafts
 
-time_rx = re.compile(r"(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|([+\-])(\d{2}):(\d{2}))?")
-date_rx = re.compile(r"(\d{4})\-(\d{2})\-(\d{2})")
 
-
-def parse_date(date_string):
-    m = date_rx.match(date_string)
-    if m is None:
+def parse_date(date_string: str) -> Optional[date]:
+    try:
+        timestamp = parser.isoparse(date_string)
+    except ValueError:
         return None
 
-    groups = m.groups()
-
-    year, month, day = (int(x) for x in groups[:3])
-    return date(year, month, day)
+    return timestamp.date()
 
 
-def validate_date(date_string):
-    m = date_rx.match(date_string)
-    if m is None:
-        return False
-
-    groups = m.groups()
-
-    year, month, day = (int(x) for x in groups[:3])
-
-    if not 1 <= year <= 9999:
-        # Have to reject this, unfortunately (despite it being OK by rfc3339):
-        # calendar.timegm/calendar.monthrange can't cope (since datetime can't)
-        return False
-
-    if not 1 <= month <= 12:
-        return False
-
-    (_, max_day) = calendar.monthrange(year, month)
-    if not 1 <= day <= max_day:
-        return False
-
-    # all OK
-    return True
+def validate_date(date_string: str) -> bool:
+    return parse_date(date_string) is not None
 
 
-def parse_time(time_string):
-    m = time_rx.match(time_string)
-    if m is None:
+def parse_time(time_string: str) -> Optional[time]:
+    try:
+        timestamp = parser.parse(time_string)
+    except ParserError:
         return None
 
-    groups = m.groups()
+    time_value = timestamp.time()
+    time_value = time_value.replace(tzinfo=timestamp.tzinfo)
 
-    hour, minute, second = (int(x) for x in groups[:3])
-    if groups[4] is not None and groups[4] != "Z":
-        return time(hour, minute, second, int(groups(3)))
-    return time(hour, minute, second)
+    return time_value
 
 
-def validate_time(time_string):
-    m = time_rx.match(time_string)
-    if m is None:
-        return False
-
-    groups = m.groups()
-
-    hour, minute, second = (int(x) for x in groups[:3])
-    if not (0 <= hour <= 23 and 0 <= minute <= 59 and 0 <= second <= 59):
-        # forbid leap seconds :-(. See README
-        return False
-
-    if groups[4] is not None and groups[4] != "Z":
-        (offset_sign, offset_hours, offset_mins) = groups[5:]
-        if not (0 <= int(offset_hours) <= 23 and 0 <= int(offset_mins) <= 59):
-            return False
-
-    # all OK
-    return True
+def validate_time(time_string: str) -> bool:
+    return parse_time(time_string) is not None
 
 
 @_checks_drafts("date", raises=ValueError)
