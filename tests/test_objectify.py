@@ -7,8 +7,8 @@ from sqlalchemy_to_json_schema import (
     RelationDecision,
     SchemaFactory,
     StructuralWalker,
-    UseForeignKeyIfPossibleDecision,
 )
+from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
 from sqlalchemy_to_json_schema.dictify import ModelLookup, objectify
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 from tests.fixtures import models

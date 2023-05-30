@@ -4,9 +4,11 @@ from dictknife import loading
 from sqlalchemy_to_json_schema import (
     ForeignKeyWalker,
     NoForeignKeyWalker,
-    RelationDecision,
     SchemaFactory,
     StructuralWalker,
+)
+from sqlalchemy_to_json_schema.decisions import (
+    RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
 

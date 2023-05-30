@@ -28,13 +28,15 @@ from typing import Iterator, Optional
 import sqlalchemy.types as t
 from sqlalchemy.dialects import postgresql as postgresql_types
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm.base import MANYTOMANY, MANYTOONE, ONETOMANY
+from sqlalchemy.orm.base import ONETOMANY
 from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.sql.visitors import VisitableType
 
+from sqlalchemy_to_json_schema.decisions import RelationDecision
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
+from sqlalchemy_to_json_schema.types import ColumnPropertyType
 
 logger = logging.getLogger(__name__)
 
@@ -302,43 +304,6 @@ class ChildFactory:
             return {"type": "object", "properties": subschema}
 
 
-RELATIONSHIP = "relationship"
-FOREIGNKEY = "foreignkey"
-
-
-class RelationDecision:
-    def decision(self, walker, prop, toplevel):
-        if hasattr(prop, "mapper"):
-            yield RELATIONSHIP, prop, {}
-        elif hasattr(prop, "columns"):
-            yield FOREIGNKEY, prop, {}
-        else:
-            raise NotImplementedError(prop)
-
-
-class UseForeignKeyIfPossibleDecision:
-    def decision(self, walker, prop, toplevel):
-        if hasattr(prop, "mapper"):
-            if prop.direction == MANYTOONE:
-                if toplevel:
-                    for c in prop.local_columns:
-                        yield FOREIGNKEY, walker.mapper._props[c.name], {"relation": prop.key}
-                else:
-                    rp = walker.history[0]
-                    if prop.local_columns != rp.remote_side:
-                        for c in prop.local_columns:
-                            yield FOREIGNKEY, walker.mapper._props[c.name], {"relation": prop.key}
-            elif prop.direction == MANYTOMANY:
-                # logger.warning("skip mapper=%s, prop=%s is many to many.", walker.mapper, prop)
-                yield {"type": "array", "items": {"type": "string"}}, prop, {}
-            else:
-                yield RELATIONSHIP, prop, {}
-        elif hasattr(prop, "columns"):
-            yield FOREIGNKEY, prop, {}
-        else:
-            raise NotImplementedError(prop)
-
-
 class SchemaFactory:
     def __init__(
         self,
@@ -436,7 +401,7 @@ class SchemaFactory:
             for action, prop, opts in self.relation_decision.decision(
                 walker, walked_prop, toplevel
             ):
-                if action == RELATIONSHIP:  # RelationshipProperty
+                if action == ColumnPropertyType.RELATIONSHIP:  # RelationshipProperty
                     history.append(prop)
                     subwalker = self.child_factory.child_walker(prop, walker, history=history)
                     suboverrides = self.child_factory.child_overrides(prop, overrides)
@@ -451,7 +416,7 @@ class SchemaFactory:
                     )
                     self._add_property_with_reference(walker, root_schema, D, prop, value)
                     history.pop()
-                elif action == FOREIGNKEY:  # ColumnProperty
+                elif action == ColumnPropertyType.FOREIGNKEY:  # ColumnProperty
                     for c in prop.columns:
                         sub = {}
                         if type(c.type) != VisitableType:

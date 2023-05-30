@@ -9,8 +9,8 @@ from sqlalchemy_to_json_schema import (
     RelationDecision,
     SchemaFactory,
     StructuralWalker,
-    UseForeignKeyIfPossibleDecision,
 )
+from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
 from sqlalchemy_to_json_schema.dictify import get_reference
 
 
