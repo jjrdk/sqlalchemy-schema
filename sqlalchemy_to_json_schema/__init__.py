@@ -304,7 +304,6 @@ class ChildFactory:
 
 RELATIONSHIP = "relationship"
 FOREIGNKEY = "foreignkey"
-IMMEDIATE = "immediate"
 
 
 class RelationDecision:
