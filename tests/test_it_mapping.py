@@ -6,10 +6,11 @@ import json
 from datetime import datetime
 
 import pytz
+from jsonschema import Draft4Validator
 
 import tests.fixtures.models as models
 from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
-from sqlalchemy_to_json_schema.mapping import Draft4MappingFactory
+from sqlalchemy_to_json_schema.mapping import MappingFactory
 
 from .fixtures.models import Group, User
 
@@ -20,13 +21,9 @@ def _datetime(*args):
     return datetime(*args)
 
 
-def _getTarget():
-    return Draft4MappingFactory
-
-
 def _makeOne(schema_factory, model, *args, **kwargs):
     module = models
-    mapping_factory = _getTarget()(schema_factory, module, *args, **kwargs)
+    mapping_factory = MappingFactory(Draft4Validator, schema_factory, module, *args, **kwargs)
     return mapping_factory(model)
 
 

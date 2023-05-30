@@ -1,7 +1,4 @@
-from functools import partial
-
 from jsonschema import FormatChecker
-from jsonschema.validators import Draft3Validator, Draft4Validator
 
 from . import default_column_to_schema, default_restriction_dict
 from .dictify import (
@@ -96,7 +93,3 @@ class MappingFactory:
         modellookup = self._ModelLookup(self.module)
         mapping = self._Mapping(validator, model, modellookup)
         return mapping
-
-
-Draft3MappingFactory = partial(MappingFactory, Draft3Validator)
-Draft4MappingFactory = partial(MappingFactory, Draft4Validator)

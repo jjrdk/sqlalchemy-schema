@@ -3,7 +3,6 @@ from typing import Optional
 
 from dateutil import parser
 from dateutil.parser import ParserError
-from jsonschema._format import _checks_drafts
 
 
 def parse_date(date_string: str) -> Optional[date]:
@@ -33,17 +32,3 @@ def parse_time(time_string: str) -> Optional[time]:
 
 def validate_time(time_string: str) -> bool:
     return parse_time(time_string) is not None
-
-
-@_checks_drafts("date", raises=ValueError)
-def is_date(instance):
-    if not isinstance(instance, str):
-        return True
-    return validate_date(instance)
-
-
-@_checks_drafts("time", raises=ValueError)
-def is_time(instance):
-    if not isinstance(instance, str):
-        return True
-    return validate_time(instance)
