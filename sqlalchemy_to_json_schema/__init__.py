@@ -57,12 +57,9 @@ default_column_to_schema = {
     t.UnicodeText: "string",
     t.Interval: "xxx",
     t.Enum: "string",
+    t.LargeBinary: "xxx",
     postgresql_types.UUID: "string",
 }
-
-
-if getattr(t, "Binary", None) is not None:
-    default_column_to_schema[t.Binary] = "xxx"
 
 
 # restriction
