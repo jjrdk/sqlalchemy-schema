@@ -21,6 +21,7 @@ JSON Schema defines seven primitive types for JSON values:
 """
 
 import logging
+from abc import ABC, abstractmethod
 from collections import OrderedDict
 from typing import Iterator, Optional
 
@@ -141,7 +142,7 @@ DefaultClassfier = Classifier(default_column_to_schema)
 Empty = ()
 
 
-class BaseModelWalker:
+class ModelWalker(ABC):
     def __init__(self, model, includes=None, excludes=None, history=None):
         self.mapper = inspect(model).mapper
         self.includes = includes
@@ -157,11 +158,15 @@ class BaseModelWalker:
     def from_child(self, model):
         return self.__class__(model, history=self.history)
 
+    @abstractmethod
+    def walk(self) -> Iterator[ColumnProperty]:
+        pass
+
 
 # mapper.column_attrs and mapper.attrs is not ordered. define our custom iterate function `iterate'
 
 
-class ForeignKeyWalker(BaseModelWalker):
+class ForeignKeyWalker(ModelWalker):
     def iterate(self) -> Iterator[ColumnProperty]:
         for c in self.mapper.local_table.columns:
             if c.name not in self.mapper._props:
@@ -181,7 +186,7 @@ class ForeignKeyWalker(BaseModelWalker):
                     yield prop
 
 
-class NoForeignKeyWalker(BaseModelWalker):
+class NoForeignKeyWalker(ModelWalker):
     def iterate(self) -> Iterator[ColumnProperty]:
         for c in self.mapper.local_table.columns:
             if c.name not in self.mapper._props:
@@ -202,7 +207,7 @@ class NoForeignKeyWalker(BaseModelWalker):
                         yield prop
 
 
-class StructuralWalker(BaseModelWalker):
+class StructuralWalker(ModelWalker):
     def iterate(self):
         for c in self.mapper.local_table.columns:
             if c.name not in self.mapper._props:

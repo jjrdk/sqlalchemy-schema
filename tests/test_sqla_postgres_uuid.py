@@ -6,9 +6,9 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy_to_json_schema import (
-    BaseModelWalker,
     DefaultClassfier,
     ForeignKeyWalker,
+    ModelWalker,
     NoForeignKeyWalker,
     SchemaFactory,
     StructuralWalker,
@@ -24,7 +24,7 @@ class MyModel(Base):
 
 
 @pytest.mark.parametrize("walker", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker])
-def test_hybrid_property(walker: BaseModelWalker) -> None:
+def test_hybrid_property(walker: ModelWalker) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 
     actual = schema_factory(MyModel)

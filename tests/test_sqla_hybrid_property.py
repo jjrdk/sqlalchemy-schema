@@ -7,9 +7,9 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from sqlalchemy_to_json_schema import (
-    BaseModelWalker,
     DefaultClassfier,
     ForeignKeyWalker,
+    ModelWalker,
     NoForeignKeyWalker,
     SchemaFactory,
     StructuralWalker,
@@ -81,7 +81,7 @@ class MyModelWithRelationship(Base):
         pytest.param(MyModelWithMixin, "MyModelWithMixin"),
     ],
 )
-def test_hybrid_property(walker: BaseModelWalker, model: Type[Base], expected_title: str) -> None:
+def test_hybrid_property(walker: ModelWalker, model: Type[Base], expected_title: str) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 
     actual = schema_factory(model)
@@ -148,7 +148,7 @@ def test_hybrid_property(walker: BaseModelWalker, model: Type[Base], expected_ti
 )
 @pytest.mark.parametrize("model", [MyModelWithRelationship])
 def test_hybrid_property_with_relationship(
-    walker: BaseModelWalker, model: Type[Base], expected: Dict[str, Any]
+    walker: ModelWalker, model: Type[Base], expected: Dict[str, Any]
 ) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 
