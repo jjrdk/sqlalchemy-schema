@@ -3,11 +3,13 @@ from dictknife import loading
 
 from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.decisions import (
+    Decision,
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
 from sqlalchemy_to_json_schema.walkers import (
     ForeignKeyWalker,
+    ModelWalker,
     NoForeignKeyWalker,
     StructuralWalker,
 )
@@ -51,7 +53,7 @@ def detect_transformer(layout):
 
 
 class Driver:
-    def __init__(self, walker, decision, layout):
+    def __init__(self, walker: ModelWalker, decision: Decision, layout: str):
         self.transformer = self.build_transformer(walker, decision, layout)
 
     def build_transformer(self, walker, decision, layout):
