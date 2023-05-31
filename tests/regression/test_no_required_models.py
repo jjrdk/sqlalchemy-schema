@@ -1,5 +1,6 @@
-from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.dictify import ModelLookup, objectify
+from sqlalchemy_to_json_schema.walkers import StructuralWalker
 from tests.fixtures import models
 
 

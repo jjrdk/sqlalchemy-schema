@@ -3,13 +3,9 @@ import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy_to_json_schema import (
-    DefaultClassfier,
-    ForeignKeyWalker,
-    SchemaFactory,
-    pop_marker,
-)
+from sqlalchemy_to_json_schema import DefaultClassfier, SchemaFactory, pop_marker
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
+from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker
 
 
 def _getTarget():

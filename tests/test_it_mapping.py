@@ -9,8 +9,9 @@ import pytz
 from jsonschema import Draft4Validator
 
 import tests.fixtures.models as models
-from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.mapping import MappingFactory
+from sqlalchemy_to_json_schema.walkers import StructuralWalker
 
 from .fixtures.models import Group, User
 

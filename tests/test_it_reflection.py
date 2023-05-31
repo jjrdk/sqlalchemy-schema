@@ -5,7 +5,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.ext.automap import automap_base
 
-from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+from sqlalchemy_to_json_schema import SchemaFactory
+from sqlalchemy_to_json_schema.walkers import StructuralWalker
 
 # using sqlalchemy's automap
 

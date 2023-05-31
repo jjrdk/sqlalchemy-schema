@@ -2,8 +2,9 @@ from datetime import datetime
 
 import pytz
 
-from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.dictify import dictify, jsonify, normalize, prepare
+from sqlalchemy_to_json_schema.walkers import StructuralWalker
 from tests.fixtures.models import Group, User
 
 

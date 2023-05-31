@@ -4,8 +4,9 @@ import sqlalchemy as sa
 from jsonschema.exceptions import ValidationError
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy_to_json_schema import SchemaFactory, StructuralWalker
+from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.dictify import jsonify
+from sqlalchemy_to_json_schema.walkers import StructuralWalker
 
 
 def _callFUT(*args, **kwargs):

@@ -5,13 +5,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_to_json_schema import (
     ChildFactory,
     DefaultClassfier,
-    ForeignKeyWalker,
     RelationDecision,
     SchemaFactory,
-    StructuralWalker,
 )
 from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
 from sqlalchemy_to_json_schema.dictify import get_reference
+from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker, StructuralWalker
 
 
 def _getTarget():

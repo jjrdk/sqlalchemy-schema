@@ -6,8 +6,9 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy_to_json_schema import DefaultClassfier, ForeignKeyWalker, SchemaFactory
+from sqlalchemy_to_json_schema import DefaultClassfier, SchemaFactory
 from sqlalchemy_to_json_schema.dictify import jsonify
+from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker
 
 
 def _getTarget():

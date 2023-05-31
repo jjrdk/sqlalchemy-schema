@@ -1,15 +1,15 @@
 import magicalimport
 from dictknife import loading
 
-from sqlalchemy_to_json_schema import (
-    ForeignKeyWalker,
-    NoForeignKeyWalker,
-    SchemaFactory,
-    StructuralWalker,
-)
+from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.decisions import (
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
+)
+from sqlalchemy_to_json_schema.walkers import (
+    ForeignKeyWalker,
+    NoForeignKeyWalker,
+    StructuralWalker,
 )
 
 from ._transformer import (

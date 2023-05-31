@@ -3,7 +3,8 @@ from datetime import datetime
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy_to_json_schema import ForeignKeyWalker, SchemaFactory
+from sqlalchemy_to_json_schema import SchemaFactory
+from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker
 
 Base = declarative_base()
 

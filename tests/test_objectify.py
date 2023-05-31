@@ -2,15 +2,11 @@ from datetime import datetime
 
 import pytest
 
-from sqlalchemy_to_json_schema import (
-    ForeignKeyWalker,
-    RelationDecision,
-    SchemaFactory,
-    StructuralWalker,
-)
+from sqlalchemy_to_json_schema import RelationDecision, SchemaFactory
 from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
 from sqlalchemy_to_json_schema.dictify import ModelLookup, objectify
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
+from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker, StructuralWalker
 from tests.fixtures import models
 
 

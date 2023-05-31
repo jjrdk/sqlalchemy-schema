@@ -5,12 +5,11 @@ from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy_to_json_schema import (
-    DefaultClassfier,
+from sqlalchemy_to_json_schema import DefaultClassfier, SchemaFactory
+from sqlalchemy_to_json_schema.walkers import (
     ForeignKeyWalker,
     ModelWalker,
     NoForeignKeyWalker,
-    SchemaFactory,
     StructuralWalker,
 )
 

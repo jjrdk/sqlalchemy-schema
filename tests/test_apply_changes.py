@@ -1,9 +1,6 @@
-from sqlalchemy_to_json_schema import (
-    NoForeignKeyWalker,
-    SchemaFactory,
-    StructuralWalker,
-)
+from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.dictify import ModelLookup, apply_changes
+from sqlalchemy_to_json_schema.walkers import NoForeignKeyWalker, StructuralWalker
 from tests.fixtures import models as m
 
 
