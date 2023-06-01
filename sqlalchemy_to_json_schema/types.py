@@ -19,3 +19,10 @@ class LayoutChoice(Enum):
 class FormatChoice(Enum):
     JSON = "json"
     YAML = "yaml"
+
+
+@unique
+class WalkerChoice(Enum):
+    STRUCTURAL = "structural"
+    NOFOREIGNKEY = "noforeignkey"
+    FOREIGNKEY = "foreignkey"

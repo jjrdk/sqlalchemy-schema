@@ -10,7 +10,7 @@ from sqlalchemy_to_json_schema.decisions import (
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
-from sqlalchemy_to_json_schema.types import FormatChoice, LayoutChoice
+from sqlalchemy_to_json_schema.types import FormatChoice, LayoutChoice, WalkerChoice
 from sqlalchemy_to_json_schema.walkers import (
     ForeignKeyWalker,
     ModelWalker,
@@ -25,15 +25,15 @@ from ._transformer import (
 )
 
 
-def detect_walker_factory(x):
-    if x == "structural":
+def detect_walker_factory(walker: WalkerChoice) -> ModelWalker:
+    if walker == WalkerChoice.STRUCTURAL:
         return StructuralWalker
-    elif x == "noforeignkey":
+    elif walker == WalkerChoice.NOFOREIGNKEY:
         return NoForeignKeyWalker
-    elif x == "foreignkey":
+    elif walker == WalkerChoice.FOREIGNKEY:
         return ForeignKeyWalker
-    else:
-        raise ValueError(x)
+
+    raise ValueError(walker)
 
 
 def detect_decision(x):
