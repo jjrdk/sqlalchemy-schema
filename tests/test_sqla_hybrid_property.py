@@ -117,7 +117,7 @@ def test_hybrid_property(walker: ModelWalker, model: Type[Base], expected_title:
                         "_other_model_id": {"type": "integer"},
                     }
                 ),
-                "required": ["id", "_other_model_id"],
+                "required": sorted(["id", "_other_model_id"]),
                 "title": "MyModelWithRelationship",
                 "type": "object",
             },

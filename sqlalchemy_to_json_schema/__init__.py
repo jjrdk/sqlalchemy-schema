@@ -22,10 +22,11 @@ JSON Schema defines seven primitive types for JSON values:
 
 import logging
 from collections import OrderedDict
-from typing import Optional
+from typing import Callable, List, Optional
 
 import sqlalchemy.types as t
 from sqlalchemy.dialects import postgresql as postgresql_types
+from sqlalchemy.orm import ColumnProperty
 from sqlalchemy.orm.base import ONETOMANY
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.sql.visitors import VisitableType
@@ -33,6 +34,7 @@ from sqlalchemy.sql.visitors import VisitableType
 from sqlalchemy_to_json_schema.decisions import RelationDecision
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 from sqlalchemy_to_json_schema.types import ColumnPropertyType
+from sqlalchemy_to_json_schema.walkers import ModelWalker
 
 logger = logging.getLogger(__name__)
 
@@ -345,18 +347,24 @@ class SchemaFactory:
                     D[prop.key] = action
         return D
 
-    def _detect_required(self, walker, *, adjust_required=None):
-        r = []
+    def _detect_required(
+        self,
+        walker: ModelWalker,
+        /,
+        *,
+        adjust_required: Optional[Callable[[ColumnProperty, bool], List[str]]] = None,
+    ) -> List[str]:
+        required_properties = set()
+
         for prop in walker.walk():
             columns = getattr(prop, "columns", {})
 
             for column in columns:
-                required = not column.nullable and (
-                    column.default is None and column.server_default is None
-                )
+                required = not column.nullable
 
                 if adjust_required is not None:
                     required = adjust_required(prop, required)
                 if required:
-                    r.append(column.key)
-        return r
+                    required_properties.add(column.key)
+
+        return sorted(required_properties)
