@@ -10,7 +10,12 @@ from sqlalchemy_to_json_schema.decisions import (
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
-from sqlalchemy_to_json_schema.types import FormatChoice, LayoutChoice, WalkerChoice
+from sqlalchemy_to_json_schema.types import (
+    DecisionChoice,
+    FormatChoice,
+    LayoutChoice,
+    WalkerChoice,
+)
 from sqlalchemy_to_json_schema.walkers import (
     ForeignKeyWalker,
     ModelWalker,
@@ -36,13 +41,13 @@ def detect_walker_factory(walker: WalkerChoice) -> ModelWalker:
     raise ValueError(walker)
 
 
-def detect_decision(x):
-    if x == "default":
+def detect_decision(decision: DecisionChoice) -> Decision:
+    if decision == DecisionChoice.DEFAULT:
         return RelationDecision()
-    elif x == "useforeignkey":
+    elif decision == DecisionChoice.USE_FOREIGN_KEY:
         return UseForeignKeyIfPossibleDecision()
-    else:
-        raise ValueError(x)
+
+    raise ValueError(decision)
 
 
 def detect_transformer(layout: LayoutChoice):
@@ -57,11 +62,11 @@ def detect_transformer(layout: LayoutChoice):
 
 
 class Driver:
-    def __init__(self, walker: ModelWalker, decision: Decision, layout: LayoutChoice):
+    def __init__(self, walker: ModelWalker, decision: DecisionChoice, layout: LayoutChoice):
         self.transformer = self.build_transformer(walker, decision, layout)
 
     def build_transformer(
-        self, walker: ModelWalker, decision: Decision, layout: LayoutChoice
+        self, walker: ModelWalker, decision: DecisionChoice, layout: LayoutChoice
     ) -> NoReturn:
         walker_factory = detect_walker_factory(walker)
         relation_decision = detect_decision(decision)

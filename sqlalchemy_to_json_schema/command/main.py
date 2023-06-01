@@ -2,7 +2,12 @@ import argparse
 
 from magicalimport import import_symbol
 
-from sqlalchemy_to_json_schema.types import FormatChoice, LayoutChoice, WalkerChoice
+from sqlalchemy_to_json_schema.types import (
+    DecisionChoice,
+    FormatChoice,
+    LayoutChoice,
+    WalkerChoice,
+)
 
 
 def main():
@@ -16,7 +21,11 @@ def main():
         choices=[walker.value for walker in WalkerChoice],
         default=WalkerChoice.STRUCTURAL.value,
     )
-    parser.add_argument("--decision", choices=["default", "useforeignkey"], default="default")
+    parser.add_argument(
+        "--decision",
+        choices=[decision.value for decision in DecisionChoice],
+        default=DecisionChoice.DEFAULT.value,
+    )
     parser.add_argument("--depth", default=None, type=int)
     parser.add_argument("--out", default=None, help="output to file")
     parser.add_argument(
@@ -28,7 +37,9 @@ def main():
     args = parser.parse_args()
 
     driver_cls = import_symbol(args.driver, cwd=True)
-    driver = driver_cls(WalkerChoice(args.walker), args.decision, LayoutChoice(args.layout))
+    driver = driver_cls(
+        WalkerChoice(args.walker), DecisionChoice(args.decision), LayoutChoice(args.layout)
+    )
     driver.run(
         args.target, args.out, format=None if args.format is None else FormatChoice(args.format)
     )

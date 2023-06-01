@@ -9,7 +9,12 @@ import yaml
 from yaml import Loader
 
 from sqlalchemy_to_json_schema.command.driver import Driver
-from sqlalchemy_to_json_schema.types import FormatChoice, LayoutChoice, WalkerChoice
+from sqlalchemy_to_json_schema.types import (
+    DecisionChoice,
+    FormatChoice,
+    LayoutChoice,
+    WalkerChoice,
+)
 
 
 @pytest.fixture
@@ -19,7 +24,7 @@ def temp_filename() -> Path:
 
 
 @pytest.mark.parametrize("walker", WalkerChoice)
-@pytest.mark.parametrize("decision", ["default", "useforeignkey"])
+@pytest.mark.parametrize("decision", DecisionChoice)
 @pytest.mark.parametrize("layout", LayoutChoice)
 @pytest.mark.parametrize(
     "format, file_loader",

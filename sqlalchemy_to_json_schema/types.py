@@ -26,3 +26,9 @@ class WalkerChoice(Enum):
     STRUCTURAL = "structural"
     NOFOREIGNKEY = "noforeignkey"
     FOREIGNKEY = "foreignkey"
+
+
+@unique
+class DecisionChoice(Enum):
+    DEFAULT = "default"
+    USE_FOREIGN_KEY = "useforeignkey"
