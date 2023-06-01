@@ -43,3 +43,7 @@ def main():
     driver.run(
         args.target, args.out, format=None if args.format is None else FormatChoice(args.format)
     )
+
+
+if __name__ == "__main__":
+    main()
