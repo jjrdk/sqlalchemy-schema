@@ -2,13 +2,15 @@ import argparse
 
 from magicalimport import import_symbol
 
-from sqlalchemy_to_json_schema.types import LayoutChoice
+from sqlalchemy_to_json_schema.types import FormatChoice, LayoutChoice
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("target", help="the module or class to extract schemas from")
-    parser.add_argument("--format", default=None, choices=["json", "yaml"])
+    parser.add_argument(
+        "--format", default=None, choices=[format.value for format in FormatChoice]
+    )
     parser.add_argument(
         "--walker",
         choices=["noforeignkey", "foreignkey", "structural"],
@@ -27,4 +29,6 @@ def main():
 
     driver_cls = import_symbol(args.driver, cwd=True)
     driver = driver_cls(args.walker, args.decision, LayoutChoice(args.layout))
-    driver.run(args.target, args.out, format=args.format)
+    driver.run(
+        args.target, args.out, format=None if args.format is None else FormatChoice(args.format)
+    )

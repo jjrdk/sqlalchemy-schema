@@ -9,7 +9,7 @@ import yaml
 from yaml import Loader
 
 from sqlalchemy_to_json_schema.command.driver import Driver
-from sqlalchemy_to_json_schema.types import LayoutChoice
+from sqlalchemy_to_json_schema.types import FormatChoice, LayoutChoice
 
 
 @pytest.fixture
@@ -24,8 +24,9 @@ def temp_filename() -> Path:
 @pytest.mark.parametrize(
     "format, file_loader",
     [
-        pytest.param("json", json.loads),
-        pytest.param("yaml", partial(yaml.load, Loader=Loader)),
+        pytest.param(None, json.loads),
+        pytest.param(FormatChoice.JSON, json.loads),
+        pytest.param(FormatChoice.YAML, partial(yaml.load, Loader=Loader)),
     ],
 )
 @pytest.mark.parametrize(
@@ -42,7 +43,7 @@ def test_run(
     decision: str,
     layout: LayoutChoice,
     module_path: str,
-    format: str,
+    format: Optional[FormatChoice],
     depth: Optional[int],
     file_loader: Callable[[str], Any],
 ) -> None:

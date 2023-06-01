@@ -13,3 +13,9 @@ class LayoutChoice(Enum):
     JSON_SCHEMA = "jsonschema"
     OPENAPI_3 = "openapi3.0"
     OPENAPI_2 = "openapi2.0"
+
+
+@unique
+class FormatChoice(Enum):
+    JSON = "json"
+    YAML = "yaml"

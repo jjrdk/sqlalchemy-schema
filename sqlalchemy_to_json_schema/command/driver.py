@@ -1,4 +1,5 @@
-from typing import NoReturn
+from pathlib import Path
+from typing import Any, Dict, NoReturn, Optional
 
 import magicalimport
 from dictknife import loading
@@ -9,7 +10,7 @@ from sqlalchemy_to_json_schema.decisions import (
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
-from sqlalchemy_to_json_schema.types import LayoutChoice
+from sqlalchemy_to_json_schema.types import FormatChoice, LayoutChoice
 from sqlalchemy_to_json_schema.walkers import (
     ForeignKeyWalker,
     ModelWalker,
@@ -68,14 +69,18 @@ class Driver:
         transformer_factory = detect_transformer(layout)
         return transformer_factory(schema_factory).transform
 
-    def run(self, module_path, filename, format, depth=None):
+    def run(
+        self, module_path: str, filename: Path, format: Optional[FormatChoice], depth: int = None
+    ) -> None:
         data = self.load(module_path)
         result = self.transformer(data, depth=depth)
         self.dump(result, filename, format=format)
 
-    def dump(self, data, filename, format):
+    def dump(self, data: Dict[str, Any], filename: Path, format: Optional[FormatChoice]) -> None:
         loading.setup(loading.json.load, loading.json.dump)
-        loading.dumpfile(data, filename, format=format, sort_keys=True)
+        loading.dumpfile(
+            data, filename, format=None if format is None else format.value, sort_keys=True
+        )
 
     def load(self, module_path):
         if ":" in module_path:
