@@ -8,7 +8,7 @@ class ColumnPropertyType(Enum):
 
 
 @unique
-class Layout(Enum):
+class LayoutChoice(Enum):
     SWAGGER_2 = "swagger2.0"
     JSON_SCHEMA = "jsonschema"
     OPENAPI_3 = "openapi3.0"

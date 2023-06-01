@@ -2,6 +2,8 @@ import argparse
 
 from magicalimport import import_symbol
 
+from sqlalchemy_to_json_schema.types import LayoutChoice
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -17,12 +19,12 @@ def main():
     parser.add_argument("--out", default=None, help="output to file")
     parser.add_argument(
         "--layout",
-        choices=["swagger2.0", "jsonschema", "openapi3.0", "openapi2.0"],
-        default="swagger2.0",
+        choices=[layout.value for layout in LayoutChoice],
+        default=LayoutChoice.SWAGGER_2.value,
     )
     parser.add_argument("--driver", default="sqlalchemy_to_json_schema.command.driver:Driver")
     args = parser.parse_args()
 
     driver_cls = import_symbol(args.driver, cwd=True)
-    driver = driver_cls(args.walker, args.decision, args.layout)
+    driver = driver_cls(args.walker, args.decision, LayoutChoice(args.layout))
     driver.run(args.target, args.out, format=args.format)

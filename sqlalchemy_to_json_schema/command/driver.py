@@ -1,3 +1,5 @@
+from typing import NoReturn
+
 import magicalimport
 from dictknife import loading
 
@@ -7,6 +9,7 @@ from sqlalchemy_to_json_schema.decisions import (
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
+from sqlalchemy_to_json_schema.types import LayoutChoice
 from sqlalchemy_to_json_schema.walkers import (
     ForeignKeyWalker,
     ModelWalker,
@@ -41,22 +44,24 @@ def detect_decision(x):
         raise ValueError(x)
 
 
-def detect_transformer(layout):
-    if layout in ("swagger2.0", "openapi2.0"):
+def detect_transformer(layout: LayoutChoice):
+    if layout in [LayoutChoice.SWAGGER_2, LayoutChoice.OPENAPI_2]:
         return OpenAPI2Transformer
-    elif layout == "openapi3.0":
+    elif layout == LayoutChoice.OPENAPI_3:
         return OpenAPI3Transformer
-    elif layout == "jsonschema":
+    elif layout == LayoutChoice.JSON_SCHEMA:
         return JSONSchemaTransformer
-    else:
-        raise ValueError(layout)
+
+    raise ValueError(layout)
 
 
 class Driver:
-    def __init__(self, walker: ModelWalker, decision: Decision, layout: str):
+    def __init__(self, walker: ModelWalker, decision: Decision, layout: LayoutChoice):
         self.transformer = self.build_transformer(walker, decision, layout)
 
-    def build_transformer(self, walker, decision, layout):
+    def build_transformer(
+        self, walker: ModelWalker, decision: Decision, layout: LayoutChoice
+    ) -> NoReturn:
         walker_factory = detect_walker_factory(walker)
         relation_decision = detect_decision(decision)
         schema_factory = SchemaFactory(walker_factory, relation_decision=relation_decision)

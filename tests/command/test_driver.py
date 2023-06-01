@@ -9,6 +9,7 @@ import yaml
 from yaml import Loader
 
 from sqlalchemy_to_json_schema.command.driver import Driver
+from sqlalchemy_to_json_schema.types import LayoutChoice
 
 
 @pytest.fixture
@@ -19,7 +20,7 @@ def temp_filename() -> Path:
 
 @pytest.mark.parametrize("walker", ["noforeignkey", "foreignkey", "structural"])
 @pytest.mark.parametrize("decision", ["default", "useforeignkey"])
-@pytest.mark.parametrize("layout", ["swagger2.0", "jsonschema", "openapi3.0", "openapi2.0"])
+@pytest.mark.parametrize("layout", LayoutChoice)
 @pytest.mark.parametrize(
     "format, file_loader",
     [
@@ -39,7 +40,7 @@ def test_run(
     temp_filename: Path,
     walker: str,
     decision: str,
-    layout: str,
+    layout: LayoutChoice,
     module_path: str,
     format: str,
     depth: Optional[int],
