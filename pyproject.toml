@@ -31,6 +31,7 @@ pytz = ">=2023.3"
 magicalimport = ">=0.9.1"
 dictknife = ">=0.7.2"
 python-dateutil = ">=2.8"
+click = "^8.1.3"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.2"
@@ -42,6 +43,7 @@ pytest-timeout = "^2.1.0"
 webob = "^1.8.7"
 pyyaml = "^6.0"
 ruamel-yaml = "^0.17.31"
+pytest-mock = "^3.10.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
