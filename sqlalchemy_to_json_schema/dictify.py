@@ -197,11 +197,6 @@ class CreateObjectWalker:
         return get_properties(schema, self.schema)
 
 
-# apply_changes
-def apply_changes(ob, params, schema, modellookup):
-    return UpdateObjectWalker(schema, modellookup)(ob, params)
-
-
 class UpdateObjectWalker:
     def __init__(self, schema, modellookup, strict=True):
         self.schema = schema
