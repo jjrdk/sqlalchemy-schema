@@ -342,8 +342,6 @@ class SchemaFactory:
                             D[c.name] = sub
                         else:
                             raise NotImplementedError
-                    # fixme: remove me???
-                    # D[prop.key] = sub
                 else:  # immediate
                     D[prop.key] = action
         return D
