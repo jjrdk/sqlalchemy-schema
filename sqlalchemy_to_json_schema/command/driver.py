@@ -1,7 +1,8 @@
+import json
 from pathlib import Path
 from typing import Any, Dict, NoReturn, Optional
 
-from dictknife import loading
+import yaml
 
 from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.command.transformer import (
@@ -81,7 +82,7 @@ class Driver:
         self.dump(result, filename, format=format)
 
     def dump(self, data: Dict[str, Any], filename: Path, format: Optional[FormatChoice]) -> None:
-        loading.setup(loading.json.load, loading.json.dump)
-        loading.dumpfile(
-            data, filename, format=None if format is None else format.value, sort_keys=True
-        )
+        if format == FormatChoice.YAML:
+            yaml.dump(data, filename.open("w"))
+        else:
+            json.dump(data, filename.open("w"))
