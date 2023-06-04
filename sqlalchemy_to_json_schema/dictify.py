@@ -7,11 +7,7 @@ import pytz
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm.relationships import RelationshipProperty
 
-from sqlalchemy_to_json_schema.exceptions import (
-    ConversionError,
-    ErrorFound,
-    InvalidStatus,
-)
+from sqlalchemy_to_json_schema.exceptions import ErrorFound, InvalidStatus
 from sqlalchemy_to_json_schema.utils.format import parse_date  # more strict
 from sqlalchemy_to_json_schema.utils.format import (
     parse_time,  # more strict than isodate
@@ -80,47 +76,7 @@ prepare_dict = {
     "boolean": maybe_wrap(bool),
 }
 
-
-def jsonify_of(ob, name, type_, registry=jsonify_dict):
-    try:
-        convert_fn = registry[type_]
-    except KeyError:
-        raise ConversionError(name, f"convert {name} failure. unknown format {type_} of {ob}")
-    return convert_fn(getattr(ob, name, None))
-
-
 marker = object()
-
-
-def normalize_of(ob, name, type_, registry=normalize_dict):
-    try:
-        convert_fn = registry[type_]
-    except KeyError:
-        raise ConversionError(name, f"convert {name} failure. unknown format {type_} of {ob}")
-    try:
-        val = ob.get(name, marker)
-        if val is marker:
-            return val
-        return convert_fn(val)
-    except ValueError as e:
-        raise ConversionError(name, e.args[0])
-
-
-def prepare_of(ob, name, type_, registry=prepare_dict):
-    val = ob.get(name, marker)
-    if val is marker:
-        return val
-    try:
-        convert_fn = registry[type_[0]]
-        return convert_fn(val)
-    except KeyError:
-        return val
-    except ValueError as e:
-        raise ConversionError(name, e.args[0])
-
-
-def attribute_of(ob, name, type_, registry=None):
-    return getattr(ob, name)
 
 
 class DictWalker:
