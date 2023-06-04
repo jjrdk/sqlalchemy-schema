@@ -110,25 +110,6 @@ tomli = {version = "*", optional = true, markers = "python_full_version <= \"3.1
 toml = ["tomli"]
 
 [[package]]
-name = "dictknife"
-version = "0.14.0"
-description = "utility set of handling dict"
-optional = false
-python-versions = "*"
-files = [
-    {file = "dictknife-0.14.0-py3-none-any.whl", hash = "sha256:e8c09df9a76fc9841d0b03ae68eb4c1de2978d058e3a1c7789c4c4685884a154"},
-    {file = "dictknife-0.14.0.tar.gz", hash = "sha256:bda4ff823998d4d5407475526074efd4a1812618114171ac4e2fa705b102f361"},
-]
-
-[package.extras]
-command = ["magicalimport", "prestring", "ruamel.yaml"]
-docs = ["recommonmark", "sphinx", "sphinx-rtd-theme"]
-lint = ["flake8"]
-load = ["ruamel.yaml", "tomlkit"]
-spreadsheet = ["google-api-python-client", "google-auth-oauthlib"]
-testing = ["jsonpatch", "ruamel.yaml"]
-
-[[package]]
 name = "exceptiongroup"
 version = "1.1.1"
 description = "Backport of PEP 654 (exception groups)"
@@ -841,4 +822,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.12"
-content-hash = "d1fbb4810abcfa2dd13fd0e9f883c4c44a17ae427f65b2226b552154ac5506bc"
+content-hash = "30a3c486ca731889b708194a828b2035e484b11067bf53af2088efa313702a69"
