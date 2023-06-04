@@ -22,7 +22,7 @@ JSON Schema defines seven primitive types for JSON values:
 
 import logging
 from collections import OrderedDict
-from typing import Callable, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import sqlalchemy.types as t
 from sqlalchemy.dialects import postgresql as postgresql_types
@@ -38,6 +38,7 @@ from sqlalchemy_to_json_schema.walkers import ModelWalker
 
 logger = logging.getLogger(__name__)
 
+Schema = Dict[str, Any]
 
 #  tentative
 default_column_to_schema = {
@@ -239,7 +240,7 @@ class SchemaFactory:
         overrides=None,
         depth=None,
         adjust_required=None,
-    ):
+    ) -> Schema:
         walker = self.walker(model, includes=includes, excludes=excludes)
         overrides = CollectionForOverrides(overrides or {})
 

@@ -1,24 +1,30 @@
 import inspect
+from abc import ABC, abstractmethod
 from types import ModuleType
 
 from dictknife import DictWalker
 
+from sqlalchemy_to_json_schema import Schema, SchemaFactory
 
-class JSONSchemaTransformer:
-    def __init__(self, schema_factory):
+
+class Transformer(ABC):
+    def __init__(self, schema_factory: SchemaFactory):
         self.schema_factory = schema_factory
 
-    def transform(self, rawtarget: ModuleType, depth: int):
+    @abstractmethod
+    def transform(self, rawtarget: ModuleType, depth: int) -> Schema:
+        ...
+
+
+class JSONSchemaTransformer(Transformer):
+    def transform(self, rawtarget: ModuleType, depth: int) -> Schema:
         if not inspect.isclass(rawtarget):
             raise RuntimeError("please passing the path of model class (e.g. foo.boo:Model)")
         return self.schema_factory(rawtarget, depth=depth)
 
 
-class OpenAPI2Transformer:
-    def __init__(self, schema_factory):
-        self.schema_factory = schema_factory
-
-    def transform(self, rawtarget, depth):
+class OpenAPI2Transformer(Transformer):
+    def transform(self, rawtarget: ModuleType, depth: int) -> Schema:
         if inspect.isclass(rawtarget):
             return self.transform_by_model(rawtarget, depth)
         else:
@@ -46,12 +52,13 @@ class OpenAPI2Transformer:
         return {"definitions": definitions}
 
 
-class OpenAPI3Transformer:
+class OpenAPI3Transformer(Transformer):
     def __init__(self, schema_factory):
-        self.schema_factory = schema_factory
+        super().__init__(schema_factory)
+
         self.oas2transformer = OpenAPI2Transformer(schema_factory)
 
-    def transform(self, rawtarget, depth):
+    def transform(self, rawtarget: ModuleType, depth: int) -> Schema:
         d = self.oas2transformer.transform(rawtarget, depth)
         for _, sd in DictWalker(["$ref"]).walk(d):
             sd["$ref"] = sd["$ref"].replace("#/definitions/", "#/components/schemas/")
