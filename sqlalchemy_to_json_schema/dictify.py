@@ -184,10 +184,6 @@ def dictify(ob, schema, convert=attribute_of):
     return DictWalker(schema, convert, getattr)(ob)
 
 
-def prepare(ob, schema, convert=prepare_of, registry=prepare_dict):
-    return DictWalker(schema, convert, dict.get, registry=registry)(ob)
-
-
 class ModelLookup:
     def __init__(self, module):
         self.module = module
