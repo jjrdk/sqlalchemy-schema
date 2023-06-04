@@ -12,9 +12,10 @@ from sqlalchemy_to_json_schema.exceptions import (
     ErrorFound,
     InvalidStatus,
 )
-
-from .custom.format import parse_date  # more strict
-from .custom.format import parse_time  # more strict than isodate
+from sqlalchemy_to_json_schema.utils.format import parse_date  # more strict
+from sqlalchemy_to_json_schema.utils.format import (
+    parse_time,  # more strict than isodate
+)
 
 logger = logging.getLogger(__name__)
 RaiseValidateErrorFn = Callable[[Any, Exception], NoReturn]
