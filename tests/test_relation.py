@@ -6,11 +6,21 @@ from sqlalchemy_to_json_schema import (
     ChildFactory,
     DefaultClassfier,
     RelationDecision,
+    Schema,
     SchemaFactory,
 )
 from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
-from sqlalchemy_to_json_schema.dictify import get_reference
 from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker, StructuralWalker
+
+
+def get_reference(schema: Schema, root_schema: Schema) -> str:
+    ref = schema["$ref"]
+    if not ref.startswith("#/"):
+        raise NotImplementedError(ref)
+    target = root_schema
+    for k in ref.split("/")[1:]:
+        target = target[k]
+    return target
 
 
 def _getTarget():
