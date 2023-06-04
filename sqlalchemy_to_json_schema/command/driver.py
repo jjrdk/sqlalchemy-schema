@@ -82,7 +82,8 @@ class Driver:
         self.dump(result, filename, format=format)
 
     def dump(self, data: Dict[str, Any], filename: Path, format: Optional[FormatChoice]) -> None:
-        if format == FormatChoice.YAML:
-            yaml.dump(data, filename.open("w"))
-        else:
-            json.dump(data, filename.open("w"))
+        with filename.open("w") as f:
+            if format == FormatChoice.YAML:
+                yaml.dump(data, f)
+            else:
+                json.dump(data, f)
