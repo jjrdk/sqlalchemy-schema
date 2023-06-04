@@ -1,4 +1,3 @@
-from importlib import import_module
 from pathlib import Path
 from typing import Optional
 
@@ -10,6 +9,7 @@ from sqlalchemy_to_json_schema.types import (
     LayoutChoice,
     WalkerChoice,
 )
+from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
 
 DEFAULT_WALKER = WalkerChoice.STRUCTURAL
 DEFAULT_DECISION = DecisionChoice.DEFAULT
@@ -53,7 +53,7 @@ def main(
     format: Optional[str] = None,
     depth: Optional[int] = None,
 ):
-    driver_cls = import_module(driver)
+    driver_cls = load_module_or_symbol(driver)
     driver = driver_cls(WalkerChoice(walker), DecisionChoice(decision), LayoutChoice(layout))
     driver.run(target, out, format=None if format is None else FormatChoice(format))
 
