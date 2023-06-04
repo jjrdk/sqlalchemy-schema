@@ -79,43 +79,6 @@ prepare_dict = {
 marker = object()
 
 
-class DictWalker:
-    def __init__(self, schema, convert, getter, registry=prepare_dict, marker=marker):
-        self.schema = schema
-        self.convert = convert
-        self.getter = getter
-        self.registry = registry
-        self.marker = marker
-
-    def __call__(self, ob):
-        return self.fold_properties(ob, self.get_properties(self.schema))
-
-    def fold_properties(self, ob, properties):
-        if ob is None:
-            return None
-        D = {}
-        for k, v in properties.items():
-            val = self.on_property(ob, k, v)
-            if val is not self.marker:
-                D[k] = val
-        return D
-
-    def on_property(self, ob, name, schema):
-        type_ = schema.get("type")
-        if type_ == "array":
-            properties = self.get_properties(schema)
-            return [self.fold_properties(e, properties) for e in self.getter(ob, name, [])]
-        elif type_ is None:
-            return self.fold_properties(self.getter(ob, name), self.get_properties(schema))
-        elif type_ == "object":
-            return self.fold_properties(self.getter(ob, name), self.get_properties(schema))
-        else:
-            return self.convert(ob, name, (type_, schema.get("format")), self.registry)
-
-    def get_properties(self, schema):
-        return get_properties(schema, self.schema)
-
-
 def get_reference(schema, root_schema):
     ref = schema["$ref"]
     if not ref.startswith("#/"):
