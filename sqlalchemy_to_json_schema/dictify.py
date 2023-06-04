@@ -180,10 +180,6 @@ def get_properties(schema, root_schema):
         return schema
 
 
-def dictify(ob, schema, convert=attribute_of):
-    return DictWalker(schema, convert, getattr)(ob)
-
-
 class ModelLookup:
     def __init__(self, module):
         self.module = module
