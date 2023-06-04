@@ -1,20 +1,14 @@
 import pprint
 from datetime import datetime
 
-import pytz
-
 from sqlalchemy_to_json_schema import SchemaFactory
-from sqlalchemy_to_json_schema.dictify import dictify, normalize, prepare
+from sqlalchemy_to_json_schema.dictify import dictify, prepare
 from sqlalchemy_to_json_schema.walkers import StructuralWalker
 from tests.fixtures.models import Group, User
 
 
 def _callFUT(*args, **kwargs):
     return dictify(*args, **kwargs)
-
-
-def _callFUT2(*args, **kwargs):
-    return normalize(*args, **kwargs)
 
 
 def _callFUT3(*args, **kwargs):
@@ -66,72 +60,6 @@ def test_it__dictify2():
             "created_at": created_at,
         },
     }
-
-
-def test_it__normalize():
-    created_at = datetime(2000, 1, 1, 0, 0, 0, 0, pytz.utc)
-
-    factory = SchemaFactory(StructuralWalker)
-    group_schema = factory(Group)
-    group_dict = {
-        "name": "ravenclaw",
-        "created_at": "2000-01-01T00:00:00+00:00",
-        "color": "blue",
-        "pk": None,
-        "users": [
-            {"name": "foo", "created_at": "2000-01-01T00:00:00+00:00", "pk": None},
-            {"name": "boo", "created_at": "2000-01-01T00:00:00+00:00", "pk": None},
-        ],
-    }
-
-    result = _callFUT2(group_dict, group_schema)
-    assert result == {
-        "pk": None,
-        "color": "blue",
-        "name": "ravenclaw",
-        "created_at": created_at,
-        "users": [
-            {"pk": None, "name": "foo", "created_at": created_at},
-            {"pk": None, "name": "boo", "created_at": created_at},
-        ],
-    }
-
-
-def test_it_normalize2():
-    factory = SchemaFactory(StructuralWalker)
-    user_schema = factory(User)
-    user_dict = {
-        "pk": None,
-        "name": "foo",
-        "created_at": None,
-        "group": {"name": "ravenclaw", "color": "blue", "pk": None, "created_at": None},
-    }
-
-    result = _callFUT2(user_dict, user_schema)
-    assert result == {
-        "pk": None,
-        "name": "foo",
-        "created_at": None,
-        "group": {"name": "ravenclaw", "color": "blue", "pk": None, "created_at": None},
-    }
-
-
-def test_it_normalize__partial():
-    factory = SchemaFactory(StructuralWalker)
-    group_schema = factory(Group)
-    group_dict = {"name": "ravenclaw", "color": "blue"}
-
-    result = _callFUT2(group_dict, group_schema)
-    assert result == {"color": "blue", "name": "ravenclaw", "users": []}
-
-
-def test_it_normalize__partial2():
-    factory = SchemaFactory(StructuralWalker)
-    user_schema = factory(User)
-    user_dict = {"name": "foo"}
-
-    result = _callFUT2(user_dict, user_schema)
-    assert result == {"name": "foo", "group": None}
 
 
 def test_it__prepare():
