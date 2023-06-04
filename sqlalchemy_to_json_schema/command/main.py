@@ -1,8 +1,8 @@
+from importlib import import_module
 from pathlib import Path
 from typing import Optional
 
 import click
-from magicalimport import import_symbol
 
 from sqlalchemy_to_json_schema.types import (
     DecisionChoice,
@@ -53,7 +53,7 @@ def main(
     format: Optional[str] = None,
     depth: Optional[int] = None,
 ):
-    driver_cls = import_symbol(driver, cwd=True)
+    driver_cls = import_module(driver)
     driver = driver_cls(WalkerChoice(walker), DecisionChoice(decision), LayoutChoice(layout))
     driver.run(target, out, format=None if format is None else FormatChoice(format))
 

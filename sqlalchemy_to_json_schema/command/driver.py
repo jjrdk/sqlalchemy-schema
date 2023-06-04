@@ -1,7 +1,7 @@
+from importlib import import_module
 from pathlib import Path
 from typing import Any, Dict, NoReturn, Optional
 
-import magicalimport
 from dictknife import loading
 
 from sqlalchemy_to_json_schema import SchemaFactory
@@ -86,8 +86,14 @@ class Driver:
             data, filename, format=None if format is None else format.value, sort_keys=True
         )
 
-    def load(self, module_path):
-        if ":" in module_path:
-            return magicalimport.import_symbol(module_path, cwd=True)
-        else:
-            return magicalimport.import_module(module_path, cwd=True)
+    def load(self, module_path: str) -> object:
+        module_name, symbol_name = module_path.split(":")
+
+        module = import_module(module_name)
+
+        if symbol_name:
+            symbol = getattr(module, symbol_name)
+
+            return symbol
+
+        return module

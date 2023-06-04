@@ -26,16 +26,16 @@ def mock_driver(mocker: MockerFixture) -> Mock:
 
 
 @pytest.fixture
-def mock_import_symbol(mock_driver: Mock, mocker: MockerFixture) -> Mock:
+def mock_import_module(mock_driver: Mock, mocker: MockerFixture) -> Mock:
     return mocker.patch(
-        "sqlalchemy_to_json_schema.command.main.import_symbol",
+        "sqlalchemy_to_json_schema.command.main.import_module",
         return_value=mock_driver,
         autospec=True,
     )
 
 
 @pytest.mark.parametrize("target", ["my_module"])
-def test_main_defaults(mock_driver: Mock, mock_import_symbol: Mock, target: str) -> None:
+def test_main_defaults(mock_driver: Mock, mock_import_module: Mock, target: str) -> None:
     """
     ARRANGE CLI args
     ACT calling the driver's method
@@ -53,7 +53,7 @@ def test_main_defaults(mock_driver: Mock, mock_import_symbol: Mock, target: str)
     # ASSERT
     assert actual.exit_code == 0
 
-    mock_import_symbol.assert_called_once_with(DEFAULT_DRIVER, cwd=True)
+    mock_import_module.assert_called_once_with(DEFAULT_DRIVER)
 
     mock_driver.assert_called_once_with(DEFAULT_WALKER, DEFAULT_DECISION, DEFAULT_LAYOUT)
     mock_driver.return_value.run.assert_called_once_with(target, None, format=None)
@@ -67,7 +67,7 @@ def test_main_defaults(mock_driver: Mock, mock_import_symbol: Mock, target: str)
 @pytest.mark.parametrize("out", [Path("output.txt").absolute()])
 def test_main(
     mock_driver: Mock,
-    mock_import_symbol: Mock,
+    mock_import_module: Mock,
     target: str,
     walker: WalkerChoice,
     decision: DecisionChoice,
@@ -103,6 +103,8 @@ def test_main(
 
     # ASSERT
     assert actual.exit_code == 0
+
+    mock_import_module.assert_called_once_with(DEFAULT_DRIVER)
 
     mock_driver.assert_called_once_with(walker, decision, layout)
     mock_driver.return_value.run.assert_called_once_with(target, out, format=format)
