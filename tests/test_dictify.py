@@ -1,9 +1,10 @@
+import pprint
 from datetime import datetime
 
 import pytz
 
 from sqlalchemy_to_json_schema import SchemaFactory
-from sqlalchemy_to_json_schema.dictify import dictify, jsonify, normalize, prepare
+from sqlalchemy_to_json_schema.dictify import dictify, normalize, prepare
 from sqlalchemy_to_json_schema.walkers import StructuralWalker
 from tests.fixtures.models import Group, User
 
@@ -18,11 +19,6 @@ def _callFUT2(*args, **kwargs):
 
 def _callFUT3(*args, **kwargs):
     return prepare(*args, **kwargs)
-
-
-def _callFUT4(*args, **kwargs):
-    kwargs["verbose"] = True
-    return jsonify(*args, **kwargs)
 
 
 def test_it__dictify():
@@ -58,6 +54,7 @@ def test_it__dictify2():
     user = User(name="foo", created_at=created_at, group=group)
 
     result = _callFUT(user, user_schema)
+    pprint.pprint(result)
     assert result == {
         "pk": None,
         "name": "foo",
@@ -171,27 +168,3 @@ def test_it__prepare_partial():
 
     result = _callFUT3(group_dict, group_schema)
     assert result == {"name": "ravenclaw", "pk": 1, "color": "blue", "users": []}
-
-
-def test_it__jsonify():
-    factory = SchemaFactory(StructuralWalker)
-    group_schema = factory(Group)
-
-    created_at = datetime(2000, 1, 1)
-    users = [
-        User(name="foo", created_at=created_at),
-        User(name="boo", created_at=created_at),
-    ]
-    group = Group(name="ravenclaw", color="blue", users=users, created_at=created_at)
-
-    result = _callFUT4(group, group_schema)
-    assert result == {
-        "name": "ravenclaw",
-        "created_at": "2000-01-01T00:00:00+00:00",
-        "color": "blue",
-        "pk": None,
-        "users": [
-            {"name": "foo", "created_at": "2000-01-01T00:00:00+00:00", "pk": None},
-            {"name": "boo", "created_at": "2000-01-01T00:00:00+00:00", "pk": None},
-        ],
-    }

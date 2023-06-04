@@ -7,7 +7,6 @@ from jsonschema.exceptions import ValidationError
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy_to_json_schema import DefaultClassfier, SchemaFactory
-from sqlalchemy_to_json_schema.dictify import jsonify
 from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker
 
 
@@ -75,15 +74,6 @@ def test_it2_create_schema__and__valid_params__success():
     schema = target(User, excludes=["pk", "group_id"])
     data = {"name": "foo", "group": {"name": "ravenclaw", "color": "blue", "pk": 1}}
     validate(data, schema)
-
-
-def test_it_jsonify_data__that_is_valid_params():
-    target = _makeOne()
-    schema = target(User, excludes=["pk", "group_id"])
-
-    user = User(name="foo", group=Group(name="ravenclaw", color="blue", pk=1))
-    jsondict = jsonify(user, schema)
-    validate(jsondict, schema)
 
 
 def test_create_schema__without_tablename():
