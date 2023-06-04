@@ -1,4 +1,3 @@
-from importlib import import_module
 from pathlib import Path
 from typing import Any, Dict, NoReturn, Optional
 
@@ -21,6 +20,7 @@ from sqlalchemy_to_json_schema.types import (
     LayoutChoice,
     WalkerChoice,
 )
+from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
 from sqlalchemy_to_json_schema.walkers import (
     ForeignKeyWalker,
     ModelWalker,
@@ -76,7 +76,7 @@ class Driver:
     def run(
         self, module_path: str, filename: Path, format: Optional[FormatChoice], depth: int = None
     ) -> None:
-        data = self.load(module_path)
+        data = load_module_or_symbol(module_path)
         result = self.transformer(data, depth=depth)
         self.dump(result, filename, format=format)
 
@@ -85,15 +85,3 @@ class Driver:
         loading.dumpfile(
             data, filename, format=None if format is None else format.value, sort_keys=True
         )
-
-    def load(self, module_path: str) -> object:
-        module_name, symbol_name = module_path.split(":")
-
-        module = import_module(module_name)
-
-        if symbol_name:
-            symbol = getattr(module, symbol_name)
-
-            return symbol
-
-        return module
