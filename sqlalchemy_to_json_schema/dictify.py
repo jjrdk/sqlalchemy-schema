@@ -197,10 +197,6 @@ class CreateObjectWalker:
         return get_properties(schema, self.schema)
 
 
-def objectify(params, schema, modellookup, strict=True):
-    return CreateObjectWalker(schema, modellookup, strict)(params)
-
-
 # apply_changes
 def apply_changes(ob, params, schema, modellookup):
     return UpdateObjectWalker(schema, modellookup)(ob, params)
