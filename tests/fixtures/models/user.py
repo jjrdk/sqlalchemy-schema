@@ -1,8 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from tests.fixtures.models.base import Base
 
 
 class Group(Base):
@@ -20,5 +19,7 @@ class User(Base):
     pk = sa.Column(sa.Integer, primary_key=True, doc="primary key")
     name = sa.Column(sa.String(255), default="", nullable=False)
     group_id = sa.Column(sa.Integer, sa.ForeignKey(Group.pk), nullable=False)
+    address_id = sa.Column(sa.Integer, sa.ForeignKey("Address.pk"), nullable=False)
     group = orm.relationship(Group, uselist=False, backref="users")
+    address = orm.relationship("Address", uselist=False, backref="users")
     created_at = sa.Column(sa.DateTime, nullable=True)

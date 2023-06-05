@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Sequence
 from unittest.mock import Mock
 
 import pytest
@@ -34,8 +35,10 @@ def mock_load_module_or_symbol(mock_driver: Mock, mocker: MockerFixture) -> Mock
     )
 
 
-@pytest.mark.parametrize("target", ["my_module"])
-def test_main_defaults(mock_driver: Mock, mock_load_module_or_symbol: Mock, target: str) -> None:
+@pytest.mark.parametrize("targets", [["my_module"]])
+def test_main_defaults(
+    mock_driver: Mock, mock_load_module_or_symbol: Mock, targets: Sequence[str]
+) -> None:
     """
     ARRANGE CLI args
     ACT calling the driver's method
@@ -45,10 +48,8 @@ def test_main_defaults(mock_driver: Mock, mock_load_module_or_symbol: Mock, targ
     # ARRANGE
     runner = CliRunner()
 
-    cli_args = [target]
-
     # ACT
-    actual = runner.invoke(main, cli_args)
+    actual = runner.invoke(main, targets)
 
     # ASSERT
     assert actual.exit_code == 0
@@ -56,10 +57,12 @@ def test_main_defaults(mock_driver: Mock, mock_load_module_or_symbol: Mock, targ
     mock_load_module_or_symbol.assert_called_once_with(DEFAULT_DRIVER)
 
     mock_driver.assert_called_once_with(DEFAULT_WALKER, DEFAULT_DECISION, DEFAULT_LAYOUT)
-    mock_driver.return_value.run.assert_called_once_with(target, None, format=None)
+    mock_driver.return_value.run.assert_called_once_with(
+        tuple(targets), filename=None, format=None
+    )
 
 
-@pytest.mark.parametrize("target", ["my_module"])
+@pytest.mark.parametrize("targets", [["my_module"]])
 @pytest.mark.parametrize("walker", WalkerChoice)
 @pytest.mark.parametrize("decision", DecisionChoice)
 @pytest.mark.parametrize("layout", LayoutChoice)
@@ -68,7 +71,7 @@ def test_main_defaults(mock_driver: Mock, mock_load_module_or_symbol: Mock, targ
 def test_main(
     mock_driver: Mock,
     mock_load_module_or_symbol: Mock,
-    target: str,
+    targets: Sequence[str],
     walker: WalkerChoice,
     decision: DecisionChoice,
     layout: LayoutChoice,
@@ -84,8 +87,7 @@ def test_main(
     # ARRANGE
     runner = CliRunner()
 
-    cli_args = [
-        target,
+    cli_args = targets + [
         "--walker",
         walker.value,
         "--decision",
@@ -107,4 +109,6 @@ def test_main(
     mock_load_module_or_symbol.assert_called_once_with(DEFAULT_DRIVER)
 
     mock_driver.assert_called_once_with(walker, decision, layout)
-    mock_driver.return_value.run.assert_called_once_with(target, out, format=format)
+    mock_driver.return_value.run.assert_called_once_with(
+        tuple(targets), filename=out, format=format
+    )

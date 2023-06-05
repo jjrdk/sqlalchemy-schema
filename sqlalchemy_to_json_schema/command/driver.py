@@ -1,7 +1,7 @@
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, NoReturn, Optional
+from typing import Any, Dict, NoReturn, Optional, Sequence
 
 import yaml
 
@@ -76,10 +76,16 @@ class Driver:
         return transformer_factory(schema_factory).transform
 
     def run(
-        self, module_path: str, filename: Path, format: Optional[FormatChoice], depth: int = None
+        self,
+        targets: Sequence[str],
+        /,
+        *,
+        filename: Optional[Path] = None,
+        format: Optional[FormatChoice] = None,
+        depth: int = None,
     ) -> None:
-        data = load_module_or_symbol(module_path)
-        result = self.transformer(data, depth)
+        modules_or_models = [load_module_or_symbol(target) for target in targets]
+        result = self.transformer(modules_or_models, depth)
         self.dump(result, filename, format=format)
 
     def dump(

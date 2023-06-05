@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Sequence
 
 import click
 
@@ -42,9 +42,9 @@ DEFAULT_DRIVER = "sqlalchemy_to_json_schema.command.driver:Driver"
         file_okay=True, dir_okay=False, resolve_path=True, writable=True, path_type=Path
     ),
 )
-@click.argument("target", type=str)
+@click.argument("targets", type=str, nargs=-1)
 def main(
-    target: str,
+    targets: Sequence[str],
     walker: str,
     decision: str,
     layout: str,
@@ -55,7 +55,7 @@ def main(
 ):
     driver_cls = load_module_or_symbol(driver)
     driver = driver_cls(WalkerChoice(walker), DecisionChoice(decision), LayoutChoice(layout))
-    driver.run(target, out, format=None if format is None else FormatChoice(format))
+    driver.run(targets, filename=out, format=None if format is None else FormatChoice(format))
 
 
 if __name__ == "__main__":

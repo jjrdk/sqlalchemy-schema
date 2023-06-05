@@ -4,7 +4,7 @@ from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.command.transformer import JSONSchemaTransformer
 from sqlalchemy_to_json_schema.walkers import StructuralWalker
 from tests.fixtures import models
-from tests.fixtures.models import User
+from tests.fixtures.models.user import User
 
 
 @pytest.fixture
@@ -18,7 +18,7 @@ class TestJSONSchemaTransformer:
         transformer = JSONSchemaTransformer(schema_factory)
 
         # Act
-        actual = transformer.transform(User, 0)
+        actual = transformer.transform([User], 0)
 
         # Assert
         assert actual == {
@@ -33,11 +33,17 @@ class TestJSONSchemaTransformer:
         transformer = JSONSchemaTransformer(schema_factory)
 
         # Act
-        actual = transformer.transform(models, 0)
+        actual = transformer.transform([models], 0)
 
         # Assert
         assert actual == {
             "definitions": {
+                "Address": {
+                    "properties": {},
+                    "required": ["pk", "street", "town"],
+                    "title": "Address",
+                    "type": "object",
+                },
                 "Group": {
                     "properties": {},
                     "required": ["name", "pk"],
