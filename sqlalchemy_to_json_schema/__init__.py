@@ -21,7 +21,6 @@ JSON Schema defines seven primitive types for JSON values:
 """
 
 import logging
-from collections import OrderedDict
 from typing import Any, Callable, Dict, List, Optional
 
 import sqlalchemy.types as t
@@ -218,11 +217,9 @@ class SchemaFactory:
         walker,
         classifier=DefaultClassfier,
         restriction_dict=default_restriction_dict,
-        container_factory=OrderedDict,
         child_factory: Optional[ChildFactory] = None,
         relation_decision: Optional[RelationDecision] = None,
     ):
-        self.container_factory = container_factory
         self.classifier = classifier
         self.walker = walker  # class
         self.restriction_set = [{k: v} for k, v in restriction_dict.items()]
@@ -298,10 +295,11 @@ class SchemaFactory:
     def _build_properties(
         self, walker, root_schema, overrides, depth=None, history=None, toplevel=True
     ):
-        if depth is not None and depth <= 0:
-            return self.container_factory()
+        definitions = {}
 
-        D = self.container_factory()
+        if depth is not None and depth <= 0:
+            return definitions
+
         if history is None:
             history = []
 
@@ -322,7 +320,9 @@ class SchemaFactory:
                         depth=depth,
                         history=history,
                     )
-                    self._add_property_with_reference(walker, root_schema, D, prop, value)
+                    self._add_property_with_reference(
+                        walker, root_schema, definitions, prop, value
+                    )
                     history.pop()
                 elif action == ColumnPropertyType.FOREIGNKEY:  # ColumnProperty
                     for c in prop.columns:
@@ -339,12 +339,12 @@ class SchemaFactory:
                                 overrides.overrides(sub)
                             if opts:
                                 sub.update(opts)
-                            D[c.name] = sub
+                            definitions[c.name] = sub
                         else:
                             raise NotImplementedError
                 else:  # immediate
-                    D[prop.key] = action
-        return D
+                    definitions[prop.key] = action
+        return definitions
 
     def _detect_required(
         self,
