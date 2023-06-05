@@ -1,4 +1,5 @@
 import json
+import sys
 from pathlib import Path
 from typing import Any, Dict, NoReturn, Optional
 
@@ -81,9 +82,17 @@ class Driver:
         result = self.transformer(data, depth=depth)
         self.dump(result, filename, format=format)
 
-    def dump(self, data: Dict[str, Any], filename: Path, format: Optional[FormatChoice]) -> None:
-        with filename.open("w") as f:
-            if format == FormatChoice.YAML:
-                yaml.dump(data, f)
-            else:
-                json.dump(data, f)
+    def dump(
+        self,
+        data: Dict[str, Any],
+        filename: Optional[Path] = None,
+        format: Optional[FormatChoice] = None,
+    ) -> None:
+        dump_function = yaml.dump if format == FormatChoice.YAML else json.dump
+
+        if filename is None:
+            output_stream = sys.stdout
+        else:
+            output_stream = filename.open("w")
+
+        dump_function(data, output_stream)

@@ -6,9 +6,15 @@ from typing import Any, Callable, Optional
 
 import pytest
 import yaml
+from pytest_mock import MockerFixture
 from yaml import Loader
 
 from sqlalchemy_to_json_schema.command.driver import Driver
+from sqlalchemy_to_json_schema.command.main import (
+    DEFAULT_DECISION,
+    DEFAULT_LAYOUT,
+    DEFAULT_WALKER,
+)
 from sqlalchemy_to_json_schema.types import (
     DecisionChoice,
     FormatChoice,
@@ -70,3 +76,24 @@ def test_run(
 
     # assert
     assert file_loader(actual)
+
+
+@pytest.mark.parametrize("module_path", ["tests.fixtures.models:Group"])
+def test_run_no_filename(mocker: MockerFixture, module_path: str) -> None:
+    """
+    ARRANGE a module path
+        AND default parameters
+        AND no output filename
+    ACT run the driver
+    ASSERT generates the expected file format on the stdout
+    """
+    # arrange
+    driver = Driver(DEFAULT_WALKER, DEFAULT_DECISION, DEFAULT_LAYOUT)
+
+    m_stdout = mocker.patch("sqlalchemy_to_json_schema.command.driver.sys.stdout", autospec=True)
+
+    # act
+    driver.run(module_path, None, None)
+
+    # assert
+    m_stdout.write.assert_called()
