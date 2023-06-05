@@ -79,7 +79,7 @@ class Driver:
         self, module_path: str, filename: Path, format: Optional[FormatChoice], depth: int = None
     ) -> None:
         data = load_module_or_symbol(module_path)
-        result = self.transformer(data, depth=depth)
+        result = self.transformer(data, depth)
         self.dump(result, filename, format=format)
 
     def dump(

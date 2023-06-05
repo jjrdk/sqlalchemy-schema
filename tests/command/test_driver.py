@@ -43,8 +43,8 @@ def temp_filename() -> Path:
 @pytest.mark.parametrize(
     "module_path",
     [
-        # fixme: must work by passing a module path without the model name
-        "tests.fixtures.models:Group"
+        "tests.fixtures.models",
+        "tests.fixtures.models:Group",
     ],
 )
 @pytest.mark.parametrize("depth", [None, 1, 2])

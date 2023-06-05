@@ -1,6 +1,7 @@
 import inspect
 from abc import ABC, abstractmethod
 from types import ModuleType
+from typing import Type, Union
 
 from sqlalchemy_to_json_schema import Schema, SchemaFactory
 
@@ -10,25 +11,42 @@ class Transformer(ABC):
         self.schema_factory = schema_factory
 
     @abstractmethod
-    def transform(self, rawtarget: ModuleType, depth: int) -> Schema:
+    def transform(self, rawtarget: Union[ModuleType, Type], depth: int, /) -> Schema:
         ...
 
 
 class JSONSchemaTransformer(Transformer):
-    def transform(self, rawtarget: ModuleType, depth: int) -> Schema:
-        if not inspect.isclass(rawtarget):
-            raise RuntimeError("please passing the path of model class (e.g. foo.boo:Model)")
-        return self.schema_factory(rawtarget, depth=depth)
-
-
-class OpenAPI2Transformer(Transformer):
-    def transform(self, rawtarget: ModuleType, depth: int) -> Schema:
+    def transform(self, rawtarget: Union[ModuleType, Type], depth: int, /) -> Schema:
         if inspect.isclass(rawtarget):
             return self.transform_by_model(rawtarget, depth)
         else:
             return self.transform_by_module(rawtarget, depth)
 
-    def transform_by_model(self, model, depth):
+    def transform_by_model(self, model: Type, depth: int) -> Schema:
+        return self.schema_factory(model, depth=depth)
+
+    def transform_by_module(self, module: ModuleType, depth: int) -> Schema:
+        subdefinitions = {}
+        definitions = {}
+        for basemodel in collect_models(module):
+            schema = self.schema_factory(basemodel, depth=depth)
+            if "definitions" in schema:
+                subdefinitions.update(schema.pop("definitions"))
+            definitions[schema["title"]] = schema
+        d = {}
+        d.update(subdefinitions)
+        d.update(definitions)
+        return {"definitions": definitions}
+
+
+class OpenAPI2Transformer(Transformer):
+    def transform(self, rawtarget: Union[ModuleType, Type], depth: int, /) -> Schema:
+        if inspect.isclass(rawtarget):
+            return self.transform_by_model(rawtarget, depth)
+        else:
+            return self.transform_by_module(rawtarget, depth)
+
+    def transform_by_model(self, model: Type, depth: int) -> Schema:
         definitions = {}
         schema = self.schema_factory(model, depth=depth)
         if "definitions" in schema:
@@ -36,7 +54,7 @@ class OpenAPI2Transformer(Transformer):
         definitions[schema["title"]] = schema
         return {"definitions": definitions}
 
-    def transform_by_module(self, module, depth):
+    def transform_by_module(self, module: ModuleType, depth: int) -> Schema:
         subdefinitions = {}
         definitions = {}
         for basemodel in collect_models(module):
@@ -67,7 +85,7 @@ class OpenAPI3Transformer(Transformer):
             for item in d:
                 self.replace_ref(item, old_prefix, new_prefix)
 
-    def transform(self, rawtarget: ModuleType, depth: int) -> Schema:
+    def transform(self, rawtarget: Union[ModuleType, Type], depth: int, /) -> Schema:
         d = self.oas2transformer.transform(rawtarget, depth)
 
         self.replace_ref(d, "#/definitions/", "#/components/schemas/")
