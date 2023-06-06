@@ -1,7 +1,7 @@
 import inspect
 from abc import ABC, abstractmethod
 from types import ModuleType
-from typing import Sequence, Type, Union
+from typing import Optional, Sequence, Type, Union
 
 from sqlalchemy_to_json_schema import Schema, SchemaFactory
 
@@ -11,12 +11,16 @@ class Transformer(ABC):
         self.schema_factory = schema_factory
 
     @abstractmethod
-    def transform(self, rawtargets: Sequence[Union[ModuleType, Type]], depth: int, /) -> Schema:
+    def transform(
+        self, rawtargets: Sequence[Union[ModuleType, Type]], depth: Optional[int], /
+    ) -> Schema:
         ...
 
 
 class JSONSchemaTransformer(Transformer):
-    def transform(self, rawtargets: Sequence[Union[ModuleType, Type]], depth: int) -> Schema:
+    def transform(
+        self, rawtargets: Sequence[Union[ModuleType, Type]], depth: Optional[int], /
+    ) -> Schema:
         definitions = {}
 
         for item in rawtargets:
@@ -47,7 +51,9 @@ class JSONSchemaTransformer(Transformer):
 
 
 class OpenAPI2Transformer(Transformer):
-    def transform(self, rawtargets: Sequence[Union[ModuleType, Type]], depth: int, /) -> Schema:
+    def transform(
+        self, rawtargets: Sequence[Union[ModuleType, Type]], depth: Optional[int], /
+    ) -> Schema:
         definitions = {}
 
         for target in rawtargets:
@@ -107,7 +113,9 @@ class OpenAPI3Transformer(Transformer):
             for item in d:
                 self.replace_ref(item, old_prefix, new_prefix)
 
-    def transform(self, rawtargets: Sequence[Union[ModuleType, Type]], depth: int, /) -> Schema:
+    def transform(
+        self, rawtargets: Sequence[Union[ModuleType, Type]], depth: Optional[int], /
+    ) -> Schema:
         d = self.oas2transformer.transform(rawtargets, depth)
 
         self.replace_ref(d, "#/definitions/", "#/components/schemas/")

@@ -1,3 +1,5 @@
+from unittest.mock import ANY
+
 import pytest
 
 from sqlalchemy_to_json_schema import SchemaFactory
@@ -18,11 +20,18 @@ class TestJSONSchemaTransformer:
         transformer = JSONSchemaTransformer(schema_factory)
 
         # Act
-        actual = transformer.transform([User], 0)
+        actual = transformer.transform([User], None)
 
         # Assert
         assert actual == {
-            "properties": {},
+            "definitions": {"Address": ANY, "Group": ANY},
+            "properties": {
+                "address": {"$ref": "#/definitions/Address"},
+                "created_at": {"format": "date-time", "type": "string"},
+                "group": {"$ref": "#/definitions/Group"},
+                "name": {"maxLength": 255, "type": "string"},
+                "pk": {"description": "primary key", "type": "integer"},
+            },
             "required": ["name", "pk"],
             "title": "User",
             "type": "object",
@@ -33,25 +42,25 @@ class TestJSONSchemaTransformer:
         transformer = JSONSchemaTransformer(schema_factory)
 
         # Act
-        actual = transformer.transform([models], 0)
+        actual = transformer.transform([models], None)
 
         # Assert
         assert actual == {
             "definitions": {
                 "Address": {
-                    "properties": {},
+                    "properties": ANY,
                     "required": ["pk", "street", "town"],
                     "title": "Address",
                     "type": "object",
                 },
                 "Group": {
-                    "properties": {},
+                    "properties": ANY,
                     "required": ["name", "pk"],
                     "title": "Group",
                     "type": "object",
                 },
                 "User": {
-                    "properties": {},
+                    "properties": ANY,
                     "required": ["name", "pk"],
                     "title": "User",
                     "type": "object",
