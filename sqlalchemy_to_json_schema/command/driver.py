@@ -85,7 +85,7 @@ class Driver:
         depth: int = None,
     ) -> None:
         modules_or_models = [load_module_or_symbol(target) for target in targets]
-        result = self.transformer(modules_or_models, depth)
+        result = self.transformer(modules_or_models, depth=depth)
         self.dump(result, filename, format=format)
 
     def dump(
