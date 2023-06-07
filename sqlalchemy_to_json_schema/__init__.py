@@ -178,7 +178,7 @@ class ChildFactory:
         self.bidirectional = bidirectional
 
     def default_excludes(self, prop):
-        return [prop.back_populates, prop.backref]
+        return [prop.back_populates, None if prop.backref is None else prop.backref[0]]
 
     def child_overrides(self, prop, overrides):
         name = prop.key
