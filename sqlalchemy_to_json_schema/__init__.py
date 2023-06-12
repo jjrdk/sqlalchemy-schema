@@ -75,6 +75,7 @@ default_column_to_schema = {
     t.Interval: "xxx",
     t.Enum: "string",
     t.LargeBinary: "xxx",
+    t.JSON: "object",
     postgresql_types.UUID: "string",
 }
 
