@@ -1,12 +1,21 @@
+from types import ModuleType
+from typing import Sequence
 from unittest.mock import ANY
 
 import pytest
+from pytest_unordered import unordered
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from sqlalchemy_to_json_schema import SchemaFactory
-from sqlalchemy_to_json_schema.command.transformer import JSONSchemaTransformer
+from sqlalchemy_to_json_schema.command.transformer import (
+    JSONSchemaTransformer,
+    collect_models,
+)
 from sqlalchemy_to_json_schema.walkers import StructuralWalker
+from tests import fixtures
 from tests.fixtures import models
-from tests.fixtures.models.user import User
+from tests.fixtures.models.address import Address
+from tests.fixtures.models.user import Group, User
 
 
 @pytest.fixture
@@ -67,3 +76,26 @@ class TestJSONSchemaTransformer:
                 },
             },
         }
+
+
+class TestCollectModels:
+    @pytest.mark.parametrize(
+        "module, expected",
+        [
+            pytest.param(fixtures.models.user, [User, Group], id="single model"),
+            pytest.param(fixtures.models.not_a_sa_model, [], id="not a model"),
+            pytest.param(fixtures.models, [User, Group, Address], id="__all__"),
+            pytest.param(lambda x: x, [], id="function"),
+        ],
+    )
+    def test_collect_models(self, module: ModuleType, expected: Sequence[DeclarativeMeta]) -> None:
+        """
+        ARRANGE given a list of modules
+        ACT call the collect_models()
+        ASSERT the resulting list of models matches the expected list of models
+        """
+        # Act
+        actual = collect_models(module)
+
+        # Assert
+        assert list(actual) == unordered(expected)

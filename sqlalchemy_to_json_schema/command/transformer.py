@@ -1,9 +1,11 @@
 import inspect
 from abc import ABC, abstractmethod
 from types import ModuleType
-from typing import Iterable, List, Optional, Type, Union
+from typing import Iterable, Iterator, Optional, Type, Union
 
+from loguru import logger
 from sqlalchemy.ext.declarative import DeclarativeMeta
+from typing_extensions import TypeGuard
 
 from sqlalchemy_to_json_schema import Schema, SchemaFactory
 
@@ -134,11 +136,27 @@ class OpenAPI3Transformer(Transformer):
         return d
 
 
-def collect_models(module: ModuleType) -> List[DeclarativeMeta]:
-    def is_alchemy_model(maybe_model: Type, /) -> bool:
-        return hasattr(maybe_model, "__table__") or hasattr(maybe_model, "__tablename__")
+def collect_models(module: ModuleType, /) -> Iterator[DeclarativeMeta]:
+    def is_alchemy_model(maybe_model: Type, /) -> TypeGuard[DeclarativeMeta]:
+        if not inspect.isclass(maybe_model):
+            return False
+
+        if not (hasattr(maybe_model, "__table__") or hasattr(maybe_model, "__tablename__")):
+            return False
+
+        logger.debug("{maybe_model} is a SQLAlchemy model")
+
+        return True
+
+    items: Iterable[Type]
 
     if hasattr(module, "__all__"):
-        return [getattr(module, name) for name in module.__all__]
+        logger.debug("Module {module} has an __all__ attribute", module=module)
+
+        items = (getattr(module, name) for name in module.__all__)
     else:
-        return [value for name, value in module.__dict__.items() if is_alchemy_model(value)]
+        items = module.__dict__.values()
+
+    models = (item for item in items if is_alchemy_model(item))
+
+    return models

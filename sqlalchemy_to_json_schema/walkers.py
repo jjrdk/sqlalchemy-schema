@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any, Iterator, Optional, Sequence, Union
 
+from loguru import logger
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Mapper
@@ -22,6 +23,8 @@ class ModelWalker(ABC):
         excludes: Optional[Sequence[str]] = None,
         history: Optional[Any] = None,
     ) -> None:
+        logger.debug("Walking model {model}, {type}", model=model, type=type(model))
+
         self.mapper = inspect(model).mapper
         self.includes = includes
         self.excludes = excludes

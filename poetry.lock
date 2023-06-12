@@ -556,6 +556,20 @@ files = [
 pytest = ">=5.0.0"
 
 [[package]]
+name = "pytest-unordered"
+version = "0.5.2"
+description = "Test equality of unordered collections in pytest"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest-unordered-0.5.2.tar.gz", hash = "sha256:8187e6d68a7d54e5447e88c229cbeafa38205e55baf7da7ae57cc965c1ecdbb3"},
+    {file = "pytest_unordered-0.5.2-py3-none-any.whl", hash = "sha256:b01bb0e8ba80db6dd8c840fe24ad1804c8672919303dc9302688221390a7dc29"},
+]
+
+[package.dependencies]
+pytest = ">=6.0.0"
+
+[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -895,4 +909,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.12"
-content-hash = "f606f52746494c2aaa135c657774421e5970e72a7533ac7afec77529cb6bc3db"
+content-hash = "b9a43fbf36d302999662ac86e45f7629f1f6f4c96c135bfcaf7df56cbe415eaf"
