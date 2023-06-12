@@ -3,8 +3,12 @@ from importlib import import_module
 from types import ModuleType
 from typing import Type, Union
 
+from loguru import logger
+
 
 def load_module_or_symbol(module_path: str, /) -> Union[ModuleType, Type]:
+    logger.info("Loading module or symbol from {module_path}", module_path=module_path)
+
     module_path_split = module_path.split(":", maxsplit=1)
 
     if len(module_path_split) == 1:
