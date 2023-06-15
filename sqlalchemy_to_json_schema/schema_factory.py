@@ -20,7 +20,6 @@ JSON Schema defines seven primitive types for JSON values:
         A JSON string.
 """
 
-import logging
 from typing import (
     Any,
     Callable,
@@ -48,8 +47,6 @@ from sqlalchemy_to_json_schema.decisions import AbstractDecision, RelationDecisi
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 from sqlalchemy_to_json_schema.types import ColumnPropertyType
 from sqlalchemy_to_json_schema.walkers import AbstractWalker
-
-logger = logging.getLogger(__name__)
 
 Schema = Dict[str, Any]
 
