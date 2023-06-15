@@ -144,7 +144,7 @@ def collect_models(module: ModuleType, /) -> Iterator[DeclarativeMeta]:
         if not (hasattr(maybe_model, "__table__") or hasattr(maybe_model, "__tablename__")):
             return False
 
-        logger.debug("{maybe_model} is a SQLAlchemy model")
+        logger.debug("{maybe_model} is a SQLAlchemy model", maybe_model=maybe_model)
 
         return True
 
