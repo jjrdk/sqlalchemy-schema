@@ -13,7 +13,7 @@ from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 
 
-class ModelWalker(ABC):
+class AbstractWalker(ABC):
     def __init__(
         self,
         model: Union[DeclarativeMeta, Mapper],
@@ -42,10 +42,10 @@ class ModelWalker(ABC):
         includes: Optional[Sequence[str]] = None,
         excludes: Optional[Sequence[str]] = None,
         history: Optional[Any] = None,
-    ) -> ModelWalker:
+    ) -> AbstractWalker:
         return self.__class__(mapper, includes=includes, excludes=excludes, history=history)
 
-    def from_child(self, model: Mapper) -> ModelWalker:
+    def from_child(self, model: Mapper) -> AbstractWalker:
         return self.__class__(model, history=self.history)
 
     @abstractmethod
@@ -56,7 +56,7 @@ class ModelWalker(ABC):
 # mapper.column_attrs and mapper.attrs is not ordered. define our custom iterate function `iterate'
 
 
-class ForeignKeyWalker(ModelWalker):
+class ForeignKeyWalker(AbstractWalker):
     def iterate(self) -> Iterator[ColumnProperty]:
         for c in self.mapper.local_table.columns:
             if c.name not in self.mapper._props:
@@ -76,7 +76,7 @@ class ForeignKeyWalker(ModelWalker):
                     yield prop
 
 
-class NoForeignKeyWalker(ModelWalker):
+class NoForeignKeyWalker(AbstractWalker):
     def iterate(self) -> Iterator[ColumnProperty]:
         for c in self.mapper.local_table.columns:
             if c.name not in self.mapper._props:
@@ -97,7 +97,7 @@ class NoForeignKeyWalker(ModelWalker):
                         yield prop
 
 
-class StructuralWalker(ModelWalker):
+class StructuralWalker(AbstractWalker):
     def iterate(self) -> Iterator[ColumnProperty]:
         for c in self.mapper.local_table.columns:
             if c.name not in self.mapper._props:

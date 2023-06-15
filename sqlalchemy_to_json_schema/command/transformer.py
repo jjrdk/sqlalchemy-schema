@@ -10,7 +10,7 @@ from typing_extensions import TypeGuard
 from sqlalchemy_to_json_schema import Schema, SchemaFactory
 
 
-class Transformer(ABC):
+class AbstractTransformer(ABC):
     def __init__(self, schema_factory: SchemaFactory, /):
         self.schema_factory = schema_factory
 
@@ -21,7 +21,7 @@ class Transformer(ABC):
         ...
 
 
-class JSONSchemaTransformer(Transformer):
+class JSONSchemaTransformer(AbstractTransformer):
     def transform(
         self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
     ) -> Schema:
@@ -56,7 +56,7 @@ class JSONSchemaTransformer(Transformer):
         return {"definitions": definitions}
 
 
-class OpenAPI2Transformer(Transformer):
+class OpenAPI2Transformer(AbstractTransformer):
     def transform(
         self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
     ) -> Schema:
@@ -104,7 +104,7 @@ class OpenAPI2Transformer(Transformer):
         return definitions
 
 
-class OpenAPI3Transformer(Transformer):
+class OpenAPI3Transformer(AbstractTransformer):
     def __init__(self, schema_factory: SchemaFactory, /):
         super().__init__(schema_factory)
 

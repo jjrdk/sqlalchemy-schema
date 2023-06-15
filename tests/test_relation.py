@@ -15,8 +15,8 @@ from sqlalchemy_to_json_schema import (
 )
 from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
 from sqlalchemy_to_json_schema.walkers import (
+    AbstractWalker,
     ForeignKeyWalker,
-    ModelWalker,
     StructuralWalker,
 )
 
@@ -31,7 +31,7 @@ def get_reference(schema: Mapping[str, Any], root_schema: Mapping[str, Any]) -> 
     return target
 
 
-def _makeOne(walker: Type[ModelWalker], *args: Any, **kwargs: Any) -> SchemaFactory:
+def _makeOne(walker: Type[AbstractWalker], *args: Any, **kwargs: Any) -> SchemaFactory:
     return SchemaFactory(walker, DefaultClassfier, *args, **kwargs)
 
 

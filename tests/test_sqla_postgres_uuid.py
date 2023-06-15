@@ -7,8 +7,8 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy_to_json_schema import DefaultClassfier, SchemaFactory
 from sqlalchemy_to_json_schema.walkers import (
+    AbstractWalker,
     ForeignKeyWalker,
-    ModelWalker,
     NoForeignKeyWalker,
     StructuralWalker,
 )
@@ -23,7 +23,7 @@ class MyModel(Base):
 
 
 @pytest.mark.parametrize("walker", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker])
-def test_hybrid_property(walker: Type[ModelWalker]) -> None:
+def test_hybrid_property(walker: Type[AbstractWalker]) -> None:
     schema_factory = SchemaFactory(walker, DefaultClassfier)
 
     actual = schema_factory(MyModel)

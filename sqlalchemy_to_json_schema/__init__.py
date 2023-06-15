@@ -44,10 +44,10 @@ from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.sql.visitors import VisitableType
 
-from sqlalchemy_to_json_schema.decisions import Decision, RelationDecision
+from sqlalchemy_to_json_schema.decisions import AbstractDecision, RelationDecision
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 from sqlalchemy_to_json_schema.types import ColumnPropertyType
-from sqlalchemy_to_json_schema.walkers import ModelWalker
+from sqlalchemy_to_json_schema.walkers import AbstractWalker
 
 logger = logging.getLogger(__name__)
 
@@ -249,9 +249,9 @@ class ChildFactory:
     def child_walker(
         self,
         prop: Union[ColumnProperty, RelationshipProperty],
-        walker: ModelWalker,
+        walker: AbstractWalker,
         history: Optional[Any] = None,
-    ) -> ModelWalker:
+    ) -> AbstractWalker:
         name = prop.key
         excludes = get_children(name, walker.includes, splitter=self.splitter, default=[])
         if not self.bidirectional:
@@ -275,7 +275,7 @@ class ChildFactory:
         prop: Union[ColumnProperty, RelationshipProperty],
         schema_factory: Any,
         root_schema: Mapping[str, Any],
-        walker: ModelWalker,
+        walker: AbstractWalker,
         overrides: Any,
         depth: Optional[int],
         history: Optional[Any],
@@ -297,11 +297,11 @@ class ChildFactory:
 class SchemaFactory:
     def __init__(
         self,
-        walker: Type[ModelWalker],
+        walker: Type[AbstractWalker],
         classifier: Classifier = DefaultClassfier,
         restriction_dict: RestrictionDict = default_restriction_dict,
         child_factory: Optional[ChildFactory] = None,
-        relation_decision: Optional[Decision] = None,
+        relation_decision: Optional[AbstractDecision] = None,
     ) -> None:
         self.classifier = classifier
         self.walker = walker  # class
@@ -362,7 +362,7 @@ class SchemaFactory:
 
     def _add_property_with_reference(
         self,
-        walker: ModelWalker,
+        walker: AbstractWalker,
         root_schema: Schema,
         current_schema: Dict[str, Any],
         prop: Union[ColumnProperty, RelationshipProperty],
@@ -388,7 +388,7 @@ class SchemaFactory:
 
     def _build_properties(
         self,
-        walker: ModelWalker,
+        walker: AbstractWalker,
         root_schema: Schema,
         /,
         *,
@@ -453,7 +453,7 @@ class SchemaFactory:
 
     def _detect_required(
         self,
-        walker: ModelWalker,
+        walker: AbstractWalker,
         /,
         *,
         adjust_required: Optional[

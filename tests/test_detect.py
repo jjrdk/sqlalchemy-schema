@@ -10,8 +10,8 @@ from sqlalchemy.sql.expression import ColumnElement
 
 from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.walkers import (
+    AbstractWalker,
     ForeignKeyWalker,
-    ModelWalker,
     NoForeignKeyWalker,
     StructuralWalker,
 )
@@ -19,7 +19,7 @@ from sqlalchemy_to_json_schema.walkers import (
 Base = declarative_base()
 
 
-def _makeOne(walker: Type[ModelWalker], /) -> SchemaFactory:
+def _makeOne(walker: Type[AbstractWalker], /) -> SchemaFactory:
     return SchemaFactory(walker)
 
 
@@ -27,7 +27,7 @@ def _makeOne(walker: Type[ModelWalker], /) -> SchemaFactory:
 @pytest.mark.parametrize("server_default", [None, func.sysdate()])
 @pytest.mark.parametrize("default", [None, datetime.now])
 def test_detect__nullable_is_True__not_required(
-    walker_cls: Type[ModelWalker],
+    walker_cls: Type[AbstractWalker],
     default: Optional[Callable[..., datetime]],
     server_default: Optional[Union[FetchedValue, str, TextClause, ColumnElement[Any], None]],
 ) -> None:
@@ -51,7 +51,7 @@ def test_detect__nullable_is_True__not_required(
 @pytest.mark.parametrize("default", [None, datetime.now])
 @pytest.mark.parametrize("walker_cls", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker])
 def test_detect__nullable_is_False__required(
-    walker_cls: Type[ModelWalker],
+    walker_cls: Type[AbstractWalker],
     default: Optional[Callable[..., datetime]],
     server_default: Optional[Callable[..., datetime]],
 ) -> None:
@@ -72,7 +72,7 @@ def test_detect__nullable_is_False__required(
 
 
 @pytest.mark.parametrize("walker_cls", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker])
-def test_detect__adjust_required(walker_cls: Type[ModelWalker]) -> None:
+def test_detect__adjust_required(walker_cls: Type[AbstractWalker]) -> None:
     class Model(Base):
         __tablename__ = f"model_adjust_required_{walker_cls}"
 

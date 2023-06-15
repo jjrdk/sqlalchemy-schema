@@ -6,18 +6,18 @@ from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.orm.relationships import RelationshipProperty
 
 from sqlalchemy_to_json_schema.types import ColumnPropertyType
-from sqlalchemy_to_json_schema.walkers import ModelWalker
+from sqlalchemy_to_json_schema.walkers import AbstractWalker
 
 DecisionResult = Tuple[
     ColumnPropertyType, Union[ColumnProperty, RelationshipProperty], Dict[str, Any]
 ]
 
 
-class Decision(ABC):
+class AbstractDecision(ABC):
     @abstractmethod
     def decision(
         self,
-        walker: ModelWalker,
+        walker: AbstractWalker,
         prop: Union[ColumnProperty, RelationshipProperty],
         /,
         *,
@@ -26,10 +26,10 @@ class Decision(ABC):
         pass
 
 
-class RelationDecision(Decision):
+class RelationDecision(AbstractDecision):
     def decision(
         self,
-        walker: ModelWalker,
+        walker: AbstractWalker,
         prop: Union[ColumnProperty, RelationshipProperty],
         /,
         *,
@@ -43,10 +43,10 @@ class RelationDecision(Decision):
             raise NotImplementedError(prop)
 
 
-class UseForeignKeyIfPossibleDecision(Decision):
+class UseForeignKeyIfPossibleDecision(AbstractDecision):
     def decision(
         self,
-        walker: ModelWalker,
+        walker: AbstractWalker,
         prop: Union[ColumnProperty, RelationshipProperty],
         /,
         *,

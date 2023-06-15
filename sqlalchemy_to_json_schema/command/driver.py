@@ -21,13 +21,13 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from sqlalchemy_to_json_schema import Schema, SchemaFactory
 from sqlalchemy_to_json_schema.command.transformer import (
+    AbstractTransformer,
     JSONSchemaTransformer,
     OpenAPI2Transformer,
     OpenAPI3Transformer,
-    Transformer,
 )
 from sqlalchemy_to_json_schema.decisions import (
-    Decision,
+    AbstractDecision,
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
@@ -39,14 +39,14 @@ from sqlalchemy_to_json_schema.types import (
 )
 from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
 from sqlalchemy_to_json_schema.walkers import (
+    AbstractWalker,
     ForeignKeyWalker,
-    ModelWalker,
     NoForeignKeyWalker,
     StructuralWalker,
 )
 
 
-def detect_walker_factory(walker: WalkerChoice, /) -> Type[ModelWalker]:
+def detect_walker_factory(walker: WalkerChoice, /) -> Type[AbstractWalker]:
     if walker == WalkerChoice.STRUCTURAL:
         return StructuralWalker
     elif walker == WalkerChoice.NOFOREIGNKEY:
@@ -57,7 +57,7 @@ def detect_walker_factory(walker: WalkerChoice, /) -> Type[ModelWalker]:
     raise ValueError(walker)
 
 
-def detect_decision(decision: DecisionChoice, /) -> Decision:
+def detect_decision(decision: DecisionChoice, /) -> AbstractDecision:
     if decision == DecisionChoice.DEFAULT:
         return RelationDecision()
     elif decision == DecisionChoice.USE_FOREIGN_KEY:
@@ -66,7 +66,7 @@ def detect_decision(decision: DecisionChoice, /) -> Decision:
     raise ValueError(decision)
 
 
-def detect_transformer(layout: LayoutChoice, /) -> Type[Transformer]:
+def detect_transformer(layout: LayoutChoice, /) -> Type[AbstractTransformer]:
     if layout in [LayoutChoice.SWAGGER_2, LayoutChoice.OPENAPI_2]:
         return OpenAPI2Transformer
     elif layout == LayoutChoice.OPENAPI_3:
