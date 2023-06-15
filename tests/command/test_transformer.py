@@ -6,12 +6,12 @@ import pytest
 from pytest_unordered import unordered
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
-from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.command.transformer import (
     AsyncAPI2Transformer,
     JSONSchemaTransformer,
     collect_models,
 )
+from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
 from sqlalchemy_to_json_schema.walkers import StructuralWalker
 from tests import fixtures
 from tests.fixtures import models

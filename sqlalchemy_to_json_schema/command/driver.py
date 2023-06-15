@@ -20,7 +20,6 @@ from typing import (
 import yaml
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
-from sqlalchemy_to_json_schema import Schema, SchemaFactory
 from sqlalchemy_to_json_schema.command.transformer import (
     AbstractTransformer,
     AsyncAPI2Transformer,
@@ -33,6 +32,7 @@ from sqlalchemy_to_json_schema.decisions import (
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
+from sqlalchemy_to_json_schema.schema_factory import Schema, SchemaFactory
 from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
 from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
 from sqlalchemy_to_json_schema.walkers import (

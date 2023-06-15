@@ -53,8 +53,8 @@ class User(Base):
 
 ```python
 import pprint as pp
-from sqlalchemy_to_json_schema import SchemaFactory
-from sqlalchemy_to_json_schema import NoForeignKeyWalker
+from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
+from sqlalchemy_to_json_schema.schema_factory import NoForeignKeyWalker
 
 factory = SchemaFactory(NoForeignKeyWalker)
 pp.pprint(factory(User))
@@ -72,8 +72,8 @@ pp.pprint(factory(User))
 
 ```python
 import pprint as pp
-from sqlalchemy_to_json_schema import SchemaFactory
-from sqlalchemy_to_json_schema import ForeignKeyWalker
+from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
+from sqlalchemy_to_json_schema.schema_factory import ForeignKeyWalker
 
 factory = SchemaFactory(ForeignKeyWalker)
 pp.pprint(factory(User))
@@ -92,8 +92,8 @@ pp.pprint(factory(User))
 
 ```python
 import pprint as pp
-from sqlalchemy_to_json_schema import SchemaFactory
-from sqlalchemy_to_json_schema import StructuralWalker
+from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
+from sqlalchemy_to_json_schema.schema_factory import StructuralWalker
 
 factory = SchemaFactory(StructuralWalker)
 pp.pprint(factory(User))

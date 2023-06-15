@@ -7,13 +7,13 @@ import sqlalchemy.orm as orm
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Mapped
 
-from sqlalchemy_to_json_schema import (
+from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
+from sqlalchemy_to_json_schema.schema_factory import (
     ChildFactory,
     DefaultClassfier,
     RelationDecision,
     SchemaFactory,
 )
-from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
 from sqlalchemy_to_json_schema.walkers import (
     AbstractWalker,
     ForeignKeyWalker,

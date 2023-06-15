@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
-from sqlalchemy_to_json_schema import DefaultClassfier, SchemaFactory
+from sqlalchemy_to_json_schema.schema_factory import DefaultClassfier, SchemaFactory
 from sqlalchemy_to_json_schema.walkers import (
     AbstractWalker,
     ForeignKeyWalker,

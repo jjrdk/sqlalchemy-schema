@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.types import String
 
-from sqlalchemy_to_json_schema import Schema, SchemaFactory
+from sqlalchemy_to_json_schema.schema_factory import Schema, SchemaFactory
 from sqlalchemy_to_json_schema.walkers import StructuralWalker
 
 
