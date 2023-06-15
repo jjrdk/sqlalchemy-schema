@@ -9,6 +9,7 @@ from typing import (
     Dict,
     Iterable,
     Iterator,
+    Mapping,
     Optional,
     Sequence,
     Type,
@@ -40,36 +41,23 @@ from sqlalchemy_to_json_schema.walkers import (
     StructuralWalker,
 )
 
+TRANSFORMER_MAP: Mapping[Layout, Type[AbstractTransformer]] = {
+    Layout.SWAGGER_2: OpenAPI2Transformer,
+    Layout.OPENAPI_2: OpenAPI2Transformer,
+    Layout.OPENAPI_3: OpenAPI3Transformer,
+    Layout.JSON_SCHEMA: JSONSchemaTransformer,
+}
 
-def detect_walker_factory(walker: Walker, /) -> Type[AbstractWalker]:
-    if walker == Walker.STRUCTURAL:
-        return StructuralWalker
-    elif walker == Walker.NOFOREIGNKEY:
-        return NoForeignKeyWalker
-    elif walker == Walker.FOREIGNKEY:
-        return ForeignKeyWalker
+WALKER_MAP: Mapping[Walker, Type[AbstractWalker]] = {
+    Walker.STRUCTURAL: StructuralWalker,
+    Walker.NOFOREIGNKEY: NoForeignKeyWalker,
+    Walker.FOREIGNKEY: ForeignKeyWalker,
+}
 
-    raise ValueError(walker)
-
-
-def detect_decision(decision: Decision, /) -> AbstractDecision:
-    if decision == Decision.DEFAULT:
-        return RelationDecision()
-    elif decision == Decision.USE_FOREIGN_KEY:
-        return UseForeignKeyIfPossibleDecision()
-
-    raise ValueError(decision)
-
-
-def detect_transformer(layout: Layout, /) -> Type[AbstractTransformer]:
-    if layout in [Layout.SWAGGER_2, Layout.OPENAPI_2]:
-        return OpenAPI2Transformer
-    elif layout == Layout.OPENAPI_3:
-        return OpenAPI3Transformer
-    elif layout == Layout.JSON_SCHEMA:
-        return JSONSchemaTransformer
-
-    raise ValueError(layout)
+DECISION_MAP: Mapping[Decision, Type[AbstractDecision]] = {
+    Decision.DEFAULT: RelationDecision,
+    Decision.USE_FOREIGN_KEY: UseForeignKeyIfPossibleDecision,
+}
 
 
 class Driver:
@@ -79,10 +67,11 @@ class Driver:
     def build_transformer(
         self, walker: Walker, decision: Decision, layout: Layout, /
     ) -> Callable[[Iterable[Union[ModuleType, DeclarativeMeta]], Optional[int]], Schema]:
-        walker_factory = detect_walker_factory(walker)
-        relation_decision = detect_decision(decision)
+        walker_factory = WALKER_MAP[walker]
+        relation_decision = DECISION_MAP[decision]()
         schema_factory = SchemaFactory(walker_factory, relation_decision=relation_decision)
-        transformer_factory = detect_transformer(layout)
+        transformer_factory = TRANSFORMER_MAP[layout]
+
         return transformer_factory(schema_factory).transform
 
     def run(
