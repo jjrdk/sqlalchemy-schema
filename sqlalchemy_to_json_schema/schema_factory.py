@@ -237,7 +237,7 @@ class ChildFactory:
         return excludes
 
     def child_overrides(
-        self, prop: Union[ColumnProperty, RelationshipProperty], overrides: Any
+        self, prop: Union[ColumnProperty, RelationshipProperty], overrides: Any, /
     ) -> Any:
         name = prop.key
         children = get_children(name, overrides.params, splitter=self.splitter)
@@ -247,6 +247,8 @@ class ChildFactory:
         self,
         prop: Union[ColumnProperty, RelationshipProperty],
         walker: AbstractWalker,
+        /,
+        *,
         history: Optional[Any] = None,
     ) -> AbstractWalker:
         name = prop.key
@@ -274,8 +276,10 @@ class ChildFactory:
         root_schema: Mapping[str, Any],
         walker: AbstractWalker,
         overrides: Any,
-        depth: Optional[int],
-        history: Optional[Any],
+        /,
+        *,
+        depth: Optional[int] = None,
+        history: Optional[Any] = None,
     ) -> Dict[str, Any]:
         subschema = schema_factory._build_properties(
             walker,
@@ -295,6 +299,8 @@ class SchemaFactory:
     def __init__(
         self,
         walker: Type[AbstractWalker],
+        /,
+        *,
         classifier: Classifier = DefaultClassfier,
         restriction_dict: RestrictionDict = default_restriction_dict,
         child_factory: Optional[ChildFactory] = None,
@@ -311,6 +317,7 @@ class SchemaFactory:
     def __call__(
         self,
         model: DeclarativeMeta,
+        /,
         *,
         includes: Optional[Sequence[str]] = None,
         excludes: Optional[Sequence[str]] = None,
@@ -341,7 +348,7 @@ class SchemaFactory:
         return schema
 
     def _add_restriction_if_found(
-        self, data: Dict[str, Any], column: Column, itype: Type[TypeEngine]
+        self, data: Dict[str, Any], column: Column, itype: Type[TypeEngine], /
     ) -> None:
         for restriction_dict in self.restriction_set:
             _, fn = get_class_mapping(
@@ -364,6 +371,7 @@ class SchemaFactory:
         current_schema: Dict[str, Any],
         prop: Union[ColumnProperty, RelationshipProperty],
         val: Dict[str, Any],
+        /,
     ) -> None:
         clsname = prop.mapper.class_.__name__
         if "definitions" not in root_schema:

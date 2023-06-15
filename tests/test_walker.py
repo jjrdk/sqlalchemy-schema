@@ -4,16 +4,12 @@ import sqlalchemy.orm as orm
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
-from sqlalchemy_to_json_schema.schema_factory import (
-    DefaultClassfier,
-    SchemaFactory,
-    pop_marker,
-)
+from sqlalchemy_to_json_schema.schema_factory import SchemaFactory, pop_marker
 from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker
 
 
 def _makeOne() -> SchemaFactory:
-    return SchemaFactory(ForeignKeyWalker, DefaultClassfier)
+    return SchemaFactory(ForeignKeyWalker)
 
 
 Base = declarative_base()

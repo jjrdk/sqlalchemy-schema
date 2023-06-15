@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
-from sqlalchemy_to_json_schema.schema_factory import DefaultClassfier, SchemaFactory
+from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
 from sqlalchemy_to_json_schema.walkers import (
     AbstractWalker,
     ForeignKeyWalker,
@@ -83,7 +83,7 @@ class MyModelWithRelationship(Base):
 def test_hybrid_property(
     walker: Type[AbstractWalker], model: Type[Base], expected_title: str
 ) -> None:
-    schema_factory = SchemaFactory(walker, DefaultClassfier)
+    schema_factory = SchemaFactory(walker)
 
     actual = schema_factory(model)
 
@@ -151,7 +151,7 @@ def test_hybrid_property(
 def test_hybrid_property_with_relationship(
     walker: Type[AbstractWalker], model: Type[Base], expected: Dict[str, Any]
 ) -> None:
-    schema_factory = SchemaFactory(walker, DefaultClassfier)
+    schema_factory = SchemaFactory(walker)
 
     actual = schema_factory(model)
 

@@ -5,7 +5,7 @@ from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 
-from sqlalchemy_to_json_schema.schema_factory import DefaultClassfier, SchemaFactory
+from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
 from sqlalchemy_to_json_schema.walkers import (
     AbstractWalker,
     ForeignKeyWalker,
@@ -24,7 +24,7 @@ class MyModel(Base):
 
 @pytest.mark.parametrize("walker", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker])
 def test_hybrid_property(walker: Type[AbstractWalker]) -> None:
-    schema_factory = SchemaFactory(walker, DefaultClassfier)
+    schema_factory = SchemaFactory(walker)
 
     actual = schema_factory(MyModel)
 

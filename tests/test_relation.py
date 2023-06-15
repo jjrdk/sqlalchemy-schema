@@ -10,7 +10,6 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
 from sqlalchemy_to_json_schema.schema_factory import (
     ChildFactory,
-    DefaultClassfier,
     RelationDecision,
     SchemaFactory,
 )
@@ -32,7 +31,7 @@ def get_reference(schema: Mapping[str, Any], root_schema: Mapping[str, Any]) -> 
 
 
 def _makeOne(walker: Type[AbstractWalker], *args: Any, **kwargs: Any) -> SchemaFactory:
-    return SchemaFactory(walker, DefaultClassfier, *args, **kwargs)
+    return SchemaFactory(walker, *args, **kwargs)
 
 
 Base = declarative_base()
