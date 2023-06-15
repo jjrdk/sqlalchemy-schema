@@ -8,7 +8,7 @@ class ColumnPropertyType(Enum):
 
 
 @unique
-class LayoutChoice(Enum):
+class Layout(Enum):
     SWAGGER_2 = "swagger2.0"
     JSON_SCHEMA = "jsonschema"
     OPENAPI_3 = "openapi3.0"
@@ -16,19 +16,19 @@ class LayoutChoice(Enum):
 
 
 @unique
-class FormatChoice(Enum):
+class Format(Enum):
     JSON = "json"
     YAML = "yaml"
 
 
 @unique
-class WalkerChoice(Enum):
+class Walker(Enum):
     STRUCTURAL = "structural"
     NOFOREIGNKEY = "noforeignkey"
     FOREIGNKEY = "foreignkey"
 
 
 @unique
-class DecisionChoice(Enum):
+class Decision(Enum):
     DEFAULT = "default"
     USE_FOREIGN_KEY = "useforeignkey"

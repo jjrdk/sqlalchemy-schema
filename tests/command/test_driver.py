@@ -16,12 +16,7 @@ from sqlalchemy_to_json_schema.command.main import (
     DEFAULT_LAYOUT,
     DEFAULT_WALKER,
 )
-from sqlalchemy_to_json_schema.types import (
-    DecisionChoice,
-    FormatChoice,
-    LayoutChoice,
-    WalkerChoice,
-)
+from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
 
 
 @pytest.fixture
@@ -30,15 +25,15 @@ def temp_filename() -> Iterator[Path]:
         yield Path(f.name)
 
 
-@pytest.mark.parametrize("walker", WalkerChoice)
-@pytest.mark.parametrize("decision", DecisionChoice)
-@pytest.mark.parametrize("layout", LayoutChoice)
+@pytest.mark.parametrize("walker", Walker)
+@pytest.mark.parametrize("decision", Decision)
+@pytest.mark.parametrize("layout", Layout)
 @pytest.mark.parametrize(
     "format, file_loader",
     [
         pytest.param(None, json.loads),
-        pytest.param(FormatChoice.JSON, json.loads),
-        pytest.param(FormatChoice.YAML, partial(yaml.load, Loader=Loader)),
+        pytest.param(Format.JSON, json.loads),
+        pytest.param(Format.YAML, partial(yaml.load, Loader=Loader)),
     ],
 )
 @pytest.mark.parametrize(
@@ -51,11 +46,11 @@ def temp_filename() -> Iterator[Path]:
 @pytest.mark.parametrize("depth", [None, 1, 2])
 def test_run(
     temp_filename: Path,
-    walker: WalkerChoice,
-    decision: DecisionChoice,
-    layout: LayoutChoice,
+    walker: Walker,
+    decision: Decision,
+    layout: Layout,
     targets: Sequence[str],
-    format: Optional[FormatChoice],
+    format: Optional[Format],
     depth: Optional[int],
     file_loader: Callable[[str], Any],
 ) -> None:
@@ -144,7 +139,7 @@ def test_run_multiple_targets(
     ASSERT generates the expected file format on the stdout
     """
     # arrange
-    driver = Driver(WalkerChoice.NOFOREIGNKEY, DEFAULT_DECISION, DEFAULT_LAYOUT)
+    driver = Driver(Walker.NOFOREIGNKEY, DEFAULT_DECISION, DEFAULT_LAYOUT)
 
     # act
     driver.run(targets, filename=temp_filename)

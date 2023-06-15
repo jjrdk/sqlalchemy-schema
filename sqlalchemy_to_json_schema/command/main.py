@@ -3,35 +3,30 @@ from typing import Optional, Sequence
 
 import click
 
-from sqlalchemy_to_json_schema.types import (
-    DecisionChoice,
-    FormatChoice,
-    LayoutChoice,
-    WalkerChoice,
-)
+from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
 from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
 
-DEFAULT_WALKER = WalkerChoice.STRUCTURAL
-DEFAULT_DECISION = DecisionChoice.DEFAULT
-DEFAULT_LAYOUT = LayoutChoice.SWAGGER_2
+DEFAULT_WALKER = Walker.STRUCTURAL
+DEFAULT_DECISION = Decision.DEFAULT
+DEFAULT_LAYOUT = Layout.SWAGGER_2
 DEFAULT_DRIVER = "sqlalchemy_to_json_schema.command.driver:Driver"
 
 
 @click.command()
-@click.option("--format", type=click.Choice([format.value for format in FormatChoice]))
+@click.option("--format", type=click.Choice([format.value for format in Format]))
 @click.option(
     "--walker",
-    type=click.Choice([walker.value for walker in WalkerChoice]),
+    type=click.Choice([walker.value for walker in Walker]),
     default=DEFAULT_WALKER.value,
 )
 @click.option(
     "--decision",
-    type=click.Choice([decision.value for decision in DecisionChoice]),
+    type=click.Choice([decision.value for decision in Decision]),
     default=DEFAULT_DECISION.value,
 )
 @click.option(
     "--layout",
-    type=click.Choice([layout.value for layout in LayoutChoice]),
+    type=click.Choice([layout.value for layout in Layout]),
     default=DEFAULT_LAYOUT.value,
 )
 @click.option("--depth", type=int)
@@ -54,8 +49,8 @@ def main(
     depth: Optional[int] = None,
 ) -> None:
     driver_cls = load_module_or_symbol(driver)
-    driver = driver_cls(WalkerChoice(walker), DecisionChoice(decision), LayoutChoice(layout))  # type: ignore[operator] # noqa: E501
-    driver.run(targets, filename=out, format=None if format is None else FormatChoice(format))  # type: ignore[attr-defined] # noqa: E501
+    driver = driver_cls(Walker(walker), Decision(decision), Layout(layout))  # type: ignore[operator] # noqa: E501
+    driver.run(targets, filename=out, format=None if format is None else Format(format))  # type: ignore[attr-defined] # noqa: E501
 
 
 if __name__ == "__main__":

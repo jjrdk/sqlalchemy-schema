@@ -31,12 +31,7 @@ from sqlalchemy_to_json_schema.decisions import (
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
-from sqlalchemy_to_json_schema.types import (
-    DecisionChoice,
-    FormatChoice,
-    LayoutChoice,
-    WalkerChoice,
-)
+from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
 from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
 from sqlalchemy_to_json_schema.walkers import (
     AbstractWalker,
@@ -46,43 +41,43 @@ from sqlalchemy_to_json_schema.walkers import (
 )
 
 
-def detect_walker_factory(walker: WalkerChoice, /) -> Type[AbstractWalker]:
-    if walker == WalkerChoice.STRUCTURAL:
+def detect_walker_factory(walker: Walker, /) -> Type[AbstractWalker]:
+    if walker == Walker.STRUCTURAL:
         return StructuralWalker
-    elif walker == WalkerChoice.NOFOREIGNKEY:
+    elif walker == Walker.NOFOREIGNKEY:
         return NoForeignKeyWalker
-    elif walker == WalkerChoice.FOREIGNKEY:
+    elif walker == Walker.FOREIGNKEY:
         return ForeignKeyWalker
 
     raise ValueError(walker)
 
 
-def detect_decision(decision: DecisionChoice, /) -> AbstractDecision:
-    if decision == DecisionChoice.DEFAULT:
+def detect_decision(decision: Decision, /) -> AbstractDecision:
+    if decision == Decision.DEFAULT:
         return RelationDecision()
-    elif decision == DecisionChoice.USE_FOREIGN_KEY:
+    elif decision == Decision.USE_FOREIGN_KEY:
         return UseForeignKeyIfPossibleDecision()
 
     raise ValueError(decision)
 
 
-def detect_transformer(layout: LayoutChoice, /) -> Type[AbstractTransformer]:
-    if layout in [LayoutChoice.SWAGGER_2, LayoutChoice.OPENAPI_2]:
+def detect_transformer(layout: Layout, /) -> Type[AbstractTransformer]:
+    if layout in [Layout.SWAGGER_2, Layout.OPENAPI_2]:
         return OpenAPI2Transformer
-    elif layout == LayoutChoice.OPENAPI_3:
+    elif layout == Layout.OPENAPI_3:
         return OpenAPI3Transformer
-    elif layout == LayoutChoice.JSON_SCHEMA:
+    elif layout == Layout.JSON_SCHEMA:
         return JSONSchemaTransformer
 
     raise ValueError(layout)
 
 
 class Driver:
-    def __init__(self, walker: WalkerChoice, decision: DecisionChoice, layout: LayoutChoice, /):
+    def __init__(self, walker: Walker, decision: Decision, layout: Layout, /):
         self.transformer = self.build_transformer(walker, decision, layout)
 
     def build_transformer(
-        self, walker: WalkerChoice, decision: DecisionChoice, layout: LayoutChoice, /
+        self, walker: Walker, decision: Decision, layout: Layout, /
     ) -> Callable[[Iterable[Union[ModuleType, DeclarativeMeta]], Optional[int]], Schema]:
         walker_factory = detect_walker_factory(walker)
         relation_decision = detect_decision(decision)
@@ -96,7 +91,7 @@ class Driver:
         /,
         *,
         filename: Optional[Path] = None,
-        format: Optional[FormatChoice] = None,
+        format: Optional[Format] = None,
         depth: Optional[int] = None,
     ) -> None:
         modules_and_types = (load_module_or_symbol(target) for target in targets)
@@ -118,9 +113,9 @@ class Driver:
         /,
         *,
         filename: Optional[Path] = None,
-        format: Optional[FormatChoice] = None,
+        format: Optional[Format] = None,
     ) -> None:
-        dump_function = yaml.dump if format == FormatChoice.YAML else json.dump
+        dump_function = yaml.dump if format == Format.YAML else json.dump
 
         if filename is None:
             output_stream = sys.stdout

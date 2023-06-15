@@ -13,12 +13,7 @@ from sqlalchemy_to_json_schema.command.main import (
     DEFAULT_WALKER,
     main,
 )
-from sqlalchemy_to_json_schema.types import (
-    DecisionChoice,
-    FormatChoice,
-    LayoutChoice,
-    WalkerChoice,
-)
+from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
 
 
 @pytest.fixture
@@ -63,19 +58,19 @@ def test_main_defaults(
 
 
 @pytest.mark.parametrize("targets", [["my_module"]])
-@pytest.mark.parametrize("walker", WalkerChoice)
-@pytest.mark.parametrize("decision", DecisionChoice)
-@pytest.mark.parametrize("layout", LayoutChoice)
-@pytest.mark.parametrize("format", FormatChoice)
+@pytest.mark.parametrize("walker", Walker)
+@pytest.mark.parametrize("decision", Decision)
+@pytest.mark.parametrize("layout", Layout)
+@pytest.mark.parametrize("format", Format)
 @pytest.mark.parametrize("out", [Path("output.txt").absolute()])
 def test_main(
     mock_driver: Mock,
     mock_load_module_or_symbol: Mock,
     targets: Sequence[str],
-    walker: WalkerChoice,
-    decision: DecisionChoice,
-    layout: LayoutChoice,
-    format: FormatChoice,
+    walker: Walker,
+    decision: Decision,
+    layout: Layout,
+    format: Format,
     out: Path,
 ) -> None:
     """
