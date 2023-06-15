@@ -104,12 +104,7 @@ class OpenAPI2Transformer(AbstractTransformer):
         return definitions
 
 
-class OpenAPI3Transformer(AbstractTransformer):
-    def __init__(self, schema_factory: SchemaFactory, /):
-        super().__init__(schema_factory)
-
-        self.oas2transformer = OpenAPI2Transformer(schema_factory)
-
+class OpenAPI3Transformer(OpenAPI2Transformer):
     def replace_ref(self, d: Union[dict, list], old_prefix: str, new_prefix: str, /) -> None:
         if isinstance(d, dict):
             for k, v in d.items():
@@ -124,7 +119,7 @@ class OpenAPI3Transformer(AbstractTransformer):
     def transform(
         self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
     ) -> Schema:
-        d = self.oas2transformer.transform(rawtargets, depth)
+        d = super().transform(rawtargets, depth)
 
         self.replace_ref(d, "#/definitions/", "#/components/schemas/")
 
