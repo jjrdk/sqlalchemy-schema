@@ -23,6 +23,7 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy_to_json_schema import Schema, SchemaFactory
 from sqlalchemy_to_json_schema.command.transformer import (
     AbstractTransformer,
+    AsyncAPI2Transformer,
     JSONSchemaTransformer,
     OpenAPI2Transformer,
     OpenAPI3Transformer,
@@ -46,6 +47,7 @@ TRANSFORMER_MAP: Mapping[Layout, Type[AbstractTransformer]] = {
     Layout.OPENAPI_2: OpenAPI2Transformer,
     Layout.OPENAPI_3: OpenAPI3Transformer,
     Layout.JSON_SCHEMA: JSONSchemaTransformer,
+    Layout.ASYNCAPI_2: AsyncAPI2Transformer,
 }
 
 WALKER_MAP: Mapping[Walker, Type[AbstractWalker]] = {

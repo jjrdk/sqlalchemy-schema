@@ -160,3 +160,7 @@ def collect_models(module: ModuleType, /) -> Iterator[DeclarativeMeta]:
     models = (item for item in items if is_alchemy_model(item))
 
     return models
+
+
+class AsyncAPI2Transformer(OpenAPI3Transformer):
+    pass

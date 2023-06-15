@@ -13,6 +13,7 @@ class Layout(Enum):
     JSON_SCHEMA = "jsonschema"
     OPENAPI_3 = "openapi3.0"
     OPENAPI_2 = "openapi2.0"
+    ASYNCAPI_2 = "asyncapi2.0"
 
 
 @unique

@@ -8,6 +8,7 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from sqlalchemy_to_json_schema import SchemaFactory
 from sqlalchemy_to_json_schema.command.transformer import (
+    AsyncAPI2Transformer,
     JSONSchemaTransformer,
     collect_models,
 )
@@ -99,3 +100,115 @@ class TestCollectModels:
 
         # Assert
         assert list(actual) == unordered(expected)
+
+
+class TestAsyncAPI2Transformer:
+    def test_transform_model(self, schema_factory: SchemaFactory) -> None:
+        # Arrange
+        transformer = AsyncAPI2Transformer(schema_factory)
+
+        # Act
+        actual = transformer.transform([User], None)
+
+        # Assert
+        assert actual == {
+            "components": {
+                "schemas": {
+                    "User": {
+                        "properties": {
+                            "address": {"$ref": "#/components/schemas/Address"},
+                            "created_at": {"format": "date-time", "type": "string"},
+                            "group": {"$ref": "#/components/schemas/Group"},
+                            "name": {"maxLength": 255, "type": "string"},
+                            "pk": {"description": "primary key", "type": "integer"},
+                        },
+                        "required": ["name", "pk"],
+                        "title": "User",
+                        "type": "object",
+                    },
+                    "Address": {
+                        "properties": {
+                            "pk": {"description": "primary key", "type": "integer"},
+                            "street": {"maxLength": 255, "type": "string"},
+                            "town": {"maxLength": 255, "type": "string"},
+                        },
+                        "required": ["pk", "street", "town"],
+                        "type": "object",
+                    },
+                    "Group": {
+                        "properties": {
+                            "color": {
+                                "enum": ["red", "green", "yellow", "blue"],
+                                "maxLength": 6,
+                                "type": "string",
+                            },
+                            "created_at": {"format": "date-time", "type": "string"},
+                            "name": {"maxLength": 255, "type": "string"},
+                            "pk": {"description": "primary key", "type": "integer"},
+                        },
+                        "required": ["name", "pk"],
+                        "type": "object",
+                    },
+                }
+            }
+        }
+
+    def test_transform_module(self, schema_factory: SchemaFactory) -> None:
+        # Arrange
+        transformer = AsyncAPI2Transformer(schema_factory)
+
+        # Act
+        actual = transformer.transform([models], None)
+
+        # Assert
+        assert actual == {
+            "components": {
+                "schemas": {
+                    "User": {
+                        "properties": {
+                            "address": {"$ref": "#/components/schemas/Address"},
+                            "created_at": {"format": "date-time", "type": "string"},
+                            "group": {"$ref": "#/components/schemas/Group"},
+                            "name": {"maxLength": 255, "type": "string"},
+                            "pk": {"description": "primary key", "type": "integer"},
+                        },
+                        "required": ["name", "pk"],
+                        "title": "User",
+                        "type": "object",
+                    },
+                    "Address": {
+                        "properties": {
+                            "pk": {"description": "primary key", "type": "integer"},
+                            "street": {"maxLength": 255, "type": "string"},
+                            "town": {"maxLength": 255, "type": "string"},
+                            "users": {
+                                "items": {"$ref": "#/components/schemas/User"},
+                                "type": "array",
+                            },
+                        },
+                        "required": ["pk", "street", "town"],
+                        "title": "Address",
+                        "type": "object",
+                    },
+                    "Group": {
+                        "properties": {
+                            "color": {
+                                "enum": ["red", "green", "yellow", "blue"],
+                                "maxLength": 6,
+                                "type": "string",
+                            },
+                            "created_at": {"format": "date-time", "type": "string"},
+                            "name": {"maxLength": 255, "type": "string"},
+                            "pk": {"description": "primary key", "type": "integer"},
+                            "users": {
+                                "items": {"$ref": "#/components/schemas/User"},
+                                "type": "array",
+                            },
+                        },
+                        "required": ["name", "pk"],
+                        "title": "Group",
+                        "type": "object",
+                    },
+                }
+            }
+        }
