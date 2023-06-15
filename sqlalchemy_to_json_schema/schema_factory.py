@@ -424,24 +424,29 @@ class SchemaFactory:
                     )
                     history.pop()
                 elif action == ColumnPropertyType.FOREIGNKEY:  # ColumnProperty
-                    for c in prop.columns:
+                    for column in prop.columns:
                         sub = {}
-                        if type(c.type) != VisitableType:
-                            itype, sub["type"] = self.classifier[c.type]
+                        if type(column.type) != VisitableType:
+                            itype, sub["type"] = self.classifier[column.type]
 
-                            self._add_restriction_if_found(sub, c, itype)
+                            self._add_restriction_if_found(sub, column, itype)
 
-                            if c.doc:
-                                sub["description"] = c.doc
+                            if column.doc:
+                                sub["description"] = column.doc
 
                             if overrides is None:
                                 raise RuntimeError("overrides is None")
 
-                            if c.name in overrides:
+                            if column.name in overrides:
                                 overrides.overrides(sub)
                             if opts:
                                 sub.update(opts)
-                            definitions[c.name] = sub
+
+                            # Ensure that the column name is a string object
+                            # It can be a quoted_name() instance
+                            column_name = str(column.name)
+
+                            definitions[column_name] = sub
                         else:
                             raise NotImplementedError
                 else:  # immediate
@@ -457,7 +462,7 @@ class SchemaFactory:
             Callable[[Union[ColumnProperty, RelationshipProperty], bool], bool]
         ] = None,
     ) -> List[str]:
-        required_properties = set()
+        required_properties_set = set()
 
         for prop in walker.walk():
             columns = getattr(prop, "columns", {})
@@ -468,6 +473,10 @@ class SchemaFactory:
                 if adjust_required is not None:
                     required = adjust_required(prop, required)
                 if required:
-                    required_properties.add(column.key)
+                    required_properties_set.add(column.key)
 
-        return sorted(required_properties)
+        # Ensure that the column name is a string object
+        # It can be a quoted_name() instance
+        required_properties = sorted(str(item) for item in required_properties_set)
+
+        return required_properties
