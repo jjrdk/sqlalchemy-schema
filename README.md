@@ -1,6 +1,6 @@
 # sqlalchemy_to_json_schema
 
-[![Python package](https://github.com/expobrain/sqlalchemy_to_json_schema/actions/workflows/python-package.yml/badge.svg)](https://github.com/expobrain/sqlalchemy_to_json_schema/actions/workflows/python-package.yml)
+[![Unit testing, formatting & linting](https://github.com/expobrain/sqlalchemy-to-json-schema/actions/workflows/main.yml/badge.svg)](https://github.com/expobrain/sqlalchemy-to-json-schema/actions/workflows/main.yml)
 
 ## features
 
