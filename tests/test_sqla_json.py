@@ -1,4 +1,4 @@
-from typing import OrderedDict, Type
+from typing import Type
 
 import pytest
 from sqlalchemy import JSON, Column
@@ -30,12 +30,10 @@ def test_json(walker: Type[AbstractWalker]) -> None:
     actual = schema_factory(MyModel)
 
     assert actual == {
-        "properties": OrderedDict(
-            {
-                "id": {"type": "string", "format": "uuid"},
-                "data": {"type": "object"},
-            }
-        ),
+        "properties": {
+            "id": {"type": "string", "format": "uuid"},
+            "data": {"type": "object"},
+        },
         "required": ["id"],
         "title": "MyModel",
         "type": "object",

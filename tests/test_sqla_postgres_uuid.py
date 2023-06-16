@@ -1,4 +1,4 @@
-from typing import OrderedDict, Type
+from typing import Type
 
 import pytest
 from sqlalchemy import Column
@@ -29,7 +29,7 @@ def test_hybrid_property(walker: Type[AbstractWalker]) -> None:
     actual = schema_factory(MyModel)
 
     assert actual == {
-        "properties": OrderedDict({"id": {"type": "string", "format": "uuid"}}),
+        "properties": {"id": {"type": "string", "format": "uuid"}},
         "required": ["id"],
         "title": "MyModel",
         "type": "object",

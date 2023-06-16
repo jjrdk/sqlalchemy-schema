@@ -1,5 +1,4 @@
 import os.path
-from collections import OrderedDict
 
 import pytest
 from sqlalchemy import create_engine
@@ -29,24 +28,14 @@ def test_it(db: AutomapBase) -> None:
     schema = target(db.classes.artist)
     expected = {
         "title": "artist",
-        "properties": OrderedDict(
-            [
-                ("artistid", {"type": "integer"}),
-                ("artistname", {"type": "string"}),
-                (
-                    "track_collection",
-                    {"items": {"$ref": "#/definitions/track"}, "type": "array"},
-                ),
-            ]
-        ),
+        "properties": {
+            "artistid": {"type": "integer"},
+            "artistname": {"type": "string"},
+            "track_collection": {"items": {"$ref": "#/definitions/track"}, "type": "array"},
+        },
         "definitions": {
             "track": {
-                "properties": OrderedDict(
-                    [
-                        ("trackid", {"type": "integer"}),
-                        ("trackname", {"type": "string"}),
-                    ]
-                ),
+                "properties": {"trackid": {"type": "integer"}, "trackname": {"type": "string"}},
                 "required": ["trackid"],
                 "type": "object",
             }
@@ -62,21 +51,14 @@ def test_it2(db: AutomapBase) -> None:
     schema = target(db.classes.track)
     expected = {
         "title": "track",
-        "properties": OrderedDict(
-            [
-                ("trackid", {"type": "integer"}),
-                ("trackname", {"type": "string"}),
-                ("artist", {"$ref": "#/definitions/artist"}),
-            ]
-        ),
+        "properties": {
+            "trackid": {"type": "integer"},
+            "trackname": {"type": "string"},
+            "artist": {"$ref": "#/definitions/artist"},
+        },
         "definitions": {
             "artist": {
-                "properties": OrderedDict(
-                    [
-                        ("artistid", {"type": "integer"}),
-                        ("artistname", {"type": "string"}),
-                    ]
-                ),
+                "properties": {"artistid": {"type": "integer"}, "artistname": {"type": "string"}},
                 "required": ["artistid", "artistname"],
                 "type": "object",
             }

@@ -1,4 +1,4 @@
-from typing import Any, Dict, OrderedDict, Type
+from typing import Any, Dict, Type
 
 import pytest
 from sqlalchemy import Column, ForeignKey, Integer
@@ -88,7 +88,7 @@ def test_hybrid_property(
     actual = schema_factory(model)
 
     assert actual == {
-        "properties": OrderedDict({"id": {"type": "integer"}}),
+        "properties": {"id": {"type": "integer"}},
         "required": ["id"],
         "title": expected_title,
         "type": "object",
@@ -101,7 +101,7 @@ def test_hybrid_property(
         pytest.param(
             NoForeignKeyWalker,
             {
-                "properties": OrderedDict({"id": {"type": "integer"}}),
+                "properties": {"id": {"type": "integer"}},
                 "required": ["id"],
                 "title": "MyModelWithRelationship",
                 "type": "object",
@@ -113,12 +113,10 @@ def test_hybrid_property(
             #       `local_table.columns` iterator is returning the real column and not the hybrid
             #       property.
             {
-                "properties": OrderedDict(
-                    {
-                        "id": {"type": "integer"},
-                        "_other_model_id": {"type": "integer"},
-                    }
-                ),
+                "properties": {
+                    "id": {"type": "integer"},
+                    "_other_model_id": {"type": "integer"},
+                },
                 "required": sorted(["id", "_other_model_id"]),
                 "title": "MyModelWithRelationship",
                 "type": "object",
@@ -129,17 +127,15 @@ def test_hybrid_property(
             {
                 "definitions": {
                     "MyOtherModel": {
-                        "properties": OrderedDict({"id": {"type": "integer"}}),
+                        "properties": {"id": {"type": "integer"}},
                         "required": ["id"],
                         "type": "object",
                     },
                 },
-                "properties": OrderedDict(
-                    {
-                        "id": {"type": "integer"},
-                        "other_model": {"$ref": "#/definitions/MyOtherModel"},
-                    },
-                ),
+                "properties": {
+                    "id": {"type": "integer"},
+                    "other_model": {"$ref": "#/definitions/MyOtherModel"},
+                },
                 "required": ["id"],
                 "title": "MyModelWithRelationship",
                 "type": "object",
