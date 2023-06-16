@@ -1,11 +1,12 @@
 from datetime import datetime
-from typing import Any, Callable, Optional, Type, Union
+from typing import Any, Callable, Optional, Sequence, Type, Union
 
 import pytest
 import sqlalchemy as sa
-from sqlalchemy import FetchedValue, func
+from sqlalchemy import FetchedValue, Integer, String, func
 from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.sql.expression import ColumnElement
+from sqlalchemy.sql.type_api import TypeEngine
 
 from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
 from sqlalchemy_to_json_schema.walkers import (
@@ -16,11 +17,15 @@ from sqlalchemy_to_json_schema.walkers import (
 )
 from tests.fixtures.models.base import Base
 
+WALKER_CLASSES: Sequence[Type[AbstractWalker]] = [
+    ForeignKeyWalker,
+    NoForeignKeyWalker,
+    StructuralWalker,
+]
+
 
 class TestSchemaFactory:
-    @pytest.mark.parametrize(
-        "walker_cls", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker]
-    )
+    @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
     @pytest.mark.parametrize("server_default", [None, func.sysdate()])
     @pytest.mark.parametrize("default", [None, datetime.now])
     def test_detect__nullable_is_True__not_required(
@@ -46,9 +51,7 @@ class TestSchemaFactory:
 
     @pytest.mark.parametrize("server_default", [None, func.sysdate()])
     @pytest.mark.parametrize("default", [None, datetime.now])
-    @pytest.mark.parametrize(
-        "walker_cls", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker]
-    )
+    @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
     def test_detect__nullable_is_False__required(
         self,
         walker_cls: Type[AbstractWalker],
@@ -72,9 +75,7 @@ class TestSchemaFactory:
 
         assert result == expected
 
-    @pytest.mark.parametrize(
-        "walker_cls", [ForeignKeyWalker, NoForeignKeyWalker, StructuralWalker]
-    )
+    @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
     def test_detect__adjust_required(self, walker_cls: Type[AbstractWalker]) -> None:
         class Model(Base):
             __tablename__ = f"model_adjust_required_{walker_cls}"
@@ -90,3 +91,43 @@ class TestSchemaFactory:
         )
 
         assert result == []
+
+    @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
+    @pytest.mark.parametrize(
+        "array_type, expected_type",
+        [
+            pytest.param(Integer, "integer", id="integer"),
+            pytest.param(String, "string", id="string"),
+        ],
+    )
+    def test_column_array(
+        self, walker_cls: Type[AbstractWalker], array_type: Type[TypeEngine], expected_type: str
+    ) -> None:
+        """
+        ARRANGE a model with a column that is concatenable
+        ACT generate the schema
+        ASSERT the column is an array of string
+        """
+
+        # arrange
+        class Model(Base):
+            __tablename__ = f"model_column_array_{expected_type}_{walker_cls}"
+
+            pk = sa.Column(sa.Integer, primary_key=True)
+            concatenable = sa.Column(sa.ARRAY(array_type))
+
+        target = SchemaFactory(walker_cls)
+
+        # act
+        actual = target(Model)
+
+        # assert
+        assert actual == {
+            "properties": {
+                "pk": {"type": "integer"},
+                "concatenable": {"type": "array", "items": {"type": expected_type}},
+            },
+            "required": ["pk"],
+            "title": "Model",
+            "type": "object",
+        }

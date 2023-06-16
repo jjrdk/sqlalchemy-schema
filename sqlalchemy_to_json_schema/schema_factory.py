@@ -53,7 +53,7 @@ Schema = Dict[str, Any]
 #  tentative
 DefaultColumnToSchemaDict = Mapping[Type[TypeEngine], str]
 
-default_column_to_schema = {
+default_column_to_schema: DefaultColumnToSchemaDict = {
     t.String: "string",
     t.Text: "string",
     t.Integer: "integer",
@@ -67,7 +67,7 @@ default_column_to_schema = {
     t.LargeBinary: "xxx",
     t.Boolean: "boolean",
     t.Unicode: "string",
-    t.Concatenable: "xxx",
+    t.ARRAY: "array",
     t.UnicodeText: "string",
     t.Interval: "xxx",
     t.Enum: "string",
@@ -131,14 +131,17 @@ class Classifier:
 
     def __getitem__(self, k: Type[Column], /) -> Tuple[Type[TypeEngine], str]:
         cls = k.__class__
+
         _, mapped = get_class_mapping(
             self.mapping,  # type: ignore[arg-type]
             cls,  # type: ignore[arg-type]
             see_mro=self.see_mro,
             see_impl=self.see_impl,
         )
+
         if mapped is None:
             raise InvalidStatus(f"notfound: {k}. (cls={cls})")
+
         return cls, mapped  # type: ignore[return-value]
 
 
@@ -347,6 +350,16 @@ class SchemaFactory:
             schema["required"] = required
         return schema
 
+    def _add_items_if_array(
+        self, data: Dict[str, Any], column: Column, itype: Type[TypeEngine], /
+    ) -> None:
+        if not isinstance(column.type, t.ARRAY):
+            return
+
+        _, item_type = self.classifier[column.type.item_type]
+
+        data["items"] = {"type": item_type}
+
     def _add_restriction_if_found(
         self, data: Dict[str, Any], column: Column, itype: Type[TypeEngine], /
     ) -> None:
@@ -438,6 +451,7 @@ class SchemaFactory:
                             itype, sub["type"] = self.classifier[column.type]
 
                             self._add_restriction_if_found(sub, column, itype)
+                            self._add_items_if_array(sub, column, itype)
 
                             if column.doc:
                                 sub["description"] = column.doc
