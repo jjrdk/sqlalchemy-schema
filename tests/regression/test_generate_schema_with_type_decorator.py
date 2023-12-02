@@ -2,7 +2,7 @@ from typing import Any, Iterable, Tuple, Type, Union
 
 import sqlalchemy as sa
 from sqlalchemy import TypeDecorator
-from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
+from sqlalchemy.orm import DeclarativeMeta, declarative_base
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.types import String
 
@@ -44,7 +44,7 @@ def test_it() -> None:
         __tablename__ = "hascolor"
         hascolor_id = sa.Column(sa.Integer, primary_key=True)
         candidates = [(c, c) for c in ["r", "g", "b", "y"]]
-        color = sa.Column(Choice(choices=candidates, length=1), nullable=False)
+        color: sa.Column[str] = sa.Column(Choice(choices=candidates, length=1), nullable=False)
 
     result = _callFUT(Hascolor)
     assert result["properties"]["color"] == {"type": "string", "maxLength": 1}
@@ -58,7 +58,7 @@ def test_it__impl_is_not_callable() -> None:
         __tablename__ = "hascolor"
         hascolor_id = sa.Column(sa.Integer, primary_key=True)
         candidates = [(c, c) for c in ["r", "g", "b", "y"]]
-        color = sa.Column(Choice(choices=candidates), nullable=False)
+        color: sa.Column[str] = sa.Column(Choice(choices=candidates), nullable=False)
 
     result = _callFUT(Hascolor)
     assert result["properties"]["color"] == {"type": "string", "maxLength": 1}

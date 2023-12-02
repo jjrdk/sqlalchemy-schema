@@ -1,4 +1,4 @@
-import os.path
+from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine
@@ -12,10 +12,10 @@ from sqlalchemy_to_json_schema.walkers import StructuralWalker
 
 @pytest.fixture(scope="module")
 def db() -> AutomapBase:
-    dbname = os.path.join(os.path.abspath(os.path.dirname(__file__)), "reflection.db")
-    engine = create_engine(f"sqlite:///{dbname}")
+    dbname = Path(__file__).parent.resolve() / "reflection.db"
+    engine = create_engine(f"sqlite:///{dbname}", future=True)
     Base = automap_base()
-    Base.prepare(engine, reflect=True)
+    Base.prepare(autoload_with=engine)
     return Base  # type: ignore[no-any-return]
 
 
@@ -25,7 +25,7 @@ def _makeOne() -> SchemaFactory:
 
 def test_it(db: AutomapBase) -> None:
     target = _makeOne()
-    schema = target(db.classes.artist)
+    schema = target(db.classes.artist)  # type: ignore[arg-type]
     expected = {
         "title": "artist",
         "properties": {
@@ -48,7 +48,7 @@ def test_it(db: AutomapBase) -> None:
 
 def test_it2(db: AutomapBase) -> None:
     target = _makeOne()
-    schema = target(db.classes.track)
+    schema = target(db.classes.track)  # type: ignore[arg-type]
     expected = {
         "title": "track",
         "properties": {
