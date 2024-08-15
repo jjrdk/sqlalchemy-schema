@@ -1,7 +1,8 @@
 import inspect
 from abc import ABC, abstractmethod
+from collections.abc import Iterable, Iterator
 from types import ModuleType
-from typing import Iterable, Iterator, Optional, Type, Union
+from typing import Optional, Union
 
 from loguru import logger
 from sqlalchemy.ext.declarative import DeclarativeMeta
@@ -17,8 +18,7 @@ class AbstractTransformer(ABC):
     @abstractmethod
     def transform(
         self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
-    ) -> Schema:
-        ...
+    ) -> Schema: ...
 
 
 class JSONSchemaTransformer(AbstractTransformer):
@@ -132,7 +132,7 @@ class OpenAPI3Transformer(OpenAPI2Transformer):
 
 
 def collect_models(module: ModuleType, /) -> Iterator[DeclarativeMeta]:
-    def is_alchemy_model(maybe_model: Type, /) -> TypeGuard[DeclarativeMeta]:
+    def is_alchemy_model(maybe_model: type, /) -> TypeGuard[DeclarativeMeta]:
         if not inspect.isclass(maybe_model):
             return False
 
@@ -143,7 +143,7 @@ def collect_models(module: ModuleType, /) -> Iterator[DeclarativeMeta]:
 
         return True
 
-    items: Iterable[Type]
+    items: Iterable[type]
 
     if hasattr(module, "__all__"):
         logger.debug("Module {module} has an __all__ attribute", module=module)

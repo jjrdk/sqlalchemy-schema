@@ -1,21 +1,10 @@
 import inspect
 import json
 import sys
+from collections.abc import Iterable, Iterator, Mapping, Sequence
 from pathlib import Path
 from types import ModuleType
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    Iterator,
-    Mapping,
-    Optional,
-    Sequence,
-    Type,
-    Union,
-    cast,
-)
+from typing import Any, Callable, Optional, Union, cast
 
 import yaml
 from sqlalchemy.ext.declarative import DeclarativeMeta
@@ -42,7 +31,7 @@ from sqlalchemy_to_json_schema.walkers import (
     StructuralWalker,
 )
 
-TRANSFORMER_MAP: Mapping[Layout, Type[AbstractTransformer]] = {
+TRANSFORMER_MAP: Mapping[Layout, type[AbstractTransformer]] = {
     Layout.SWAGGER_2: OpenAPI2Transformer,
     Layout.OPENAPI_2: OpenAPI2Transformer,
     Layout.OPENAPI_3: OpenAPI3Transformer,
@@ -50,13 +39,13 @@ TRANSFORMER_MAP: Mapping[Layout, Type[AbstractTransformer]] = {
     Layout.ASYNCAPI_2: AsyncAPI2Transformer,
 }
 
-WALKER_MAP: Mapping[Walker, Type[AbstractWalker]] = {
+WALKER_MAP: Mapping[Walker, type[AbstractWalker]] = {
     Walker.STRUCTURAL: StructuralWalker,
     Walker.NOFOREIGNKEY: NoForeignKeyWalker,
     Walker.FOREIGNKEY: ForeignKeyWalker,
 }
 
-DECISION_MAP: Mapping[Decision, Type[AbstractDecision]] = {
+DECISION_MAP: Mapping[Decision, type[AbstractDecision]] = {
     Decision.DEFAULT: RelationDecision,
     Decision.USE_FOREIGN_KEY: UseForeignKeyIfPossibleDecision,
 }
@@ -100,7 +89,7 @@ class Driver:
 
     def dump(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         /,
         *,
         filename: Optional[Path] = None,

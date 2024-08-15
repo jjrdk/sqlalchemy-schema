@@ -1,12 +1,12 @@
 import inspect
 from importlib import import_module
 from types import ModuleType
-from typing import Type, Union
+from typing import Union
 
 from loguru import logger
 
 
-def load_module_or_symbol(module_path: str, /) -> Union[ModuleType, Type]:
+def load_module_or_symbol(module_path: str, /) -> Union[ModuleType, type]:
     logger.info("Loading module or symbol from {module_path}", module_path=module_path)
 
     module_path_split = module_path.split(":", maxsplit=1)
