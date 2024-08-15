@@ -1,8 +1,9 @@
 import json
+from collections.abc import Iterator, Sequence
 from functools import partial
 from pathlib import Path
 from tempfile import NamedTemporaryFile
-from typing import Any, Callable, Dict, Iterator, Optional, Sequence
+from typing import Any, Callable, Optional
 from unittest.mock import ANY
 
 import pytest
@@ -131,7 +132,7 @@ class TestDriver:
         ],
     )
     def test_run_multiple_targets(
-        self, targets: Sequence[str], temp_filename: Path, expected: Dict[str, Any]
+        self, targets: Sequence[str], temp_filename: Path, expected: dict[str, Any]
     ) -> None:
         """
         ARRANGE a list of targets

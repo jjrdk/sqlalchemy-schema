@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 99
-target-version = ["py38", "py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311", "py312"]
 exclude = '''
 /(
     \.git|.venv
@@ -23,7 +23,7 @@ readme = "README.md"
 packages = [{ include = "sqlalchemy_to_json_schema" }]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 sqlalchemy = {version = ">=2", extras = ["mypy"]}
 jsonschema = ">=4.17.3"
 python-dateutil = ">=2.8"
@@ -31,6 +31,7 @@ click = ">=8.1"
 pyyaml = ">=5.4"
 loguru = ">=0.7"
 typing-extensions = ">=4.6"
+greenlet = ">=3"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.11"

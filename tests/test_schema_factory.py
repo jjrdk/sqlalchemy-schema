@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from datetime import datetime
-from typing import Any, Callable, Dict, Optional, Sequence, Type, Union
+from typing import Any, Callable, Optional, Union
 
 import pytest
 import sqlalchemy as sa
@@ -20,7 +21,7 @@ from sqlalchemy_to_json_schema.walkers import (
 )
 from tests.fixtures.models.base import Base
 
-WALKER_CLASSES: Sequence[Type[AbstractWalker]] = [
+WALKER_CLASSES: Sequence[type[AbstractWalker]] = [
     ForeignKeyWalker,
     NoForeignKeyWalker,
     StructuralWalker,
@@ -33,7 +34,7 @@ class TestSchemaFactory:
     @pytest.mark.parametrize("default", [None, datetime.now])
     def test_detect__nullable_is_True__not_required(
         self,
-        walker_cls: Type[AbstractWalker],
+        walker_cls: type[AbstractWalker],
         default: Optional[Callable[..., datetime]],
         server_default: Optional[Union[FetchedValue, str, TextClause, ColumnElement[Any], None]],
     ) -> None:
@@ -57,7 +58,7 @@ class TestSchemaFactory:
     @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
     def test_detect__nullable_is_False__required(
         self,
-        walker_cls: Type[AbstractWalker],
+        walker_cls: type[AbstractWalker],
         default: Optional[Callable[..., datetime]],
         server_default: Optional[Callable[..., datetime]],
     ) -> None:
@@ -79,7 +80,7 @@ class TestSchemaFactory:
         assert result == expected
 
     @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
-    def test_detect__adjust_required(self, walker_cls: Type[AbstractWalker]) -> None:
+    def test_detect__adjust_required(self, walker_cls: type[AbstractWalker]) -> None:
         class Model(Base):
             __tablename__ = f"model_adjust_required_{walker_cls}"
 
@@ -104,7 +105,7 @@ class TestSchemaFactory:
         ],
     )
     def test_column_array(
-        self, walker_cls: Type[AbstractWalker], array_type: Type[TypeEngine], expected_type: str
+        self, walker_cls: type[AbstractWalker], array_type: type[TypeEngine], expected_type: str
     ) -> None:
         """
         ARRANGE a model with a column that is concatenable
@@ -136,7 +137,7 @@ class TestSchemaFactory:
         }
 
     @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
-    def test_column_postgres_uuid(self, walker_cls: Type[AbstractWalker]) -> None:
+    def test_column_postgres_uuid(self, walker_cls: type[AbstractWalker]) -> None:
         class Model(Base):
             __tablename__ = f"model_column_postgres_uuid_{walker_cls}"
 
@@ -154,7 +155,7 @@ class TestSchemaFactory:
         }
 
     @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
-    def test_column_json(self, walker_cls: Type[AbstractWalker]) -> None:
+    def test_column_json(self, walker_cls: type[AbstractWalker]) -> None:
         class Model(Base):
             __tablename__ = f"model_column_json_{walker_cls}"
 
@@ -176,7 +177,7 @@ class TestSchemaFactory:
         }
 
     @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
-    def test_hybrid_property(self, walker_cls: Type[AbstractWalker]) -> None:
+    def test_hybrid_property(self, walker_cls: type[AbstractWalker]) -> None:
         class Model(Base):
             __tablename__ = f"model_hybrid_property_{walker_cls}"
 
@@ -202,7 +203,7 @@ class TestSchemaFactory:
         }
 
     @pytest.mark.parametrize("walker_cls", WALKER_CLASSES)
-    def test_hybrid_property_with_mixin(self, walker_cls: Type[AbstractWalker]) -> None:
+    def test_hybrid_property_with_mixin(self, walker_cls: type[AbstractWalker]) -> None:
         class IdMixin:
             _id = sa.Column("id", Integer, primary_key=True)
 
@@ -277,7 +278,7 @@ class TestSchemaFactory:
         ],
     )
     def test_hybrid_property_with_relationship(
-        self, walker_cls: Type[AbstractWalker], expected: Dict[str, Any]
+        self, walker_cls: type[AbstractWalker], expected: dict[str, Any]
     ) -> None:
         class OtherModel(Base):
             __tablename__ = f"submodel_hybrid_property_with_relationship_{walker_cls}"
@@ -315,11 +316,11 @@ class TestSchemaFactory:
         ],
     )
     def test_column_custom_column(
-        self, walker_cls: Type[AbstractWalker], custom_type: Type[TypeEngine], expected_type: str
+        self, walker_cls: type[AbstractWalker], custom_type: type[TypeEngine], expected_type: str
     ) -> None:
         # arrange
         class Identifier(Integer):
-            def __init__(self, inner: Type[TypeEngine]) -> None:
+            def __init__(self, inner: type[TypeEngine]) -> None:
                 self.inner = inner
 
             def _compiler_dispatch(self, visitor: Any, **kw: Any) -> Any:

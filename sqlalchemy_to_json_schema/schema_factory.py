@@ -20,18 +20,8 @@ JSON Schema defines seven primitive types for JSON values:
         A JSON string.
 """
 
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    Union,
-)
+from collections.abc import Mapping, Sequence
+from typing import Any, Callable, Optional, Union
 
 import sqlalchemy.types as t
 from sqlalchemy import Enum
@@ -48,10 +38,10 @@ from sqlalchemy_to_json_schema.exceptions import InvalidStatus
 from sqlalchemy_to_json_schema.types import ColumnPropertyType
 from sqlalchemy_to_json_schema.walkers import AbstractWalker
 
-Schema = Dict[str, Any]
+Schema = dict[str, Any]
 
 #  tentative
-DefaultColumnToSchemaDict = Mapping[Type[TypeEngine], str]
+DefaultColumnToSchemaDict = Mapping[type[TypeEngine], str]
 
 default_column_to_schema: DefaultColumnToSchemaDict = {
     t.String: "string",
@@ -78,33 +68,33 @@ default_column_to_schema: DefaultColumnToSchemaDict = {
 
 
 # restriction
-def string_max_length(column: NamedColumn, sub: Dict[str, int], /) -> None:
+def string_max_length(column: NamedColumn, sub: dict[str, int], /) -> None:
     if hasattr(column.type, "length") and column.type.length is not None:
         sub["maxLength"] = column.type.length
 
 
-def enum_one_of(column: NamedColumn[Enum], sub: Dict[str, list], /) -> None:
+def enum_one_of(column: NamedColumn[Enum], sub: dict[str, list], /) -> None:
     sub["enum"] = list(column.type.enums)  # type: ignore[attr-defined]
 
 
-def datetime_format(column: NamedColumn, sub: Dict[str, str], /) -> None:
+def datetime_format(column: NamedColumn, sub: dict[str, str], /) -> None:
     sub["format"] = "date-time"
 
 
-def date_format(column: NamedColumn, sub: Dict[str, str], /) -> None:
+def date_format(column: NamedColumn, sub: dict[str, str], /) -> None:
     sub["format"] = "date"
 
 
-def time_format(column: NamedColumn, sub: Dict[str, str], /) -> None:
+def time_format(column: NamedColumn, sub: dict[str, str], /) -> None:
     sub["format"] = "time"
 
 
-def uuid_format(column: NamedColumn, sub: Dict[str, str], /) -> None:
+def uuid_format(column: NamedColumn, sub: dict[str, str], /) -> None:
     sub["format"] = "uuid"
 
 
-TypeFormatFn = Callable[[NamedColumn, Dict[str, Any]], None]
-RestrictionDict = Mapping[Type[TypeEngine], TypeFormatFn]
+TypeFormatFn = Callable[[NamedColumn, dict[str, Any]], None]
+RestrictionDict = Mapping[type[TypeEngine], TypeFormatFn]
 
 default_restriction_dict: RestrictionDict = {
     t.String: string_max_length,
@@ -129,7 +119,7 @@ class Classifier:
         self.see_mro = see_mro
         self.see_impl = see_impl
 
-    def __getitem__(self, k: TypeEngine, /) -> Tuple[Type[TypeEngine], str]:
+    def __getitem__(self, k: TypeEngine, /) -> tuple[type[TypeEngine], str]:
         cls = k.__class__
 
         _, mapped = get_class_mapping(
@@ -147,12 +137,12 @@ class Classifier:
 
 def get_class_mapping(
     mapping: RestrictionDict,
-    cls: Type[TypeEngine],
+    cls: type[TypeEngine],
     /,
     *,
     see_mro: bool = True,
     see_impl: bool = True,
-) -> Tuple[Optional[DeclarativeMeta], Optional[TypeFormatFn]]:
+) -> tuple[Optional[DeclarativeMeta], Optional[TypeFormatFn]]:
     v = mapping.get(cls)
     if v is not None:
         return cls, v  # type: ignore[return-value]
@@ -187,8 +177,8 @@ def get_children(
     /,
     *,
     splitter: str = ".",
-    default: Optional[Union[List[str], Dict[str, Any]]] = None,
-) -> Union[List[str], Dict[str, Any], None]:
+    default: Optional[Union[list[str], dict[str, Any]]] = None,
+) -> Union[list[str], dict[str, Any], None]:
     prefix = name + splitter
     if hasattr(params, "items"):
         if params is None:
@@ -204,7 +194,7 @@ pop_marker = object()
 
 
 class CollectionForOverrides:
-    def __init__(self, params: Dict[str, Any], /, *, pop_marker: object = pop_marker) -> None:
+    def __init__(self, params: dict[str, Any], /, *, pop_marker: object = pop_marker) -> None:
         self.params = params or {}
         self.not_used_keys = set(params.keys())
         self.pop_marker = pop_marker
@@ -212,7 +202,7 @@ class CollectionForOverrides:
     def __contains__(self, k: str, /) -> bool:
         return k in self.params
 
-    def overrides(self, basedict: Dict[str, Any], /) -> None:
+    def overrides(self, basedict: dict[str, Any], /) -> None:
         for k, v in self.params.items():
             if v == self.pop_marker:
                 basedict.pop(k, None)
@@ -226,7 +216,7 @@ class ChildFactory:
         self.splitter = splitter
         self.bidirectional = bidirectional
 
-    def default_excludes(self, prop: MapperProperty, /) -> List[str]:
+    def default_excludes(self, prop: MapperProperty, /) -> list[str]:
         nullable_excludes = [
             prop.back_populates,
             None if prop.backref is None else prop.backref[0],
@@ -281,7 +271,7 @@ class ChildFactory:
         *,
         depth: Optional[int] = None,
         history: Optional[Any] = None,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         subschema = schema_factory._build_properties(
             walker,
             root_schema,
@@ -299,7 +289,7 @@ class ChildFactory:
 class SchemaFactory:
     def __init__(
         self,
-        walker: Type[AbstractWalker],
+        walker: type[AbstractWalker],
         /,
         *,
         classifier: Classifier = DefaultClassfier,
@@ -329,7 +319,7 @@ class SchemaFactory:
         walker = self.walker(model, includes=includes, excludes=excludes)
         overrides_manager = CollectionForOverrides(overrides or {})
 
-        schema: Dict[str, Any] = {"title": model.__name__, "type": "object"}
+        schema: dict[str, Any] = {"title": model.__name__, "type": "object"}
         schema["properties"] = self._build_properties(
             walker, schema, overrides=overrides_manager, depth=depth
         )
@@ -347,7 +337,7 @@ class SchemaFactory:
         return schema
 
     def _add_items_if_array(
-        self, data: Dict[str, Any], column: NamedColumn, itype: Type[TypeEngine], /
+        self, data: dict[str, Any], column: NamedColumn, itype: type[TypeEngine], /
     ) -> None:
         if not isinstance(column.type, t.ARRAY):
             return
@@ -357,7 +347,7 @@ class SchemaFactory:
         data["items"] = {"type": item_type}
 
     def _add_restriction_if_found(
-        self, data: Dict[str, Any], column: NamedColumn, itype: Type[TypeEngine], /
+        self, data: dict[str, Any], column: NamedColumn, itype: type[TypeEngine], /
     ) -> None:
         for restriction_dict in self.restriction_set:
             _, fn = get_class_mapping(
@@ -377,9 +367,9 @@ class SchemaFactory:
         self,
         walker: AbstractWalker,
         root_schema: Schema,
-        current_schema: Dict[str, Any],
+        current_schema: dict[str, Any],
         prop: MapperProperty,
-        val: Dict[str, Any],
+        val: dict[str, Any],
         /,
     ) -> None:
         clsname = prop.mapper.class_.__name__
@@ -408,10 +398,10 @@ class SchemaFactory:
         *,
         overrides: Optional[CollectionForOverrides] = None,
         depth: Optional[int] = None,
-        history: Optional[List[MapperProperty]] = None,
+        history: Optional[list[MapperProperty]] = None,
         toplevel: bool = True,
-    ) -> Dict[str, Any]:
-        definitions: Dict[str, Any] = {}
+    ) -> dict[str, Any]:
+        definitions: dict[str, Any] = {}
 
         if depth is not None and depth <= 0:
             return definitions
@@ -477,7 +467,7 @@ class SchemaFactory:
         /,
         *,
         adjust_required: Optional[Callable[[MapperProperty, bool], bool]] = None,
-    ) -> List[str]:
+    ) -> list[str]:
         required_properties_set = set()
 
         for prop in walker.walk():

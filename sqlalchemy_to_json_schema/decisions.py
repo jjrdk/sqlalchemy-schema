@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Iterator, Tuple, Union
+from collections.abc import Iterator
+from typing import Any, Union
 
 from sqlalchemy.orm import MapperProperty
 from sqlalchemy.orm.base import MANYTOMANY, MANYTOONE
@@ -9,8 +10,8 @@ from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy_to_json_schema.types import ColumnPropertyType
 from sqlalchemy_to_json_schema.walkers import AbstractWalker
 
-DecisionResult = Tuple[
-    ColumnPropertyType, Union[ColumnProperty, RelationshipProperty, MapperProperty], Dict[str, Any]
+DecisionResult = tuple[
+    ColumnPropertyType, Union[ColumnProperty, RelationshipProperty, MapperProperty], dict[str, Any]
 ]
 
 

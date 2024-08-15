@@ -1,4 +1,5 @@
-from typing import Any, Iterable, Tuple, Type, Union
+from collections.abc import Iterable
+from typing import Any, Union
 
 import sqlalchemy as sa
 from sqlalchemy import TypeDecorator
@@ -19,11 +20,11 @@ def _callFUT(model: DeclarativeMeta, /) -> Schema:
     return schema
 
 
-def _makeType(impl_: Union[Type[TypeEngine], TypeEngine]) -> Type[TypeDecorator]:
+def _makeType(impl_: Union[type[TypeEngine], TypeEngine]) -> type[TypeDecorator]:
     class Choice(TypeDecorator):
         impl = impl_
 
-        def __init__(self, choices: Iterable[Tuple[str, Any]], **kw: Any) -> None:
+        def __init__(self, choices: Iterable[tuple[str, Any]], **kw: Any) -> None:
             self.choices = dict(choices)
             super().__init__(**kw)
 

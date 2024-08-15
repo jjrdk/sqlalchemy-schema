@@ -1,5 +1,5 @@
+from collections.abc import Sequence
 from types import ModuleType
-from typing import Sequence
 from unittest.mock import ANY
 
 import pytest
