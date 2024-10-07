@@ -180,9 +180,7 @@ def get_children(
     default: Optional[Union[list[str], dict[str, Any]]] = None,
 ) -> Union[list[str], dict[str, Any], None]:
     prefix = name + splitter
-    if hasattr(params, "items"):
-        if params is None:
-            raise RuntimeError("params is None")
+    if isinstance(params, dict):
         return {k.split(splitter, 1)[1]: v for k, v in params.items() if k.startswith(prefix)}
     elif isinstance(params, (list, tuple)):
         return [e.split(splitter, 1)[1] for e in params if e.startswith(prefix)]
