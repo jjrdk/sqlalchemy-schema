@@ -35,7 +35,7 @@ greenlet = ">=3"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.11"
-pytest = "^8.3.2"
+pytest = "^8.3.3"
 pytest-cov = "^5.0.0"
 pytest-clarity = "^1.0.1"
 pytest-testmon = "^2.1.0"
