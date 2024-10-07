@@ -21,7 +21,7 @@ JSON Schema defines seven primitive types for JSON values:
 """
 
 from collections.abc import Mapping, Sequence
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Optional
 
 import sqlalchemy.types as t
 from sqlalchemy import Enum
@@ -173,12 +173,12 @@ DefaultClassfier = Classifier(default_column_to_schema)
 
 def get_children(
     name: str,
-    params: Optional[Union[Sequence[str], Mapping[str, Any]]],
+    params: Optional[Sequence[str]],
     /,
     *,
     splitter: str = ".",
-    default: Optional[Union[list[str], dict[str, Any]]] = None,
-) -> Union[list[str], dict[str, Any], None]:
+    default: Optional[list[str]] = None,
+) -> Optional[list[str]]:
     prefix = name + splitter
     if isinstance(params, dict):
         return {k.split(splitter, 1)[1]: v for k, v in params.items() if k.startswith(prefix)}
@@ -243,8 +243,6 @@ class ChildFactory:
         name = prop.key
         excludes = get_children(name, walker.includes, splitter=self.splitter, default=[])
         if not self.bidirectional:
-            if isinstance(excludes, dict):
-                raise RuntimeError(f"excludes is dict: {excludes}")
             if excludes is None:
                 raise RuntimeError("excludes is None")
             excludes.extend(self.default_excludes(prop))
@@ -253,8 +251,8 @@ class ChildFactory:
         return walker.clone(
             name,
             prop.mapper,
-            includes=includes,  # type: ignore[arg-type]
-            excludes=excludes,  # type: ignore[arg-type]
+            includes=includes,
+            excludes=excludes,
             history=history,
         )
 
