@@ -271,7 +271,7 @@ class ChildFactory:
         subschema = schema_factory._build_properties(
             walker,
             root_schema,
-            overrides=overrides,
+            overrides,
             depth=(depth and depth - 1),
             history=history,
             toplevel=False,
@@ -317,7 +317,7 @@ class SchemaFactory:
 
         schema: dict[str, Any] = {"title": model.__name__, "type": "object"}
         schema["properties"] = self._build_properties(
-            walker, schema, overrides=overrides_manager, depth=depth
+            walker, schema, overrides_manager, depth=depth
         )
 
         if overrides_manager.not_used_keys:
@@ -390,9 +390,9 @@ class SchemaFactory:
         self,
         walker: AbstractWalker,
         root_schema: Schema,
+        overrides: CollectionForOverrides,
         /,
         *,
-        overrides: Optional[CollectionForOverrides] = None,
         depth: Optional[int] = None,
         history: Optional[list[MapperProperty]] = None,
         toplevel: bool = True,
