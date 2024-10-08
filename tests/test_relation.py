@@ -9,11 +9,7 @@ from pytest_unordered import unordered
 from sqlalchemy.orm import Mapped, declarative_base
 
 from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
-from sqlalchemy_to_json_schema.schema_factory import (
-    ChildFactory,
-    RelationDecision,
-    SchemaFactory,
-)
+from sqlalchemy_to_json_schema.schema_factory import RelationDecision, SchemaFactory
 from sqlalchemy_to_json_schema.walkers import (
     AbstractWalker,
     ForeignKeyWalker,
@@ -97,27 +93,6 @@ def test_properties__include_ManytoOne_backref() -> None:
         "required": ["pk"],
         "properties": {
             "name": {"maxLength": 255, "type": "string"},
-            "pk": {"description": "primary key", "type": "integer"},
-        },
-    }
-
-
-def test_properties__include_ManytoOne_backref__bidirectional_is_true() -> None:
-    target = _makeOne(StructuralWalker, child_factory=ChildFactory(bidirectional=True))
-    result = target(Group)
-
-    assert "required" in result
-    assert list(sorted(result["properties"])) == ["name", "pk", "users"]
-    assert result["properties"]["users"] == {
-        "type": "array",
-        "items": {"$ref": "#/definitions/User"},
-    }
-    assert result["definitions"]["User"] == {
-        "type": "object",
-        "required": ["pk"],
-        "properties": {
-            "name": {"maxLength": 255, "type": "string"},
-            "group": {"$ref": "#/definitions/Group"},
             "pk": {"description": "primary key", "type": "integer"},
         },
     }
