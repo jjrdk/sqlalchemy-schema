@@ -320,7 +320,7 @@ class SchemaFactory:
             walker, schema, overrides=overrides_manager, depth=depth
         )
 
-        if overrides_manager is not None and overrides_manager.not_used_keys:
+        if overrides_manager.not_used_keys:
             raise InvalidStatus(f"invalid overrides: {overrides_manager.not_used_keys}")
 
         if model.__doc__:
