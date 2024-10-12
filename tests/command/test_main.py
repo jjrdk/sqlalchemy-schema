@@ -8,7 +8,6 @@ from pytest_mock import MockerFixture
 
 from sqlalchemy_to_json_schema.command.main import (
     DEFAULT_DECISION,
-    DEFAULT_DRIVER,
     DEFAULT_LAYOUT,
     DEFAULT_WALKER,
     main,
@@ -18,22 +17,11 @@ from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
 
 @pytest.fixture
 def mock_driver(mocker: MockerFixture) -> Mock:
-    return mocker.patch("sqlalchemy_to_json_schema.command.driver.Driver", autospec=True)
-
-
-@pytest.fixture
-def mock_load_module_or_symbol(mock_driver: Mock, mocker: MockerFixture) -> Mock:
-    return mocker.patch(
-        "sqlalchemy_to_json_schema.command.main.load_module_or_symbol",
-        return_value=mock_driver,
-        autospec=True,
-    )
+    return mocker.patch("sqlalchemy_to_json_schema.command.main.Driver", autospec=True)
 
 
 @pytest.mark.parametrize("targets", [["my_module"]])
-def test_main_defaults(
-    mock_driver: Mock, mock_load_module_or_symbol: Mock, targets: Sequence[str]
-) -> None:
+def test_main_defaults(mock_driver: Mock, targets: Sequence[str]) -> None:
     """
     ARRANGE CLI args
     ACT calling the driver's method
@@ -49,8 +37,6 @@ def test_main_defaults(
     # ASSERT
     assert actual.exit_code == 0
 
-    mock_load_module_or_symbol.assert_called_once_with(DEFAULT_DRIVER)
-
     mock_driver.assert_called_once_with(DEFAULT_WALKER, DEFAULT_DECISION, DEFAULT_LAYOUT)
     mock_driver.return_value.run.assert_called_once_with(
         tuple(targets), filename=None, format=None
@@ -65,7 +51,6 @@ def test_main_defaults(
 @pytest.mark.parametrize("out", [Path("output.txt").absolute()])
 def test_main(
     mock_driver: Mock,
-    mock_load_module_or_symbol: Mock,
     targets: Sequence[str],
     walker: Walker,
     decision: Decision,
@@ -101,8 +86,6 @@ def test_main(
 
     # ASSERT
     assert actual.exit_code == 0
-
-    mock_load_module_or_symbol.assert_called_once_with(DEFAULT_DRIVER)
 
     mock_driver.assert_called_once_with(walker, decision, layout)
     mock_driver.return_value.run.assert_called_once_with(
