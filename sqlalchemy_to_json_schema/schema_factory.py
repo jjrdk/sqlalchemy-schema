@@ -20,8 +20,10 @@ JSON Schema defines seven primitive types for JSON values:
         A JSON string.
 """
 
+from __future__ import annotations
+
 from collections.abc import Mapping, Sequence
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 import sqlalchemy.types as t
 from sqlalchemy import Enum
@@ -142,7 +144,7 @@ def get_class_mapping(
     *,
     see_mro: bool = True,
     see_impl: bool = True,
-) -> tuple[Optional[DeclarativeMeta], Optional[TypeFormatFn]]:
+) -> tuple[DeclarativeMeta | None, TypeFormatFn | None]:
     v = mapping.get(cls)
     if v is not None:
         return cls, v  # type: ignore[return-value]
@@ -173,12 +175,12 @@ DefaultClassfier = Classifier(default_column_to_schema)
 
 def get_children(
     name: str,
-    params: Optional[Sequence[str]],
+    params: Sequence[str] | None,
     /,
     *,
     splitter: str = ".",
-    default: Optional[list[str]] = None,
-) -> Optional[list[str]]:
+    default: list[str] | None = None,
+) -> list[str] | None:
     prefix = name + splitter
     if isinstance(params, dict):
         return {k.split(splitter, 1)[1]: v for k, v in params.items() if k.startswith(prefix)}
@@ -238,7 +240,7 @@ class ChildFactory:
         walker: AbstractWalker,
         /,
         *,
-        history: Optional[Any] = None,
+        history: Any | None = None,
     ) -> AbstractWalker:
         name = prop.key
         excludes = get_children(name, walker.includes, splitter=self.splitter, default=[])
@@ -259,14 +261,14 @@ class ChildFactory:
     def child_schema(
         self,
         prop: MapperProperty,
-        schema_factory: Any,
-        root_schema: Mapping[str, Any],
+        schema_factory: SchemaFactory,
+        root_schema: dict[str, Any],
         walker: AbstractWalker,
         overrides: Any,
         /,
         *,
-        depth: Optional[int] = None,
-        history: Optional[Any] = None,
+        depth: int | None = None,
+        history: Any | None = None,
     ) -> dict[str, Any]:
         subschema = schema_factory._build_properties(
             walker,
@@ -290,8 +292,8 @@ class SchemaFactory:
         *,
         classifier: Classifier = DefaultClassfier,
         restriction_dict: RestrictionDict = default_restriction_dict,
-        child_factory: Optional[ChildFactory] = None,
-        relation_decision: Optional[AbstractDecision] = None,
+        child_factory: ChildFactory | None = None,
+        relation_decision: AbstractDecision | None = None,
     ) -> None:
         self.classifier = classifier
         self.walker = walker  # class
@@ -306,11 +308,11 @@ class SchemaFactory:
         model: DeclarativeMeta,
         /,
         *,
-        includes: Optional[Sequence[str]] = None,
-        excludes: Optional[Sequence[str]] = None,
-        overrides: Optional[dict] = None,
-        depth: Optional[int] = None,
-        adjust_required: Optional[Callable[[MapperProperty, bool], bool]] = None,
+        includes: Sequence[str] | None = None,
+        excludes: Sequence[str] | None = None,
+        overrides: dict | None = None,
+        depth: int | None = None,
+        adjust_required: Callable[[MapperProperty, bool], bool] | None = None,
     ) -> Schema:
         walker = self.walker(model, includes=includes, excludes=excludes)
         overrides_manager = CollectionForOverrides(overrides or {})
@@ -393,8 +395,8 @@ class SchemaFactory:
         overrides: CollectionForOverrides,
         /,
         *,
-        depth: Optional[int] = None,
-        history: Optional[list[MapperProperty]] = None,
+        depth: int | None = None,
+        history: list[MapperProperty] | None = None,
         toplevel: bool = True,
     ) -> dict[str, Any]:
         definitions: dict[str, Any] = {}
@@ -462,7 +464,7 @@ class SchemaFactory:
         walker: AbstractWalker,
         /,
         *,
-        adjust_required: Optional[Callable[[MapperProperty, bool], bool]] = None,
+        adjust_required: Callable[[MapperProperty, bool], bool] | None = None,
     ) -> list[str]:
         required_properties_set = set()
 
