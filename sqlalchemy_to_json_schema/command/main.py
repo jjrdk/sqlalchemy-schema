@@ -29,7 +29,6 @@ DEFAULT_LAYOUT: Final = Layout.SWAGGER_2
     type=click.Choice([layout.value for layout in Layout]),
     default=DEFAULT_LAYOUT.value,
 )
-@click.option("--depth", type=int)
 @click.option(
     "--out",
     type=click.Path(
@@ -44,7 +43,6 @@ def main(
     layout: str,
     out: Optional[Path] = None,
     format: Optional[str] = None,
-    depth: Optional[int] = None,
 ) -> None:
     driver = Driver(Walker(walker), Decision(decision), Layout(layout))
     driver.run(targets, filename=out, format=None if format is None else Format(format))
