@@ -14,7 +14,7 @@ skip_glob = ".venv"
 
 [tool.poetry]
 name = "sqlalchemy-to-json-schema"
-version = "0.2.0"
+version = "0.3.0"
 description = "Convert SQLAlchemy models to JSON Schema definitions"
 repository = "https://github.com/expobrain/sqlalchemy-to-json-schema"
 authors = ["Daniele Esposti <daniele.esposti@gmail.com>"]
