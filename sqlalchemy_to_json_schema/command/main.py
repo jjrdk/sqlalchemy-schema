@@ -4,13 +4,12 @@ from typing import Optional
 
 import click
 
+from sqlalchemy_to_json_schema.command.driver import Driver
 from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
-from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
 
 DEFAULT_WALKER = Walker.STRUCTURAL
 DEFAULT_DECISION = Decision.DEFAULT
 DEFAULT_LAYOUT = Layout.SWAGGER_2
-DEFAULT_DRIVER = "sqlalchemy_to_json_schema.command.driver:Driver"
 
 
 @click.command()
@@ -31,7 +30,6 @@ DEFAULT_DRIVER = "sqlalchemy_to_json_schema.command.driver:Driver"
     default=DEFAULT_LAYOUT.value,
 )
 @click.option("--depth", type=int)
-@click.option("--driver", type=str, default=DEFAULT_DRIVER)
 @click.option(
     "--out",
     type=click.Path(
@@ -44,14 +42,12 @@ def main(
     walker: str,
     decision: str,
     layout: str,
-    driver: str,
     out: Optional[Path] = None,
     format: Optional[str] = None,
     depth: Optional[int] = None,
 ) -> None:
-    driver_cls = load_module_or_symbol(driver)
-    driver = driver_cls(Walker(walker), Decision(decision), Layout(layout))  # type: ignore[operator] # noqa: E501
-    driver.run(targets, filename=out, format=None if format is None else Format(format))  # type: ignore[attr-defined] # noqa: E501
+    driver = Driver(Walker(walker), Decision(decision), Layout(layout))
+    driver.run(targets, filename=out, format=None if format is None else Format(format))
 
 
 if __name__ == "__main__":
