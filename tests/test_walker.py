@@ -1,6 +1,7 @@
 import pytest
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
+from pytest_unordered import unordered
 from sqlalchemy.orm import declarative_base
 
 from sqlalchemy_to_json_schema.exceptions import InvalidStatus
@@ -47,7 +48,7 @@ def test_properties__are__all_of_columns() -> None:
     result = target(Group)
 
     assert "properties" in result
-    assert list(sorted(result["properties"].keys())) == ["color", "name", "pk"]
+    assert list(result["properties"].keys()) == unordered(["color", "name", "pk"])
 
 
 def test_title__id__model_class_name() -> None:
@@ -87,13 +88,13 @@ def test_properties__all__this_is_slackoff_little_bit__all_is_all() -> None:  # 
 def test__filtering_by__includes() -> None:
     target = _makeOne()
     result = target(Group, includes=["pk"])
-    assert list(sorted(result["properties"].keys())) == ["pk"]
+    assert list(result["properties"].keys()) == unordered(["pk"])
 
 
 def test__filtering_by__excludes() -> None:
     target = _makeOne()
     result = target(Group, excludes=["pk"])
-    assert list(sorted(result["properties"].keys())) == ["color", "name"]
+    assert list(result["properties"].keys()) == unordered(["color", "name"])
 
 
 def test__filtering_by__excludes_and_includes__conflict() -> None:

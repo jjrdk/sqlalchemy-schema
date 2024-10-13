@@ -5,6 +5,7 @@ from typing import Any
 
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
+from pytest_unordered import unordered
 from sqlalchemy.orm import Mapped, declarative_base
 
 from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
@@ -60,7 +61,7 @@ def test_properties__default__includes__foreign_keys() -> None:
     result = target(User)
 
     assert "properties" in result
-    assert list(sorted(result["properties"].keys())) == ["group_id", "name", "pk"]
+    assert list(result["properties"].keys()) == unordered(["group_id", "name", "pk"])
 
 
 def test_properties__include_OnetoMany_relation() -> None:
@@ -68,7 +69,7 @@ def test_properties__include_OnetoMany_relation() -> None:
     result = target(User)
 
     assert "required" in result
-    assert list(sorted(result["properties"])) == ["group", "name", "pk"]
+    assert list(result["properties"]) == unordered(["group", "name", "pk"])
     assert result["properties"]["group"] == {"$ref": "#/definitions/Group"}
 
 
@@ -77,7 +78,7 @@ def test_properties__include_OnetoMany_relation2() -> None:
     result = target(User)
 
     assert "required" in result
-    assert list(sorted(result["properties"])) == ["group_id", "name", "pk"]
+    assert list(result["properties"]) == unordered(["group_id", "name", "pk"])
     assert result["properties"]["group_id"] == {"type": "integer", "relation": "group"}
 
 
@@ -86,7 +87,7 @@ def test_properties__include_ManytoOne_backref() -> None:
     result = target(Group)
 
     assert "required" in result
-    assert list(sorted(result["properties"])) == ["name", "pk", "users"]
+    assert list(result["properties"]) == unordered(["name", "pk", "users"])
     assert result["properties"]["users"] == {
         "type": "array",
         "items": {"$ref": "#/definitions/User"},
@@ -174,7 +175,7 @@ def test_properties__default_depth_is__traverse_all_chlidren() -> None:
     result = target(A0)
 
     assert "required" in result
-    assert list(sorted(result["properties"])) == ["children", "pk"]
+    assert list(result["properties"]) == unordered(["children", "pk"])
     children0 = get_reference(result["properties"]["children"]["items"], result)
     children1 = get_reference(children0["properties"]["children"]["items"], result)
     children2 = get_reference(children1["properties"]["children"]["items"], result)
@@ -188,7 +189,7 @@ def test_properties__default_depth_is__2__traverse_depth2() -> None:
     result = target(A0, depth=2)
 
     assert "required" in result
-    assert list(sorted(result["properties"])) == ["children", "pk"]
+    assert list(result["properties"]) == unordered(["children", "pk"])
     children0 = get_reference(result["properties"]["children"]["items"], result)
     assert children0["properties"]["pk"]["description"] == "primary key1"
 
@@ -198,7 +199,7 @@ def test_properties__default_depth_is__3__traverse_depth3() -> None:
     result = target(A0, depth=3)
 
     assert "required" in result
-    assert list(sorted(result["properties"])) == ["children", "pk"]
+    assert list(result["properties"]) == unordered(["children", "pk"])
     children0 = get_reference(result["properties"]["children"]["items"], result)
     children1 = get_reference(children0["properties"]["children"]["items"], result)
     assert children1["properties"]["pk"]["description"] == "primary key2"
@@ -236,7 +237,7 @@ def test_properties__infinite_loop() -> None:
     zs = get_reference(ys, result)["properties"]["zs"]
     xs = get_reference(zs, result)["properties"]
     assert "required" in result
-    assert list(sorted(result["properties"])) == ["id", "ys"]
+    assert list(result["properties"]) == unordered(["id", "ys"])
     assert xs["id"]["description"] == "primary key"
 
 
@@ -244,6 +245,6 @@ def test_properties__infinite_loop2() -> None:
     target = _makeOne(StructuralWalker, relation_decision=UseForeignKeyIfPossibleDecision())
     result = target(X)
     assert "required" in result
-    assert list(sorted(result["properties"])) == ["id", "y_id"]
+    assert list(result["properties"]) == unordered(["id", "y_id"])
 
     assert result["properties"]["y_id"] == {"type": "integer", "relation": "ys"}

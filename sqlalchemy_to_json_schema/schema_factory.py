@@ -20,8 +20,10 @@ JSON Schema defines seven primitive types for JSON values:
         A JSON string.
 """
 
+from __future__ import annotations
+
 from collections.abc import Mapping, Sequence
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable
 
 import sqlalchemy.types as t
 from sqlalchemy import Enum
@@ -142,7 +144,7 @@ def get_class_mapping(
     *,
     see_mro: bool = True,
     see_impl: bool = True,
-) -> tuple[Optional[DeclarativeMeta], Optional[TypeFormatFn]]:
+) -> tuple[DeclarativeMeta | None, TypeFormatFn | None]:
     v = mapping.get(cls)
     if v is not None:
         return cls, v  # type: ignore[return-value]
@@ -173,16 +175,14 @@ DefaultClassfier = Classifier(default_column_to_schema)
 
 def get_children(
     name: str,
-    params: Optional[Union[Sequence[str], Mapping[str, Any]]],
+    params: Sequence[str] | None,
     /,
     *,
     splitter: str = ".",
-    default: Optional[Union[list[str], dict[str, Any]]] = None,
-) -> Union[list[str], dict[str, Any], None]:
+    default: list[str] | None = None,
+) -> list[str] | None:
     prefix = name + splitter
-    if hasattr(params, "items"):
-        if params is None:
-            raise RuntimeError("params is None")
+    if isinstance(params, dict):
         return {k.split(splitter, 1)[1]: v for k, v in params.items() if k.startswith(prefix)}
     elif isinstance(params, (list, tuple)):
         return [e.split(splitter, 1)[1] for e in params if e.startswith(prefix)]
@@ -240,13 +240,11 @@ class ChildFactory:
         walker: AbstractWalker,
         /,
         *,
-        history: Optional[Any] = None,
+        history: Any | None = None,
     ) -> AbstractWalker:
         name = prop.key
         excludes = get_children(name, walker.includes, splitter=self.splitter, default=[])
         if not self.bidirectional:
-            if isinstance(excludes, dict):
-                raise RuntimeError(f"excludes is dict: {excludes}")
             if excludes is None:
                 raise RuntimeError("excludes is None")
             excludes.extend(self.default_excludes(prop))
@@ -255,27 +253,27 @@ class ChildFactory:
         return walker.clone(
             name,
             prop.mapper,
-            includes=includes,  # type: ignore[arg-type]
-            excludes=excludes,  # type: ignore[arg-type]
+            includes=includes,
+            excludes=excludes,
             history=history,
         )
 
     def child_schema(
         self,
         prop: MapperProperty,
-        schema_factory: Any,
-        root_schema: Mapping[str, Any],
+        schema_factory: SchemaFactory,
+        root_schema: dict[str, Any],
         walker: AbstractWalker,
         overrides: Any,
         /,
         *,
-        depth: Optional[int] = None,
-        history: Optional[Any] = None,
+        depth: int | None = None,
+        history: Any | None = None,
     ) -> dict[str, Any]:
         subschema = schema_factory._build_properties(
             walker,
             root_schema,
-            overrides=overrides,
+            overrides,
             depth=(depth and depth - 1),
             history=history,
             toplevel=False,
@@ -294,8 +292,8 @@ class SchemaFactory:
         *,
         classifier: Classifier = DefaultClassfier,
         restriction_dict: RestrictionDict = default_restriction_dict,
-        child_factory: Optional[ChildFactory] = None,
-        relation_decision: Optional[AbstractDecision] = None,
+        child_factory: ChildFactory | None = None,
+        relation_decision: AbstractDecision | None = None,
     ) -> None:
         self.classifier = classifier
         self.walker = walker  # class
@@ -310,21 +308,21 @@ class SchemaFactory:
         model: DeclarativeMeta,
         /,
         *,
-        includes: Optional[Sequence[str]] = None,
-        excludes: Optional[Sequence[str]] = None,
-        overrides: Optional[dict] = None,
-        depth: Optional[int] = None,
-        adjust_required: Optional[Callable[[MapperProperty, bool], bool]] = None,
+        includes: Sequence[str] | None = None,
+        excludes: Sequence[str] | None = None,
+        overrides: dict | None = None,
+        depth: int | None = None,
+        adjust_required: Callable[[MapperProperty, bool], bool] | None = None,
     ) -> Schema:
         walker = self.walker(model, includes=includes, excludes=excludes)
         overrides_manager = CollectionForOverrides(overrides or {})
 
         schema: dict[str, Any] = {"title": model.__name__, "type": "object"}
         schema["properties"] = self._build_properties(
-            walker, schema, overrides=overrides_manager, depth=depth
+            walker, schema, overrides_manager, depth=depth
         )
 
-        if overrides_manager is not None and overrides_manager.not_used_keys:
+        if overrides_manager.not_used_keys:
             raise InvalidStatus(f"invalid overrides: {overrides_manager.not_used_keys}")
 
         if model.__doc__:
@@ -394,11 +392,11 @@ class SchemaFactory:
         self,
         walker: AbstractWalker,
         root_schema: Schema,
+        overrides: CollectionForOverrides,
         /,
         *,
-        overrides: Optional[CollectionForOverrides] = None,
-        depth: Optional[int] = None,
-        history: Optional[list[MapperProperty]] = None,
+        depth: int | None = None,
+        history: list[MapperProperty] | None = None,
         toplevel: bool = True,
     ) -> dict[str, Any]:
         definitions: dict[str, Any] = {}
@@ -466,7 +464,7 @@ class SchemaFactory:
         walker: AbstractWalker,
         /,
         *,
-        adjust_required: Optional[Callable[[MapperProperty, bool], bool]] = None,
+        adjust_required: Callable[[MapperProperty, bool], bool] | None = None,
     ) -> list[str]:
         required_properties_set = set()
 

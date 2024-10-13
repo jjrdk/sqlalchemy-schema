@@ -119,16 +119,16 @@ class OpenAPI3Transformer(OpenAPI2Transformer):
     def transform(
         self, rawtargets: Iterable[Union[ModuleType, DeclarativeMeta]], depth: Optional[int], /
     ) -> Schema:
-        d = super().transform(rawtargets, depth)
+        definitions = super().transform(rawtargets, depth)
 
-        self.replace_ref(d, "#/definitions/", "#/components/schemas/")
+        self.replace_ref(definitions, "#/definitions/", "#/components/schemas/")
 
-        if "components" not in d:
-            d["components"] = {}
-        if "schemas" not in d["components"]:
-            d["components"]["schemas"] = {}
-        d["components"]["schemas"] = d.pop("definitions", {})
-        return d
+        if "components" not in definitions:
+            definitions["components"] = {}
+        if "schemas" not in definitions["components"]:
+            definitions["components"]["schemas"] = {}
+        definitions["components"]["schemas"] = definitions.pop("definitions", {})
+        return definitions
 
 
 def collect_models(module: ModuleType, /) -> Iterator[DeclarativeMeta]:
