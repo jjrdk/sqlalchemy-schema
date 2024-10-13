@@ -212,9 +212,8 @@ class CollectionForOverrides:
 
 
 class ChildFactory:
-    def __init__(self, *, splitter: str = ".", bidirectional: bool = False) -> None:
+    def __init__(self, *, splitter: str = ".") -> None:
         self.splitter = splitter
-        self.bidirectional = bidirectional
 
     def default_excludes(self, prop: MapperProperty, /) -> list[str]:
         nullable_excludes = [
@@ -243,12 +242,13 @@ class ChildFactory:
         history: Any | None = None,
     ) -> AbstractWalker:
         name = prop.key
-        excludes = get_children(name, walker.includes, splitter=self.splitter, default=[])
-        if not self.bidirectional:
-            if excludes is None:
-                raise RuntimeError("excludes is None")
-            excludes.extend(self.default_excludes(prop))
         includes = get_children(name, walker.includes, splitter=self.splitter)
+        excludes = get_children(name, walker.includes, splitter=self.splitter, default=[])
+
+        if excludes is None:
+            excludes = self.default_excludes(prop)
+        else:
+            excludes.extend(self.default_excludes(prop))
 
         return walker.clone(
             name,
