@@ -102,4 +102,4 @@ class Driver:
         else:
             output_stream = filename.open("w")
 
-        dump_function(data, output_stream)  # type: ignore[operator]
+        dump_function(data, output_stream)
