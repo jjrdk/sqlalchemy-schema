@@ -12,8 +12,8 @@ from sqlalchemy.sql.elements import TextClause
 from sqlalchemy.sql.expression import ColumnElement
 from sqlalchemy.sql.type_api import TypeEngine
 
-from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
-from sqlalchemy_to_json_schema.walkers import (
+from sqlalchemy_schema.schema_factory import SchemaFactory
+from sqlalchemy_schema.walkers import (
     AbstractWalker,
     ForeignKeyWalker,
     NoForeignKeyWalker,

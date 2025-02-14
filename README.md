@@ -1,13 +1,13 @@
-# sqlalchemy_to_json_schema
+# sqlalchemy_schema
 
 [![Unit testing, formatting & linting](https://github.com/expobrain/sqlalchemy-to-json-schema/actions/workflows/main.yml/badge.svg)](https://github.com/expobrain/sqlalchemy-to-json-schema/actions/workflows/main.yml)
 
 ## features
 
-sqlalchemy_to_json_schema is the library for converting sqlalchemys's model to jsonschema.
+sqlalchemy_schema is the library for converting sqlalchemys's model to jsonschema.
 
-- using sqlalchemy_to_json_schema as command
-- using sqlalchemy_to_json_schema as library
+- using sqlalchemy_schema as command
+- using sqlalchemy_schema as library
 
 ## as library
 
@@ -53,8 +53,8 @@ class User(Base):
 
 ```python
 import pprint as pp
-from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
-from sqlalchemy_to_json_schema.schema_factory import NoForeignKeyWalker
+from sqlalchemy_schema.schema_factory import SchemaFactory
+from sqlalchemy_schema.schema_factory import NoForeignKeyWalker
 
 factory = SchemaFactory(NoForeignKeyWalker)
 pp.pprint(factory(User))
@@ -72,8 +72,8 @@ pp.pprint(factory(User))
 
 ```python
 import pprint as pp
-from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
-from sqlalchemy_to_json_schema.schema_factory import ForeignKeyWalker
+from sqlalchemy_schema.schema_factory import SchemaFactory
+from sqlalchemy_schema.schema_factory import ForeignKeyWalker
 
 factory = SchemaFactory(ForeignKeyWalker)
 pp.pprint(factory(User))
@@ -92,8 +92,8 @@ pp.pprint(factory(User))
 
 ```python
 import pprint as pp
-from sqlalchemy_to_json_schema.schema_factory import SchemaFactory
-from sqlalchemy_to_json_schema.schema_factory import StructuralWalker
+from sqlalchemy_schema.schema_factory import SchemaFactory
+from sqlalchemy_schema.schema_factory import StructuralWalker
 
 factory = SchemaFactory(StructuralWalker)
 pp.pprint(factory(User))
@@ -134,13 +134,13 @@ pp.pprint(factory(Group))
 
 ## as command
 
-using sqlalchemy_to_json_schema as command (the command name is also `sqlalchemy_to_json_schema`).
+using sqlalchemy_schema as command (the command name is also `sqlalchemy_schema`).
 
 ### help
 
 ```bash
-$ sqlalchemy_to_json_schema --help
-usage: sqlalchemy_to_json_schema [-h] [--walker {noforeignkey,foreignkey,structural}]
+$ sqlalchemy_schema --help
+usage: sqlalchemy_schema [-h] [--walker {noforeignkey,foreignkey,structural}]
                          [--decision {default,fullset}] [--depth DEPTH]
                          [--out OUT]
                          target
@@ -169,7 +169,7 @@ Using StructuralWalker via command line (`--walker structural`).
 Of course, NoForeignKeyWalker is noforeignkey, and ForeignKeyWalker is foreignkey.
 
 ```bash
-$ sqlalchemy_to_json_schema --walker structural tests.models:Group
+$ sqlalchemy_schema --walker structural tests.models:Group
 
 {
   "definitions": {
@@ -241,8 +241,8 @@ Output is not same when using Walker-class, directly. This is handy output for s
 what is `--decision`? (TODO: gentle description)
 
 ```bash
-$ sqlalchemy_to_json_schema --walker structural tests.models:User | jq . -S > /tmp/default.json
-$ sqlalchemy_to_json_schema --decision useforeignkey --walker structural tests.models:User | jq . -S > /tmp/useforeignkey.json
+$ sqlalchemy_schema --walker structural tests.models:User | jq . -S > /tmp/default.json
+$ sqlalchemy_schema --decision useforeignkey --walker structural tests.models:User | jq . -S > /tmp/useforeignkey.json
 
 
 $ diff -u /tmp/default.json /tmp/useforeignkey.json

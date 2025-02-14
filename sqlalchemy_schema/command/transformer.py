@@ -8,7 +8,7 @@ from loguru import logger
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from typing_extensions import TypeGuard
 
-from sqlalchemy_to_json_schema.schema_factory import Schema, SchemaFactory
+from sqlalchemy_schema.schema_factory import Schema, SchemaFactory
 
 
 class AbstractTransformer(ABC):

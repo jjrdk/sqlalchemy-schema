@@ -6,18 +6,18 @@ import pytest
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
-from sqlalchemy_to_json_schema.command.main import (
+from sqlalchemy_schema.command.main import (
     DEFAULT_DECISION,
     DEFAULT_LAYOUT,
     DEFAULT_WALKER,
     main,
 )
-from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
+from sqlalchemy_schema.types import Decision, Format, Layout, Walker
 
 
 @pytest.fixture
 def mock_driver(mocker: MockerFixture) -> Mock:
-    return mocker.patch("sqlalchemy_to_json_schema.command.main.Driver", autospec=True)
+    return mocker.patch("sqlalchemy_schema.command.main.Driver", autospec=True)
 
 
 @pytest.mark.parametrize("targets", [["my_module"]])

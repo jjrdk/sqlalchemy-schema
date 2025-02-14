@@ -9,22 +9,22 @@ from typing import Any, Callable, Optional, Union, cast
 import yaml
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
-from sqlalchemy_to_json_schema.command.transformer import (
+from sqlalchemy_schema.command.transformer import (
     AbstractTransformer,
     AsyncAPI2Transformer,
     JSONSchemaTransformer,
     OpenAPI2Transformer,
     OpenAPI3Transformer,
 )
-from sqlalchemy_to_json_schema.decisions import (
+from sqlalchemy_schema.decisions import (
     AbstractDecision,
     RelationDecision,
     UseForeignKeyIfPossibleDecision,
 )
-from sqlalchemy_to_json_schema.schema_factory import Schema, SchemaFactory
-from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
-from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
-from sqlalchemy_to_json_schema.walkers import (
+from sqlalchemy_schema.schema_factory import Schema, SchemaFactory
+from sqlalchemy_schema.types import Decision, Format, Layout, Walker
+from sqlalchemy_schema.utils.imports import load_module_or_symbol
+from sqlalchemy_schema.walkers import (
     AbstractWalker,
     ForeignKeyWalker,
     NoForeignKeyWalker,

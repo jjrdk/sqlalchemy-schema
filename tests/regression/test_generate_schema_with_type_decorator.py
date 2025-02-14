@@ -7,12 +7,12 @@ from sqlalchemy.orm import DeclarativeMeta, declarative_base
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.types import String
 
-from sqlalchemy_to_json_schema.schema_factory import Schema, SchemaFactory
-from sqlalchemy_to_json_schema.walkers import StructuralWalker
+from sqlalchemy_schema.schema_factory import Schema, SchemaFactory
+from sqlalchemy_schema.walkers import StructuralWalker
 
 
 def _callFUT(model: DeclarativeMeta, /) -> Schema:
-    # see: https://github.com/expobrain/sqlalchemy_to_json_schema/issues/6
+    # see: https://github.com/expobrain/sqlalchemy_schema/issues/6
 
     factory = SchemaFactory(StructuralWalker)
     schema = factory(model)

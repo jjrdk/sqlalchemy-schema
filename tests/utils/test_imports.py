@@ -4,7 +4,7 @@ from typing import Union
 import pytest
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
-from sqlalchemy_to_json_schema.utils.imports import load_module_or_symbol
+from sqlalchemy_schema.utils.imports import load_module_or_symbol
 from tests.fixtures.models import user
 
 

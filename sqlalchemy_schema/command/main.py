@@ -4,8 +4,8 @@ from typing import Final, Optional
 
 import click
 
-from sqlalchemy_to_json_schema.command.driver import Driver
-from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
+from sqlalchemy_schema.command.driver import Driver
+from sqlalchemy_schema.types import Decision, Format, Layout, Walker
 
 DEFAULT_WALKER: Final = Walker.STRUCTURAL
 DEFAULT_DECISION: Final = Decision.DEFAULT

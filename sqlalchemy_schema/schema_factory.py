@@ -35,10 +35,10 @@ from sqlalchemy.sql.elements import NamedColumn
 from sqlalchemy.sql.type_api import TypeEngine
 from sqlalchemy.sql.visitors import Visitable
 
-from sqlalchemy_to_json_schema.decisions import AbstractDecision, RelationDecision
-from sqlalchemy_to_json_schema.exceptions import InvalidStatus
-from sqlalchemy_to_json_schema.types import ColumnPropertyType
-from sqlalchemy_to_json_schema.walkers import AbstractWalker
+from sqlalchemy_schema.decisions import AbstractDecision, RelationDecision
+from sqlalchemy_schema.exceptions import InvalidStatus
+from sqlalchemy_schema.types import ColumnPropertyType
+from sqlalchemy_schema.walkers import AbstractWalker
 
 Schema = dict[str, Any]
 

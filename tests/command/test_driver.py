@@ -11,13 +11,13 @@ import yaml
 from pytest_mock import MockerFixture
 from yaml import Loader
 
-from sqlalchemy_to_json_schema.command.driver import Driver
-from sqlalchemy_to_json_schema.command.main import (
+from sqlalchemy_schema.command.driver import Driver
+from sqlalchemy_schema.command.main import (
     DEFAULT_DECISION,
     DEFAULT_LAYOUT,
     DEFAULT_WALKER,
 )
-from sqlalchemy_to_json_schema.types import Decision, Format, Layout, Walker
+from sqlalchemy_schema.types import Decision, Format, Layout, Walker
 
 
 @pytest.fixture
@@ -97,7 +97,7 @@ class TestDriver:
         driver = Driver(DEFAULT_WALKER, DEFAULT_DECISION, DEFAULT_LAYOUT)
 
         m_stdout = mocker.patch(
-            "sqlalchemy_to_json_schema.command.driver.sys.stdout", autospec=True
+            "sqlalchemy_schema.command.driver.sys.stdout", autospec=True
         )
 
         # act

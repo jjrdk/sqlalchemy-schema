@@ -11,7 +11,7 @@ from sqlalchemy.orm import Mapper, MapperProperty
 from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.orm.relationships import RelationshipProperty
 
-from sqlalchemy_to_json_schema.exceptions import InvalidStatus
+from sqlalchemy_schema.exceptions import InvalidStatus
 
 
 class AbstractWalker(ABC):

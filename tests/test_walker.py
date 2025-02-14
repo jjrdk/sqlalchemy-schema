@@ -4,9 +4,9 @@ import sqlalchemy.orm as orm
 from pytest_unordered import unordered
 from sqlalchemy.orm import declarative_base
 
-from sqlalchemy_to_json_schema.exceptions import InvalidStatus
-from sqlalchemy_to_json_schema.schema_factory import SchemaFactory, pop_marker
-from sqlalchemy_to_json_schema.walkers import ForeignKeyWalker
+from sqlalchemy_schema.exceptions import InvalidStatus
+from sqlalchemy_schema.schema_factory import SchemaFactory, pop_marker
+from sqlalchemy_schema.walkers import ForeignKeyWalker
 
 
 def _makeOne() -> SchemaFactory:

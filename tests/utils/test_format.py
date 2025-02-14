@@ -4,7 +4,7 @@ from typing import Optional
 import pytest
 from dateutil import tz
 
-from sqlalchemy_to_json_schema.utils.format import (
+from sqlalchemy_schema.utils.format import (
     parse_date,
     parse_time,
     validate_date,

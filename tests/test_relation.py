@@ -8,9 +8,9 @@ import sqlalchemy.orm as orm
 from pytest_unordered import unordered
 from sqlalchemy.orm import Mapped, declarative_base
 
-from sqlalchemy_to_json_schema.decisions import UseForeignKeyIfPossibleDecision
-from sqlalchemy_to_json_schema.schema_factory import RelationDecision, SchemaFactory
-from sqlalchemy_to_json_schema.walkers import (
+from sqlalchemy_schema.decisions import UseForeignKeyIfPossibleDecision
+from sqlalchemy_schema.schema_factory import RelationDecision, SchemaFactory
+from sqlalchemy_schema.walkers import (
     AbstractWalker,
     ForeignKeyWalker,
     StructuralWalker,

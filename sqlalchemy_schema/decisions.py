@@ -7,8 +7,8 @@ from sqlalchemy.orm.base import MANYTOMANY, MANYTOONE
 from sqlalchemy.orm.properties import ColumnProperty
 from sqlalchemy.orm.relationships import RelationshipProperty
 
-from sqlalchemy_to_json_schema.types import ColumnPropertyType
-from sqlalchemy_to_json_schema.walkers import AbstractWalker
+from sqlalchemy_schema.types import ColumnPropertyType
+from sqlalchemy_schema.walkers import AbstractWalker
 
 DecisionResult = tuple[
     ColumnPropertyType, Union[ColumnProperty, RelationshipProperty, MapperProperty], dict[str, Any]
