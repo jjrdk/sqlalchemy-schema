@@ -23,7 +23,7 @@ jobs:
         run: poetry install
       - name: Build package
         run: |
-          poetry version ${{ inputs.release-tag }}
+          poetry version ${{ env.RELEASE_TAG }}
           poetry build
         shell: bash
       # From https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/#publishing-the-distribution-to-pypi-and-testpypi
