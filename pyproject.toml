@@ -1,6 +1,6 @@
 [project]
 name = "sqlalchemy-schema"
-version = "0.1.1"
+version = "0.0.0"
 description = "Convert SQLAlchemy models to JSON Schema definitions"
 repository = "https://github.com/expobrain/sqlalchemy-to-json-schema"
 authors = [
@@ -11,10 +11,10 @@ readme = "README.md"
 packages = [{ include = "sqlalchemy_schema" }]
 dependencies = [
     "sqlalchemy >= 2.0",
-    "jsonschema >= 4.23",
-    "pyyaml >= 5.4",
+    "jsonschema >= 4.24",
+    "pyyaml >= 6.0",
     "loguru >= 0.7",
-    "click >=8.1"
+    "click >=8.2"
 ]
 requires-python = ">=3.10,<4.0"
 
@@ -25,15 +25,15 @@ pytest = "^8.3"
 pytest-cov = "^6.0"
 pytest-mock = "^3.14.0"
 pytest-xdist = "^3.6"
-types-pygments = "^2.18.0.20240506"
-types-colorama = "^0.4.15.20240311"
-types-jsonschema = "^4.23.0.20241208"
-types-pytz = "^2024.2.0.20241221"
-types-setuptools = "^75.6.0.20241223"
-types-python-dateutil = "^2.9.0.20241206"
-types-pyyaml = "^6.0.12.20241230"
-types-mock = "^5.1.0.20240425"
-pytest-unordered = "^0.6.1"
+types-pygments = "^2.19"
+types-colorama = "^0.4"
+types-jsonschema = "^4.24"
+types-pytz = "^2025.2"
+types-setuptools = "^79.0"
+types-python-dateutil = "^2.9"
+types-pyyaml = "^6.0"
+types-mock = "^5.2"
+pytest-unordered = "^0.7"
 
 [build-system]
 requires = ["poetry-core>=2.0.0"]
