@@ -3,7 +3,7 @@ from collections.abc import Sequence
 
 class ErrorFound(Exception):  # xxx:
     def __init__(self, errors: Sequence[str], /):
-        self.errors = errors
+        self.errors = list(errors)
 
 
 class InvalidStatus(Exception):

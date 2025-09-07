@@ -56,7 +56,6 @@ default_column_to_schema: DefaultColumnToSchemaDict = {
     t.DateTime: "string",
     t.Date: "string",
     t.Time: "string",  # xxx
-    t.LargeBinary: "xxx",
     t.Boolean: "boolean",
     t.Unicode: "string",
     t.ARRAY: "array",
@@ -155,10 +154,10 @@ def get_class_mapping(
             if issubclass(TypeEngine, type_):
                 break
             if type_ in mapping:
-                return [
+                return (
                     type_,  # type: ignore[return-value]
                     mapping[type_],
-                ]
+                )
 
     # decorator's type
     if see_impl and hasattr(cls, "impl"):
